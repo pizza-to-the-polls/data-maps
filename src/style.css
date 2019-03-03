@@ -1,0 +1,42 @@
+body {
+  font-family: sans-serif;
+  color: #333;
+}
+
+.state, .district {
+  fill: none;
+  stroke: #ccc;
+  stroke-linejoin: round;
+}
+
+.district:hover {
+  fill: #ccc;
+}
+
+.table-container {
+  height: 300px;
+  overflow-y: scroll;
+  border: 1px solid #cecece;
+}
+
+table {
+  font-size: 12px;
+  border-collapse: collapse;
+  width: 100%;
+  font-family: monospace;
+}
+
+thead {
+  background: #525151;
+  color: #fff;
+  text-align: left;
+}
+
+table tr:nth-child(odd) {
+  background: #ececec;
+}
+
+td,
+th {
+  padding: 4px;
+}

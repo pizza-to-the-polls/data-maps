@@ -1,4 +1,49 @@
-// make D3 aware of the <svg> element in the HTML
+const districtData = {};
+
+function parseRow(row) {
+  const pieces = {};
+  row.forEach(r => {
+    const key = r.split(': ')[0];
+    const value = r.split(': ')[1];
+    pieces[key] = isNaN(Number(value)) ? value : Number(value);
+  })
+  return pieces;
+}
+
+d3.json('https://spreadsheets.google.com/feeds/list/1loELb4aslMLnvzdU7mMz75iz11OyDblZZSRcINnukYk/1/public/basic?alt=json')
+  .then(function(response) {
+    response.feed.entry.forEach(d => {
+      const rowContent = d.content.$t.split(', ');
+      districtData[d.title.$t] = parseRow(rowContent);
+    })
+    // Let's create a table to see what we've got
+    createTable(districtData);
+  });
+
+// Maybe throwaway, but useful to see
+function createTable(data) {
+  const keys = Object.keys(data[Object.keys(data)[0]]);
+  const tableHead = document.getElementById('data-table-header');
+  const tableBody = document.getElementById('data-table-body');
+  console.log(tableHead);
+  keys.forEach(k => {
+    const label = document.createElement('th');
+    label.innerHTML = k;
+    tableHead.appendChild(label);
+  });
+
+  Object.values(data).forEach(d => {
+    const row = document.createElement('tr');
+    Object.values(d).forEach(c => {
+        const cell = document.createElement('td');
+        cell.innerHTML = c;
+        row.appendChild(cell);
+    })
+    tableBody.appendChild(row);
+  })
+}
+
+////// D3 ///////
 const svg = d3.select("svg");
 
 // get <svg> width and height from HTML instead of hard-coding values
@@ -39,17 +84,18 @@ d3
       .append("path")
       .attr("d", geoPathGenerator)
       .attr("class", "district");
-  });
+});
 
-  const zoom = d3.zoom()
-    .scaleExtent([1, 8])
-    .on('zoom', zoomed);
+// ZOOM ZOOM //
+const zoom = d3.zoom()
+  .scaleExtent([1, 20])
+  .on('zoom', zoomed);
 
 
- svg.call(zoom);
+svg.call(zoom);
 
- function zoomed() {
-      svg
-        .selectAll('path') // To prevent stroke width from scaling
-        .attr('transform', d3.event.transform);
-    }
+function zoomed() {
+  svg
+    .selectAll('path') // To prevent stroke width from scaling
+    .attr('transform', d3.event.transform);
+}
