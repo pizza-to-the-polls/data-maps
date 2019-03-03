@@ -1,6 +1,8 @@
-const districtData = {};
+const sheetsURL = 'https://spreadsheets.google.com/feeds/list/1loELb4aslMLnvzdU7mMz75iz11OyDblZZSRcINnukYk/1/public/basic?alt=json';
+const districtData = [];
 
 function parseRow(row) {
+  // Takes a string and converts it into an object with keys for each column
   const pieces = {};
   row.forEach(r => {
     const key = r.split(': ')[0];
@@ -10,11 +12,13 @@ function parseRow(row) {
   return pieces;
 }
 
-d3.json('https://spreadsheets.google.com/feeds/list/1loELb4aslMLnvzdU7mMz75iz11OyDblZZSRcINnukYk/1/public/basic?alt=json')
+d3.json(sheetsURL)
   .then(function(response) {
     response.feed.entry.forEach(d => {
       const rowContent = d.content.$t.split(', ');
-      districtData[d.title.$t] = parseRow(rowContent);
+      const row = parseRow(rowContent);
+      row['id'] = d.title.$t; // Need to add the first column manually
+      districtData.push(row);
     })
     // Let's create a table to see what we've got
     createTable(districtData);
@@ -32,7 +36,7 @@ function createTable(data) {
     tableHead.appendChild(label);
   });
 
-  Object.values(data).forEach(d => {
+  data.forEach(d => {
     const row = document.createElement('tr');
     Object.values(d).forEach(c => {
         const cell = document.createElement('td');
