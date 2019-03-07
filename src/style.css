@@ -5,12 +5,14 @@ body {
 
 .state, .district {
   fill: none;
-  stroke: #ccc;
+  stroke: #367db0;
   stroke-linejoin: round;
 }
 
 .district:hover {
-  fill: #ccc;
+  fill: #367db0;
+  fill-opacity: 1;
+  cursor: pointer;
 }
 
 .table-container {
@@ -19,24 +21,33 @@ body {
   border: 1px solid #cecece;
 }
 
-table {
+.table-container table {
   font-size: 12px;
   border-collapse: collapse;
   width: 100%;
   font-family: monospace;
 }
 
-thead {
+.table-container thead {
   background: #525151;
   color: #fff;
   text-align: left;
 }
 
-table tr:nth-child(odd) {
+.table-container table tr:nth-child(odd) {
   background: #ececec;
 }
 
-td,
-th {
+.table-container td,
+.table-container th {
   padding: 4px;
+}
+
+.tooltip {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #367db0;
+  border-radius: 8px;
+  font-size: 12px;
+  padding: 5px;
 }
