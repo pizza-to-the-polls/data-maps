@@ -9,6 +9,7 @@ const sheetsURL = 'https://spreadsheets.google.com/feeds/list/1loELb4aslMLnvzdU7
 const statesURL = '/src/us.json';
 const districtsURL = '/src/us-congress-113.json';
 const districtData = [];
+let sortAscending = true;
 
 // Default filter value
 let globalFilter = 'overall';
@@ -34,14 +35,37 @@ function createTable(data) {
     .attr('class', 'table-container')
     .append('table');
 
-  const tableHead = table
+  const tableHeaders = table
     .append('thead')
     .selectAll('th')
     .data(keys)
     .enter()
     .append('th')
-    .text(d => d);
+    .text(d => d)
+    .on('click', function (d) {
+      // This doesn't work yet
+  	 //   tableHeaders.attr('class', 'header');
+     //
+  	 //   if (sortAscending) {
+  	 //     data.sort((a, b) => {
+     //       return b[d] - a[d];
+     //     });
+  	 //     sortAscending = false;
+  	 //     this.className = 'aes';
+  	 //   } else {
+    	// 	 data.sort((a, b) => b[d] - a[d]);
+    	// 	 sortAscending = true;
+    	// 	 this.className = 'des';
+  	 //   }
+     //
+     //   rows.data(data);
+     //
+     });
 
+     createRows(table, data, keys);
+}
+
+function createRows(table, data, keys) {
   const rows = table
     .append('tbody')
     .selectAll('tr')
@@ -49,10 +73,18 @@ function createTable(data) {
     .enter()
     .append('tr')
     .selectAll('td')
-    .data(d => Object.values(d))
+    .data(function (d) {
+      const tempdata = keys.map(function (k) {
+        return { 'value': d[k], 'key': k};
+      });
+
+      return tempdata;
+    })
+    // .data(d => Object.values(d))
     .enter()
     .append('td')
-    .text(d => d);
+    .attr('data-th', d => d.key)
+    .text(d => d.value);
 }
 
 ////// D3 ///////
@@ -67,6 +99,9 @@ const projection = d3
   .translate([svgWidth / 2, svgHeight / 2]);
 
 const geoPathGenerator = d3.geoPath().projection(projection);
+
+// Create a diverging red to blue scale
+const colorScale = d3.scaleSequential(d3.interpolateRdBu).domain([0, 1]);
 
 // Tooltip
 tooltip = d3.select("body").append("div")
@@ -116,9 +151,22 @@ function drawMap(data) {
   const districtsGeo = topojson.feature(districts, districts.objects.districts);
   const cleanStats = parseStats(stats);
   const districtsWithStats = addStatsToFeatures(districtsGeo.features, cleanStats);
-  createTable(cleanStats);
-  drawStates(statesGeo);
-  drawDistricts(districtsWithStats);
+  const filters = Object.keys(cleanStats[0]).filter(key => ['label', 'id', 'state'].indexOf(key) === -1);
+
+  const statePaths = drawStates(statesGeo);
+  const districtPaths = drawDistricts(districtsWithStats);
+  const dataTable = createTable(cleanStats);
+
+  // Add some filters
+  d3
+    .select('#filters')
+    .selectAll('button')
+    .data(filters)
+    .enter()
+    .append('button')
+    .text(d => d)
+    .on('click', filter => updateDistricts(districtPaths, filter));
+
 };
 
 function drawStates(states) {
@@ -133,15 +181,14 @@ function drawStates(states) {
 
 
 function drawDistricts(districts) {
-  svg
+  return svg
     .selectAll("path")
     .data(districts)
     .enter()
     .append("path")
     .attr("d", geoPathGenerator)
     .attr("class", "district")
-    .style("fill", "#229fdd")
-    .style("fill-opacity", d => d[globalFilter])
+    .style("fill", d => colorScale(d[globalFilter]))
     .on('mouseover', d => {
       tooltip.transition()
       .duration(250)
@@ -164,19 +211,11 @@ function drawDistricts(districts) {
     });
 }
 
-// Filters
-function addFilters(data) {
-  const filters = Object.keys(data[0]).filter(key => ['id', 'geometry', 'label', 'properties', 'state', 'type'].indexOf(key) === -1);
-  d3
-    .select('#filters')
-    .selectAll('button')
-    .data(filters)
-    .enter()
-    .append('button')
-    .text(d => d)
-    .on('click', d => globalFilter = d);
+function updateDistricts(districtPaths, filter) {
+  districtPaths
+    .transition()
+    .style("fill", d => colorScale(d[filter]));
 }
-
 
 // ZOOM ZOOM //
 const zoom = d3.zoom()

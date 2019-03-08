@@ -32,6 +32,12 @@ body {
   background: #525151;
   color: #fff;
   text-align: left;
+  cursor: pointer;
+}
+
+th.aes,
+th.des {
+  background: #367db0;
 }
 
 .table-container table tr:nth-child(odd) {
@@ -50,4 +56,25 @@ body {
   border-radius: 8px;
   font-size: 12px;
   padding: 5px;
+}
+
+#filters {
+  padding: 10px;
+  text-align: center;
+}
+
+button {
+  background: none;
+  padding: 5px 10px;
+  border: 1px solid #999;
+  border-right: none;
+}
+
+button:first-child {
+  border-radius: 4px 0 0 4px;
+}
+
+button:last-child {
+  border-radius: 0 4px 4px 0;
+  border-right: 1px solid #999;
 }
