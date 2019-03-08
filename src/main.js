@@ -6,7 +6,12 @@ http://bl.ocks.org/dougdowson/9832019
 
 
 const sheetsURL = 'https://spreadsheets.google.com/feeds/list/1loELb4aslMLnvzdU7mMz75iz11OyDblZZSRcINnukYk/1/public/basic?alt=json';
+const statesURL = '/src/us.json';
+const districtsURL = '/src/us-congress-113.json';
 const districtData = [];
+
+// Default filter value
+let globalFilter = 'overall';
 
 function parseRow(row) {
   // Takes a string and converts it into an object with keys for each column
@@ -63,90 +68,115 @@ const projection = d3
 
 const geoPathGenerator = d3.geoPath().projection(projection);
 
-async function addDataToFeatures(features) {
-  // Get data from Google Sheet and add it to the geojson data
-  // Returns an enriched set of district data
-  const combinedData = [];
-
-  await d3.json(sheetsURL)
-    .then(function(response) {
-      response.feed.entry.forEach(d => {
-        const rowContent = d.content.$t.split(', ');
-        const row = parseRow(rowContent);
-        row['id'] = Number(d.title.$t); // Need to add the first column manually
-        districtData.push(row);
-      })
-      // Let's create a table to see what we've got
-      createTable(districtData);
-
-      features.forEach(feature => {
-        const data = districtData.find(d => d.id === feature.id);
-        const richDistrict = {...feature, ...data};
-        combinedData.push(richDistrict);
-      })
-    });
-
-    return combinedData;
-}
-
 // Tooltip
 tooltip = d3.select("body").append("div")
 	.attr("class", "tooltip")
 	.style("opacity", 0);
 
-// Load states
-d3
-  .json("/src/us.json")
-  .then(function(loadedTopoJson) {
-    const geoJson = topojson.feature(loadedTopoJson, loadedTopoJson.objects.states);
+// Load data
+const files = [statesURL, districtsURL, sheetsURL];
+let promises = [];
+files.forEach(url => promises.push(d3.json(url)));
+Promise.all(promises).then(drawMap);
 
-    svg
-      .selectAll("path")
-      .data(geoJson.features)
-      .enter()
-      .append("path")
-      .attr("d", geoPathGenerator)
-      .attr("class", "state");
+// Clean up the google data
+function parseStats(data) {
+  const cleanStats = [];
+  data.feed.entry.forEach(d => {
+    const rowContent = d.content.$t.split(', ');
+    const row = parseRow(rowContent);
+    row['id'] = Number(d.title.$t); // Need to add the first column manually
+    cleanStats.push(row);
+  })
+  return cleanStats;
+}
+
+// Get data from Google Sheet and add it to the geojson data
+// Returns an enriched set of district data
+function addStatsToFeatures(districts, stats) {
+  const combinedData = [];
+
+  districts.forEach(feature => {
+    const data = stats.find(d => d.id === feature.id);
+    const richDistrict = {...feature, ...data};
+    combinedData.push(richDistrict);
   });
 
-// Load districts
-d3
-  .json("/src/us-congress-113.json")
-  .then(function(loadedTopoJson) {
-    const districtJson = topojson.feature(loadedTopoJson, loadedTopoJson.objects.districts);
-    addDataToFeatures(districtJson.features)
-      .then(data => {
-        svg
-          .selectAll("path")
-          .data(data)
-          .enter()
-          .append("path")
-          .attr("d", geoPathGenerator)
-          .attr("class", "district")
-          .style("fill", "#229fdd")
-          .style("fill-opacity", d => d.overall)
-          .on('mouseover', d => {
-            tooltip.transition()
-      			.duration(250)
-      			.style("opacity", 1);
-      			tooltip.html(
-        			"<strong>" + d.label + "</strong>" +
-        			"<table><tbody><tr><td class='wide'>Overall:</td><td>" + d.overall + "</td></tr>" +
-        			"<tr><td>Clinton</td><td>" + d.clinton + "</td></tr>" +
-        			"<tr><td>Trump:</td><td>" + d.trump + "</td></tr>" +
-              "<tr><td>Independent:</td><td>" + d.independent + "</td></tr>" +
-              "</tbody></table>"
-      			)
-      			.style("left", (d3.event.pageX + 15) + "px")
-      			.style("top", (d3.event.pageY - 28) + "px");
-      		})
-      		.on("mouseout", function(d) {
-      			tooltip.transition()
-      			.duration(250)
-      			.style("opacity", 0);
-      		});
-      });
-});
+  return combinedData;
+}
+
+// Draw the map
+function drawMap(data) {
+  // Data = results from the three json calls
+  const states = data[0];
+  const districts = data[1];
+  const stats = data[2];
+
+  const statesGeo = topojson.feature(states, states.objects.states);
+  const districtsGeo = topojson.feature(districts, districts.objects.districts);
+  const cleanStats = parseStats(stats);
+  const districtsWithStats = addStatsToFeatures(districtsGeo.features, cleanStats);
+  createTable(cleanStats);
+  drawStates(statesGeo);
+  drawDistricts(districtsWithStats);
+};
+
+function drawStates(states) {
+  svg
+    .selectAll("path")
+    .data(states.features)
+    .enter()
+    .append("path")
+    .attr("d", geoPathGenerator)
+    .attr("class", "state");
+}
+
+
+function drawDistricts(districts) {
+  svg
+    .selectAll("path")
+    .data(districts)
+    .enter()
+    .append("path")
+    .attr("d", geoPathGenerator)
+    .attr("class", "district")
+    .style("fill", "#229fdd")
+    .style("fill-opacity", d => d[globalFilter])
+    .on('mouseover', d => {
+      tooltip.transition()
+      .duration(250)
+      .style("opacity", 1);
+      tooltip.html(
+        "<strong>" + d.label + "</strong>" +
+        "<table><tbody><tr><td class='wide'>Overall:</td><td>" + d.overall + "</td></tr>" +
+        "<tr><td>Clinton</td><td>" + d.clinton + "</td></tr>" +
+        "<tr><td>Trump:</td><td>" + d.trump + "</td></tr>" +
+        "<tr><td>Independent:</td><td>" + d.independent + "</td></tr>" +
+        "</tbody></table>"
+      )
+      .style("left", (d3.event.pageX + 15) + "px")
+      .style("top", (d3.event.pageY - 28) + "px");
+    })
+    .on("mouseout", function(d) {
+      tooltip.transition()
+      .duration(250)
+      .style("opacity", 0);
+    });
+}
+
+// Filters
+function addFilters(data) {
+  const filters = Object.keys(data[0]).filter(key => ['id', 'geometry', 'label', 'properties', 'state', 'type'].indexOf(key) === -1);
+  d3
+    .select('#filters')
+    .selectAll('button')
+    .data(filters)
+    .enter()
+    .append('button')
+    .text(d => d)
+    .on('click', d => globalFilter = d);
+}
+
 
 // ZOOM ZOOM //
 const zoom = d3.zoom()
