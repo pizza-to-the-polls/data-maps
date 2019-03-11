@@ -15,23 +15,22 @@ body {
   stroke: yellow;
 }
 
-.table-container {
+#table {
   height: 300px;
   overflow-y: scroll;
   border: 1px solid #cecece;
 }
 
-.table-container table {
+#table table {
   font-size: 12px;
   border-collapse: collapse;
   width: 100%;
   font-family: monospace;
 }
 
-.table-container thead {
+#table thead {
   background: #bdbdbd;
   text-align: left;
-  cursor: pointer;
 }
 
 .sortable {
@@ -39,6 +38,7 @@ body {
   background-repeat: no-repeat;
   background-position: 100% 4px;
   background-size: 12px;
+  cursor: pointer;
 }
 
 .sort--ascending {
@@ -49,12 +49,12 @@ body {
   background-image: url('/img/sort-down.png');
 }
 
-.table-container table tr:nth-child(odd) {
+#table table tr:nth-child(odd) {
   background: #ececec;
 }
 
-.table-container td,
-.table-container th {
+#table td,
+#table th {
   padding: 4px;
 }
 

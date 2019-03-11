@@ -1,18 +1,40 @@
-/** D3 examples
-http://bl.ocks.org/dougdowson/9832019
-
-
-**/
-
-
-const sheetsURL = 'https://spreadsheets.google.com/feeds/list/1loELb4aslMLnvzdU7mMz75iz11OyDblZZSRcINnukYk/1/public/basic?alt=json';
+const sheetsBaseUrl = 'https://spreadsheets.google.com/feeds/list';
+const sheetsID = '1loELb4aslMLnvzdU7mMz75iz11OyDblZZSRcINnukYk';
 const statesURL = '/src/us.json';
 const districtsURL = '/src/us-congress-113.json';
 const districtData = [];
-let sortAscending = true;
+const tabs = [1, 2]; // Array of tab IDs
+const filterContainer = d3.select('#filters');
+const mapSelectorContainer = d3.select('#selector');
+const tableContainer = d3.select('#table');
+
+// SVG stuff
+const svg = d3.select("svg");
+const svgWidth = +svg.attr("viewBox").split(" ")[2],
+  svgHeight = +svg.attr("viewBox").split(" ")[3];
+
+const projection = d3
+  .geoAlbersUsa()
+  .translate([svgWidth / 2, svgHeight / 2]);
+
+const geoPathGenerator = d3.geoPath().projection(projection);
+const colorScale = d3.scaleSequential(d3.interpolateRdBu).domain([0, 1]);
+
+// Tooltip
+tooltip = d3.select("body").append("div")
+	.attr("class", "tooltip")
+	.style("opacity", 0);
 
 // Default filter value
 let globalFilter = 'overall';
+let sortAscending = true;
+
+// Build() calls the API and builds everything
+build(tabs[0]);
+
+function buildSheetsURL(tab) {
+  return `${sheetsBaseUrl}/${sheetsID}/${tab}/public/basic?alt=json`;
+}
 
 function parseRow(row) {
   // Takes a string and converts it into an object with keys for each column
@@ -29,11 +51,8 @@ function parseRow(row) {
 function createTable(data) {
   let keys = Object.keys(data[Object.keys(data)[0]]);
   keys.pop('fips');
-  const table = d3
-    .select('body')
-    .append('div')
-    .attr('class', 'table-container')
-    .append('table');
+  tableContainer.selectAll("*").remove();
+  const table = tableContainer.append('table');
 
   let rows = createRows(table, data, keys);
 
@@ -91,36 +110,14 @@ function createRows(table, data, keys) {
     .text(d => d.value);
 }
 
-function sortTable(sortByKey) {
-
-}
-
-////// D3 ///////
-const svg = d3.select("svg");
-
-// get <svg> width and height from HTML instead of hard-coding values
-const svgWidth = +svg.attr("viewBox").split(" ")[2],
-  svgHeight = +svg.attr("viewBox").split(" ")[3];
-
-const projection = d3
-  .geoAlbersUsa()
-  .translate([svgWidth / 2, svgHeight / 2]);
-
-const geoPathGenerator = d3.geoPath().projection(projection);
-
-// Create a diverging red to blue scale
-const colorScale = d3.scaleSequential(d3.interpolateRdBu).domain([0, 1]);
-
-// Tooltip
-tooltip = d3.select("body").append("div")
-	.attr("class", "tooltip")
-	.style("opacity", 0);
-
 // Load data
-const files = [statesURL, districtsURL, sheetsURL];
-let promises = [];
-files.forEach(url => promises.push(d3.json(url)));
-Promise.all(promises).then(drawMap);
+function build(tab) {
+  const sheetsURL = buildSheetsURL(tab);
+  const files = [statesURL, districtsURL, sheetsURL];
+  let promises = [];
+  files.forEach(url => promises.push(d3.json(url)));
+  Promise.all(promises).then(drawMap);
+}
 
 // Clean up the google data
 function parseStats(data) {
@@ -159,6 +156,9 @@ function drawMap(data) {
   const districtsGeo = topojson.feature(districts, districts.objects.districts);
   const cleanStats = parseStats(stats);
 
+  // Clear the map out
+  svg.selectAll("*").remove();
+
   // If the first row's FIPS code is over 100 we know it's district data
   if (cleanStats[0].fips > 100) {
     const statePaths = drawStates(statesGeo.features);
@@ -174,8 +174,8 @@ function drawMap(data) {
   const dataTable = createTable(cleanStats);
 
   // Add some filters
-  d3
-    .select('#filters')
+  filterContainer.selectAll("*").remove();
+  filterContainer
     .selectAll('button')
     .data(filters)
     .enter()
@@ -262,7 +262,6 @@ const zoom = d3.zoom()
   .scaleExtent([1, 20])
   .on('zoom', zoomed);
 
-
 svg.call(zoom);
 
 function zoomed() {
@@ -270,3 +269,22 @@ function zoomed() {
     .selectAll('path') // To prevent stroke width from scaling
     .attr('transform', d3.event.transform);
 }
+
+// Map switcher
+mapSelectorContainer.append('label').attr('for', 'map-selector').text('Issue');
+
+const mapSelector = mapSelectorContainer
+  .append('select')
+  .attr('id', 'map-selector')
+  .on('change', () => {
+    const selectedTab = mapSelector.property('value');
+    build(selectedTab);
+  });
+
+const options = mapSelector
+  .selectAll('option')
+  .data(tabs)
+  .enter()
+  .append('option')
+  .attr('value', d => d)
+  .text(d => d);
