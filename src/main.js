@@ -25,7 +25,6 @@ function parseRow(row) {
   return pieces;
 }
 
-
 // Maybe throwaway, but useful to see
 function createTable(data) {
   const keys = Object.keys(data[Object.keys(data)[0]]);
@@ -35,6 +34,8 @@ function createTable(data) {
     .attr('class', 'table-container')
     .append('table');
 
+  let rows = createRows(table, data, keys);
+
   const tableHeaders = table
     .append('thead')
     .selectAll('th')
@@ -42,31 +43,35 @@ function createTable(data) {
     .enter()
     .append('th')
     .text(d => d)
+    .attr('class', d => {
+      return !isNaN(data[0][d]) ? 'sortable' : 'not-sortable';
+    })
     .on('click', function (d) {
-      // This doesn't work yet
-  	 //   tableHeaders.attr('class', 'header');
-     //
-  	 //   if (sortAscending) {
-  	 //     data.sort((a, b) => {
-     //       return b[d] - a[d];
-     //     });
-  	 //     sortAscending = false;
-  	 //     this.className = 'aes';
-  	 //   } else {
-    	// 	 data.sort((a, b) => b[d] - a[d]);
-    	// 	 sortAscending = true;
-    	// 	 this.className = 'des';
-  	 //   }
-     //
-     //   rows.data(data);
-     //
+      tableHeaders.attr('class', d => {
+         return !isNaN(data[0][d]) ? 'sortable' : 'not-sortable';
+      });
+      if (!isNaN(data[0][d])) {
+    	   if (sortAscending) {
+    	     data.sort((a, b) => {
+             return b[d] - a[d];
+           });
+    	     sortAscending = false;
+    	     this.className = 'sortable sort--ascending';
+    	   } else {
+      		 data.sort((a, b) => a[d] - b[d]);
+      		 sortAscending = true;
+      		 this.className = 'sortable sort--descending';
+    	   }
+
+         rows.remove();
+         rows = createRows(table, data, keys);
+      }
      });
 
-     createRows(table, data, keys);
 }
 
 function createRows(table, data, keys) {
-  const rows = table
+  return table
     .append('tbody')
     .selectAll('tr')
     .data(data)
@@ -80,11 +85,14 @@ function createRows(table, data, keys) {
 
       return tempdata;
     })
-    // .data(d => Object.values(d))
     .enter()
     .append('td')
     .attr('data-th', d => d.key)
     .text(d => d.value);
+}
+
+function sortTable(sortByKey) {
+
 }
 
 ////// D3 ///////

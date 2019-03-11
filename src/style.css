@@ -10,9 +10,9 @@ body {
 }
 
 .district:hover {
-  fill: #367db0;
   fill-opacity: 1;
   cursor: pointer;
+  stroke: yellow;
 }
 
 .table-container {
@@ -29,15 +29,24 @@ body {
 }
 
 .table-container thead {
-  background: #525151;
-  color: #fff;
+  background: #bdbdbd;
   text-align: left;
   cursor: pointer;
 }
 
-th.aes,
-th.des {
-  background: #367db0;
+.sortable {
+  background-image: url('/img/sort.png');
+  background-repeat: no-repeat;
+  background-position: 100% 4px;
+  background-size: 12px;
+}
+
+.sort--ascending {
+  background-image: url('/img/sort-up.png');
+}
+
+.sort--descending {
+  background-image: url('/img/sort-down.png');
 }
 
 .table-container table tr:nth-child(odd) {
