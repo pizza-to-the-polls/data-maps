@@ -27,7 +27,8 @@ function parseRow(row) {
 
 // Maybe throwaway, but useful to see
 function createTable(data) {
-  const keys = Object.keys(data[Object.keys(data)[0]]);
+  let keys = Object.keys(data[Object.keys(data)[0]]);
+  keys.pop('fips');
   const table = d3
     .select('body')
     .append('div')
@@ -67,7 +68,6 @@ function createTable(data) {
          rows = createRows(table, data, keys);
       }
      });
-
 }
 
 function createRows(table, data, keys) {
@@ -128,7 +128,7 @@ function parseStats(data) {
   data.feed.entry.forEach(d => {
     const rowContent = d.content.$t.split(', ');
     const row = parseRow(rowContent);
-    row['id'] = Number(d.title.$t); // Need to add the first column manually
+    row['fips'] = Number(d.title.$t); // Need to add the first column manually
     cleanStats.push(row);
   })
   return cleanStats;
@@ -136,11 +136,11 @@ function parseStats(data) {
 
 // Get data from Google Sheet and add it to the geojson data
 // Returns an enriched set of district data
-function addStatsToFeatures(districts, stats) {
+function addStatsToFeatures(features, stats) {
   const combinedData = [];
 
-  districts.forEach(feature => {
-    const data = stats.find(d => d.id === feature.id);
+  features.forEach(feature => {
+    const data = stats.find(d => d.fips === feature.id);
     const richDistrict = {...feature, ...data};
     combinedData.push(richDistrict);
   });
@@ -158,11 +158,19 @@ function drawMap(data) {
   const statesGeo = topojson.feature(states, states.objects.states);
   const districtsGeo = topojson.feature(districts, districts.objects.districts);
   const cleanStats = parseStats(stats);
-  const districtsWithStats = addStatsToFeatures(districtsGeo.features, cleanStats);
-  const filters = Object.keys(cleanStats[0]).filter(key => ['label', 'id', 'state'].indexOf(key) === -1);
 
-  const statePaths = drawStates(statesGeo);
-  const districtPaths = drawDistricts(districtsWithStats);
+  // If the first row's FIPS code is over 100 we know it's district data
+  if (cleanStats[0].fips > 100) {
+    const statePaths = drawStates(statesGeo.features);
+    const districtsWithStats = addStatsToFeatures(districtsGeo.features, cleanStats);
+    const districtPaths = drawDistricts(districtsWithStats);
+  } else {
+    // Otherwise we know it's states
+    const statesWithStats = addStatsToFeatures(statesGeo.features, cleanStats);
+    const statePaths = drawStatesWithData(statesWithStats);
+  }
+
+  const filters = Object.keys(cleanStats[0]).filter(key => ['label', 'fips', 'state'].indexOf(key) === -1);
   const dataTable = createTable(cleanStats);
 
   // Add some filters
@@ -177,16 +185,58 @@ function drawMap(data) {
 
 };
 
+function drawStatesWithData(states) {
+  svg
+    .selectAll("path")
+    .data(states)
+    .enter()
+    .append("path")
+    .style("fill", d => colorScale(d[globalFilter]))
+    .attr("d", geoPathGenerator)
+    .attr("class", "state")
+    .on('mouseover', addTooltip)
+    .on("mouseout", removeTooltip);
+}
+
 function drawStates(states) {
   svg
     .selectAll("path")
-    .data(states.features)
+    .data(states)
     .enter()
     .append("path")
     .attr("d", geoPathGenerator)
-    .attr("class", "state");
+    .attr("class", "state")
+    .on('mouseover', addTooltip)
+    .on("mouseout", removeTooltip);
 }
 
+function createTooltipContent(data) {
+    let content = `<strong>${data.label}</strong>`;
+    content += `<table><tbody>`;
+    Object.keys(data).forEach(key => {
+      if (!isNaN(data[key]) && key !== 'fips' && key !== 'id') {
+        content += `<tr><td>${key}</td><td>${data[key]}</td></tr>`;
+      }
+    });
+    content += `</tbody></table>`;
+    return content;
+}
+
+function addTooltip(d) {
+  tooltip.transition()
+  .duration(250);
+
+  tooltip.html(createTooltipContent(d))
+  .style("opacity", 1)
+  .style("left", (d3.event.pageX + 15) + "px")
+  .style("top", (d3.event.pageY - 28) + "px");
+}
+
+function removeTooltip(d) {
+  tooltip.transition()
+  .duration(250)
+  .style("opacity", 0);
+}
 
 function drawDistricts(districts) {
   return svg
@@ -197,26 +247,8 @@ function drawDistricts(districts) {
     .attr("d", geoPathGenerator)
     .attr("class", "district")
     .style("fill", d => colorScale(d[globalFilter]))
-    .on('mouseover', d => {
-      tooltip.transition()
-      .duration(250)
-      .style("opacity", 1);
-      tooltip.html(
-        "<strong>" + d.label + "</strong>" +
-        "<table><tbody><tr><td class='wide'>Overall:</td><td>" + d.overall + "</td></tr>" +
-        "<tr><td>Clinton</td><td>" + d.clinton + "</td></tr>" +
-        "<tr><td>Trump:</td><td>" + d.trump + "</td></tr>" +
-        "<tr><td>Independent:</td><td>" + d.independent + "</td></tr>" +
-        "</tbody></table>"
-      )
-      .style("left", (d3.event.pageX + 15) + "px")
-      .style("top", (d3.event.pageY - 28) + "px");
-    })
-    .on("mouseout", function(d) {
-      tooltip.transition()
-      .duration(250)
-      .style("opacity", 0);
-    });
+    .on('mouseover', addTooltip)
+    .on("mouseout", removeTooltip);
 }
 
 function updateDistricts(districtPaths, filter) {
