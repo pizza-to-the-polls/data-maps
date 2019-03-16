@@ -2,20 +2,23 @@ import {sheetsBaseUrl, sheetsID, statesURL, districtsURL, districtData, tabs} fr
 import { buildSheetsURL, parseRow } from './utils';
 import { createTable } from './table';
 import { drawMap } from './map';
+import { setup } from './setup';
+import { select, json } from 'd3';
 
+setup();
 
 function build(tab) {
   const sheetsURL = buildSheetsURL(tab);
   const files = [statesURL, districtsURL, sheetsURL];
   let promises = [];
-  files.forEach(url => promises.push(d3.json(url)));
+  files.forEach(url => promises.push(json(url)));
   Promise.all(promises).then(drawMap);
 }
 
 build(tabs[0]);
 
 // Map switcher
-const mapSelectorContainer = d3.select('#selector');
+const mapSelectorContainer = select('#selector');
 
 mapSelectorContainer.append('label').attr('for', 'map-selector').text('Issue');
 

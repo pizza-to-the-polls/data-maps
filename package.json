@@ -18,5 +18,9 @@
   "homepage": "https://github.com/noahmanger/data-for-progress-maps#readme",
   "devDependencies": {
     "webpack-cli": "^3.3.0"
+  },
+  "dependencies": {
+    "d3": "^5.9.2",
+    "topojson": "^3.0.2"
   }
 }
