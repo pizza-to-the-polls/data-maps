@@ -1,9 +1,9 @@
 const sheetsBaseUrl = 'https://spreadsheets.google.com/feeds/list';
 const sheetsID = '1loELb4aslMLnvzdU7mMz75iz11OyDblZZSRcINnukYk';
-const statesURL = '/src/us.json';
-const districtsURL = '/src/us-congress-113.json';
+const statesURL = '/data/us.json';
+const districtsURL = '/data/us-congress-113.json';
 const districtData = [];
-const tabs = [1, 2]; // Array of tab IDs
+const tabs = [3, 4, 5, 6]; // Array of tab IDs
 const filterContainer = d3.select('#filters');
 const mapSelectorContainer = d3.select('#selector');
 const tableContainer = d3.select('#table');

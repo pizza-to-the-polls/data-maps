@@ -1,0 +1,22 @@
+{
+  "name": "data-for-progress-maps",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "watch": "webpack --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noahmanger/data-for-progress-maps.git"
+  },
+  "author": "Noah Manger",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/noahmanger/data-for-progress-maps/issues"
+  },
+  "homepage": "https://github.com/noahmanger/data-for-progress-maps#readme",
+  "devDependencies": {
+    "webpack-cli": "^3.3.0"
+  }
+}
