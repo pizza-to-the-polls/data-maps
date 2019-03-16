@@ -1,20 +1,23 @@
-import {sheetsBaseUrl, sheetsID, statesURL, districtsURL, districtData, tabs} from './constants';
-import { buildSheetsURL, parseRow } from './utils';
-import { createTable } from './table';
-import { drawMap } from './map';
-import { setup } from './setup';
 import { select, json } from 'd3';
+import {
+  statesURL, districtsURL, tabs,
+} from './constants';
+import { buildSheetsURL } from './utils';
+import drawMap from './map';
+import getSettings from './getSettings';
 
-setup();
+const datasets = getSettings();
+const datasetKeys = Object.keys(datasets);
 
 function build(tab) {
   const sheetsURL = buildSheetsURL(tab);
   const files = [statesURL, districtsURL, sheetsURL];
-  let promises = [];
+  const promises = [];
   files.forEach(url => promises.push(json(url)));
   Promise.all(promises).then(drawMap);
 }
 
+// Build the map for the first tab
 build(tabs[0]);
 
 // Map switcher
@@ -30,10 +33,10 @@ const mapSelector = mapSelectorContainer
     build(selectedTab);
   });
 
-const options = mapSelector
+mapSelector
   .selectAll('option')
-  .data(tabs)
+  .data(datasetKeys)
   .enter()
   .append('option')
   .attr('value', d => d)
-  .text(d => d);
+  .text(d => datasets[d].issuelabel);

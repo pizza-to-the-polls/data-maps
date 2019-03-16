@@ -4,10 +4,29 @@ let sortAscending = true;
 
 const tableContainer = d3.select('#table');
 
-export function createTable(data) {
-  let keys = Object.keys(data[Object.keys(data)[0]]);
+function createRows(table, data, keys) {
+  return table
+    .append('tbody')
+    .selectAll('tr')
+    .data(data)
+    .enter()
+    .append('tr')
+    .selectAll('td')
+    .data((d) => {
+      const tempdata = keys.map(k => ({ value: d[k], key: k }));
+
+      return tempdata;
+    })
+    .enter()
+    .append('td')
+    .attr('data-th', d => d.key)
+    .text(d => d.value);
+}
+
+function createTable(data) {
+  const keys = Object.keys(data[Object.keys(data)[0]]);
   keys.pop('fips');
-  tableContainer.selectAll("*").remove();
+  tableContainer.selectAll('*').remove();
   const table = tableContainer.append('table');
 
   let rows = createRows(table, data, keys);
@@ -19,49 +38,24 @@ export function createTable(data) {
     .enter()
     .append('th')
     .text(d => d)
-    .attr('class', d => {
-      return !isNaN(data[0][d]) ? 'sortable' : 'not-sortable';
-    })
-    .on('click', function (d) {
-      tableHeaders.attr('class', d => {
-         return !isNaN(data[0][d]) ? 'sortable' : 'not-sortable';
-      });
+    .attr('class', d => (!isNaN(data[0][d]) ? 'sortable' : 'not-sortable'))
+    .on('click', (d) => {
+      tableHeaders.attr('class', d => (!isNaN(data[0][d]) ? 'sortable' : 'not-sortable'));
       if (!isNaN(data[0][d])) {
-    	   if (sortAscending) {
-    	     data.sort((a, b) => {
-             return b[d] - a[d];
-           });
-    	     sortAscending = false;
-    	     this.className = 'sortable sort--ascending';
-    	   } else {
-      		 data.sort((a, b) => a[d] - b[d]);
-      		 sortAscending = true;
-      		 this.className = 'sortable sort--descending';
-    	   }
+        if (sortAscending) {
+          data.sort((a, b) => b[d] - a[d]);
+          sortAscending = false;
+          this.className = 'sortable sort--ascending';
+        } else {
+          data.sort((a, b) => a[d] - b[d]);
+          sortAscending = true;
+          this.className = 'sortable sort--descending';
+        }
 
-         rows.remove();
-         rows = createRows(table, data, keys);
+        rows.remove();
+        rows = createRows(table, data, keys);
       }
-     });
+    });
 }
 
-export function createRows(table, data, keys) {
-  return table
-    .append('tbody')
-    .selectAll('tr')
-    .data(data)
-    .enter()
-    .append('tr')
-    .selectAll('td')
-    .data(function (d) {
-      const tempdata = keys.map(function (k) {
-        return { 'value': d[k], 'key': k};
-      });
-
-      return tempdata;
-    })
-    .enter()
-    .append('td')
-    .attr('data-th', d => d.key)
-    .text(d => d.value);
-}
+export default createTable;

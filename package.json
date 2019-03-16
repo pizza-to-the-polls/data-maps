@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/noahmanger/data-for-progress-maps#readme",
   "devDependencies": {
+    "eslint": "^5.15.2",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.16.0",
     "webpack-cli": "^3.3.0"
   },
   "dependencies": {
