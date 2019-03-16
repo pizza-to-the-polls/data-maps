@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import * as topojson from 'topojson';
 
 import { parseRow } from '../utils';
-import { createTable } from '../table';
+import createTable from '../table';
 
 const filterContainer = d3.select('#filters');
 
@@ -175,4 +175,4 @@ const zoom = d3.zoom()
 
 svg.call(zoom);
 
-export default 'drawMap';
+export default drawMap;
