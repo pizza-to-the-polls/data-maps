@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "d3": "^5.9.2",
+    "marked": "^0.6.1",
     "topojson": "^3.0.2"
   }
 }

@@ -1,8 +1,7 @@
 import { select, json } from 'd3';
-import {
-  statesURL, districtsURL,
-} from './constants';
-import { buildSheetsURL, parseRow, selectActiveFilter } from './utils';
+import { statesURL, districtsURL } from './constants';
+import { buildSheetsURL, parseRow } from './utils';
+import { getContent, showContent } from './content';
 import drawMap from './map';
 
 const state = {};
@@ -17,7 +16,7 @@ function build(tab) {
 }
 
 // Map switcher
-const url = buildSheetsURL(1);
+const settingsURL = buildSheetsURL(1);
 const mapSelectorContainer = select('#selector');
 const toggleContainer = select('#toggle');
 const datasets = {};
@@ -53,11 +52,12 @@ const mapSelector = mapSelectorContainer
     state.currentDataset = selected;
     build(selected.defaultTab);
     addStateAndDistrictToggle(selected);
+    showContent(state.currentDataset.issuekey);
   });
 
 
 // Get the Settings tab which lists all the datasets (other tabs) we'll later get
-json(url).then((response) => {
+json(settingsURL).then((response) => {
   response.feed.entry.forEach((entry) => {
     const dataset = parseRow(entry.content.$t);
     const key = entry.title.$t;
@@ -66,6 +66,7 @@ json(url).then((response) => {
       datasets[key].issuelabel = dataset.issuelabel;
       datasets[key].defaultTab = dataset.tab;
       datasets[key].defaultView = dataset.dataset.toLowerCase();
+      datasets[key].issuekey = key;
     }
     datasets[key][dataset.dataset.toLowerCase()] = dataset;
   });
@@ -86,4 +87,5 @@ json(url).then((response) => {
   addStateAndDistrictToggle(firstDataset);
   state.currentDataset = firstDataset;
   build(firstDataset.defaultTab, firstDataset.issuelabel);
+  getContent(firstDataset.issuekey);
 });
