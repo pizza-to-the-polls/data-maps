@@ -3,13 +3,18 @@ body {
   color: #333;
 }
 
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
 svg {
-  border: 1px solid #333;
+  max-height: 400px;
 }
 
 .state, .district {
   fill: none;
-  stroke: #999;
+  stroke: #ccc;
   stroke-linejoin: round;
 }
 
@@ -18,25 +23,31 @@ svg {
   fill-opacity: 1;
   cursor: pointer;
   stroke: #000;
-  stroke-width: 3px;
 }
 
 
 #details {
   background: #fff;
-  border: 1px solid #367db0;
-  font-size: 12px;
-  padding: 5px;
-  width: 180px;
+  font-size: 14px;
+  padding: 10px;
+  position: absolute;
+  bottom: 0;
+  max-width: 200px;
 }
 
 #details p {
   margin-top: 0;
 }
 
+#details tr {
+  border-bottom: 1px solid #ccc;
+}
+
 #vis {
   display: flex;
   margin: 0;
+  position: relative;
+  border: 2px solid #ccc;
 }
 
 #controls {
@@ -52,18 +63,21 @@ svg {
 
 .control label {
   display: block;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .control select {
   width: 100%;
   display: block;
+  font-size: 18px;
 }
 
 #map {
   width: 100%;
-  padding: 0 20px;
+  max-height: 400px;
+  padding-left: 20px;
 }
-
 
 .table-container {
   padding: 10px;
@@ -120,4 +134,8 @@ svg {
 #table td,
 #table th {
   padding: 4px;
+}
+
+.details-content {
+  font-size: 12px;
 }

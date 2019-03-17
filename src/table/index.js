@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import { formatAsPercentage } from '../utils';
-import { labelMap } from '../translations';
+import { labelMap } from '../constants';
 
 let sortAscending = true;
 

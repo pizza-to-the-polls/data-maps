@@ -1,7 +1,8 @@
 import { select, json } from 'd3';
-import { statesURL, districtsURL } from './constants';
+import { statesURL, districtsURL, labelMap } from './constants';
 import { buildSheetsURL, parseRow } from './utils';
 import { getContent, showContent } from './content';
+import { removeTooltip } from './map/tooltip';
 import drawMap from './map';
 
 const state = {};
@@ -13,6 +14,7 @@ function build(tab) {
   files.forEach(url => promises.push(json(url)));
   Promise.all(promises).then(drawMap);
   select('#header').text(state.currentDataset.issuelabel);
+  removeTooltip();
 }
 
 // Map switcher
@@ -39,8 +41,8 @@ function addStateAndDistrictToggle(dataset) {
       .data(['state', 'house'])
       .enter()
       .append('option')
-      .attr('value', d => d)
-      .text(d => d);
+      .attr('value', d => d.toLowerCase())
+      .text(d => labelMap[d]);
   }
 }
 

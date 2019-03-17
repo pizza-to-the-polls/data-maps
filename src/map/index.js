@@ -3,8 +3,7 @@ import * as topojson from 'topojson';
 
 import { parseStats } from '../utils';
 import createTable from '../table';
-import { defaultFilter } from '../constants';
-import { labelMap } from '../translations';
+import { defaultFilter, labelMap } from '../constants';
 import { addTooltip, removeTooltip } from './tooltip';
 
 const filterContainer = d3.select('#filters');
@@ -53,8 +52,7 @@ function drawStatesWithData(states) {
     .style('fill', d => colorScale(d[defaultFilter]))
     .attr('d', geoPathGenerator)
     .attr('class', 'state')
-    .on('mouseover', addTooltip)
-    .on('mouseout', removeTooltip);
+    .on('click', addTooltip);
 }
 
 function drawStates(states) {
@@ -65,8 +63,7 @@ function drawStates(states) {
     .append('path')
     .attr('d', geoPathGenerator)
     .attr('class', 'state')
-    .on('mouseover', addTooltip)
-    .on('mouseout', removeTooltip);
+    .on('click', addTooltip);
 }
 
 function drawDistricts(districts) {
@@ -91,7 +88,7 @@ function updatePaths(paths, filter) {
 function addFilters(paths, filters) {
   // Add some filters
   filterContainer.selectAll('*').remove();
-  filterContainer.append('label').attr('for', 'filter').text('Demographic');
+  filterContainer.append('label').attr('for', 'filter').text('Group');
   const filter = filterContainer
     .append('select')
     .attr('name', 'filter')
