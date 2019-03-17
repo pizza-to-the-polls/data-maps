@@ -67,23 +67,42 @@ body {
   padding: 5px;
 }
 
-#filters {
-  padding: 10px;
-  text-align: center;
+#vis {
+  display: flex;
+  margin: 0;
 }
 
-button {
+#controls {
+  width: 180px;
+}
+
+#map {
+  width: 100%;
+}
+
+#filters {
+  padding: 10px 0;
+}
+
+#toggle {
+  padding: 20px 0;
+}
+
+#controls button {
+  display: block;
+  width: 100%;
   background: none;
   padding: 5px 10px;
   border: 1px solid #999;
-  border-right: none;
+  border-bottom: none;
+  text-align: left;
 }
 
-button:first-child {
-  border-radius: 4px 0 0 4px;
+#controls button:last-child {
+  border-bottom: 1px solid #999;
 }
 
-button:last-child {
-  border-radius: 0 4px 4px 0;
-  border-right: 1px solid #999;
+#controls .selected {
+  background-color: #367db0;
+  color: #fff;
 }

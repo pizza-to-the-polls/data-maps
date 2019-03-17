@@ -1,4 +1,6 @@
 import * as d3 from 'd3';
+import { formatAsPercentage } from '../utils';
+import { labelMap } from '../translations';
 
 let sortAscending = true;
 
@@ -12,15 +14,11 @@ function createRows(table, data, keys) {
     .enter()
     .append('tr')
     .selectAll('td')
-    .data((d) => {
-      const tempdata = keys.map(k => ({ value: d[k], key: k }));
-
-      return tempdata;
-    })
+    .data(d => keys.map(k => ({ value: d[k], key: k })))
     .enter()
     .append('td')
     .attr('data-th', d => d.key)
-    .text(d => d.value);
+    .text(d => formatAsPercentage(d.value));
 }
 
 function createTable(data) {
@@ -37,19 +35,20 @@ function createTable(data) {
     .data(keys)
     .enter()
     .append('th')
-    .text(d => d)
-    .attr('class', d => (!isNaN(data[0][d]) ? 'sortable' : 'not-sortable'))
-    .on('click', (d) => {
-      tableHeaders.attr('class', d => (!isNaN(data[0][d]) ? 'sortable' : 'not-sortable'));
-      if (!isNaN(data[0][d])) {
+    .text(d => labelMap[d])
+    .attr('class', d => (!Number.isNaN(data[0][d]) ? 'sortable' : 'not-sortable'))
+    .on('click', (d, i, h) => {
+      tableHeaders.attr('class', t => (!Number.isNaN(data[0][t]) ? 'sortable' : 'not-sortable'));
+      const th = h[i];
+      if (!Number.isNaN(data[0][d])) {
         if (sortAscending) {
           data.sort((a, b) => b[d] - a[d]);
           sortAscending = false;
-          this.className = 'sortable sort--ascending';
+          th.className = 'sortable sort--ascending';
         } else {
           data.sort((a, b) => a[d] - b[d]);
           sortAscending = true;
-          this.className = 'sortable sort--descending';
+          th.className = 'sortable sort--descending';
         }
 
         rows.remove();
