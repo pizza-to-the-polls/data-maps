@@ -4,10 +4,7 @@ import { excludedKeys } from '../constants';
 import { labelMap } from '../translations';
 
 // Tooltip
-const tooltip = d3.select('body').append('div')
-  .attr('class', 'tooltip')
-  .style('opacity', 0);
-
+const tooltip = d3.select('#details');
 
 function getTooltipKeys(data) {
   return Object.keys(data).filter(k => excludedKeys.indexOf(k) === -1);
@@ -25,17 +22,9 @@ function createTooltipContent(data) {
 }
 
 export function addTooltip(d) {
-  tooltip.transition()
-    .duration(250);
-
-  tooltip.html(createTooltipContent(d))
-    .style('opacity', 1)
-    .style('left', `${d3.event.pageX + 15}px`)
-    .style('top', `${d3.event.pageY - 28}px`);
+  tooltip.html(createTooltipContent(d));
 }
 
 export function removeTooltip() {
-  tooltip.transition()
-    .duration(250)
-    .style('opacity', 0);
+  tooltip.selectAll('*').remove();
 }

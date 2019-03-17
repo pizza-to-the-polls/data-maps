@@ -5,14 +5,16 @@ body {
 
 .state, .district {
   fill: none;
-  stroke: #367db0;
+  stroke: #999;
   stroke-linejoin: round;
 }
 
-.district:hover {
+.district:hover,
+.state:hover {
   fill-opacity: 1;
   cursor: pointer;
-  stroke: yellow;
+  stroke: #000;
+  stroke-width: 3px;
 }
 
 #table {
@@ -58,13 +60,12 @@ body {
   padding: 4px;
 }
 
-.tooltip {
-  position: absolute;
+#details {
   background: #fff;
   border: 1px solid #367db0;
-  border-radius: 8px;
   font-size: 12px;
   padding: 5px;
+  min-height: 120px;
 }
 
 #vis {
