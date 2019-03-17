@@ -4,7 +4,8 @@ import { excludedKeys } from '../constants';
 import { labelMap } from '../translations';
 
 // Tooltip
-const tooltip = d3.select('#details');
+const placeholder = 'Hover over the map to view details.';
+const tooltip = d3.select('#details').append('p').text(placeholder);
 
 function getTooltipKeys(data) {
   return Object.keys(data).filter(k => excludedKeys.indexOf(k) === -1);
@@ -27,4 +28,5 @@ export function addTooltip(d) {
 
 export function removeTooltip() {
   tooltip.selectAll('*').remove();
+  tooltip.append('p').text(placeholder);
 }

@@ -3,6 +3,10 @@ body {
   color: #333;
 }
 
+svg {
+  border: 1px solid #333;
+}
+
 .state, .district {
   fill: none;
   stroke: #999;
@@ -17,10 +21,68 @@ body {
   stroke-width: 3px;
 }
 
+
+#details {
+  background: #fff;
+  border: 1px solid #367db0;
+  font-size: 12px;
+  padding: 5px;
+  width: 180px;
+}
+
+#details p {
+  margin-top: 0;
+}
+
+#vis {
+  display: flex;
+  margin: 0;
+}
+
+#controls {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 0;
+}
+
+.control {
+  width: 30%;
+}
+
+.control label {
+  display: block;
+}
+
+.control select {
+  width: 100%;
+  display: block;
+}
+
+#map {
+  width: 100%;
+  padding: 0 20px;
+}
+
+
+.table-container {
+  padding: 10px;
+  background: #f1f0f0;
+  border: 1px solid #ccc;
+  margin-top: 30px;
+}
+
+.table-container summary {
+  padding: 10px 0;
+  font-weight: bold;
+  cursor: pointer;
+}
+
 #table {
   height: 300px;
   overflow-y: scroll;
   border: 1px solid #cecece;
+  margin-top: 10px;
 }
 
 #table table {
@@ -52,58 +114,10 @@ body {
 }
 
 #table table tr:nth-child(odd) {
-  background: #ececec;
+  background: #fff;
 }
 
 #table td,
 #table th {
   padding: 4px;
-}
-
-#details {
-  background: #fff;
-  border: 1px solid #367db0;
-  font-size: 12px;
-  padding: 5px;
-  min-height: 120px;
-}
-
-#vis {
-  display: flex;
-  margin: 0;
-}
-
-#controls {
-  width: 180px;
-}
-
-#map {
-  width: 100%;
-}
-
-#filters {
-  padding: 10px 0;
-}
-
-#toggle {
-  padding: 20px 0;
-}
-
-#controls button {
-  display: block;
-  width: 100%;
-  background: none;
-  padding: 5px 10px;
-  border: 1px solid #999;
-  border-bottom: none;
-  text-align: left;
-}
-
-#controls button:last-child {
-  border-bottom: 1px solid #999;
-}
-
-#controls .selected {
-  background-color: #367db0;
-  color: #fff;
 }

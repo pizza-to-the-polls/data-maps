@@ -26,31 +26,33 @@ mapSelectorContainer.append('label').attr('for', 'map-selector').text('Issue');
 
 function addStateAndDistrictToggle(dataset) {
   toggleContainer.selectAll('*').remove();
-  toggleContainer.append('button').attr('id', 'state-toggle').text('By state').on('click', () => {
-    if (state.currentDataset.tab !== dataset.state.tab) {
-      state.currentDataset = dataset.state;
-      build(dataset.state.tab);
-      selectActiveFilter(toggleContainer, 'state-toggle');
-    }
-  });
-  toggleContainer.append('button').attr('id', 'house-toggle').text('By house district').on('click', () => {
-    if (state.currentDataset.tab !== dataset.house.tab) {
-      state.currentDataset = dataset.house;
-      build(dataset.house.tab);
-      selectActiveFilter(toggleContainer, 'house-toggle');
-    }
-  });
+  if (dataset.state && dataset.house) {
+    toggleContainer.append('label').attr('for', 'toggle').text('View by');
 
-  selectActiveFilter(toggleContainer, `${dataset.defaultView}-toggle`);
+    const toggle = toggleContainer.append('select').attr('name', 'toggle').on('change', () => {
+      const selected = dataset[toggle.property('value')];
+      state.currentDataset = selected;
+      build(selected.tab);
+    });
+
+    toggle
+      .selectAll('option')
+      .data(['state', 'house'])
+      .enter()
+      .append('option')
+      .attr('value', d => d)
+      .text(d => d);
+  }
 }
 
 const mapSelector = mapSelectorContainer
   .append('select')
-  .attr('id', 'map-selector')
+  .attr('name', 'map-selector')
   .on('change', () => {
     const selected = state.datasets[mapSelector.property('value')];
     state.currentDataset = selected;
     build(selected.defaultTab);
+    addStateAndDistrictToggle(selected);
   });
 
 
@@ -81,10 +83,7 @@ json(url).then((response) => {
     .text(d => datasets[d].issuelabel);
 
   const firstDataset = datasets[datasetKeys[0]];
-  if (firstDataset.state && firstDataset.house) {
-    addStateAndDistrictToggle(firstDataset);
-  }
-
+  addStateAndDistrictToggle(firstDataset);
   state.currentDataset = firstDataset;
   build(firstDataset.defaultTab, firstDataset.issuelabel);
 });

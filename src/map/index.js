@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import * as topojson from 'topojson';
 
-import { parseStats, selectActiveFilter } from '../utils';
+import { parseStats } from '../utils';
 import createTable from '../table';
 import { defaultFilter } from '../constants';
 import { labelMap } from '../translations';
@@ -91,19 +91,21 @@ function updatePaths(paths, filter) {
 function addFilters(paths, filters) {
   // Add some filters
   filterContainer.selectAll('*').remove();
-  filterContainer
-    .selectAll('button')
-    .data(filters)
-    .enter()
-    .append('button')
-    .text(d => labelMap[d])
-    .attr('id', d => d)
-    .on('click', (filter) => {
-      updatePaths(paths, filter);
-      selectActiveFilter(filterContainer, filter);
+  filterContainer.append('label').attr('for', 'filter').text('Demographic');
+  const filter = filterContainer
+    .append('select')
+    .attr('name', 'filter')
+    .on('change', () => {
+      updatePaths(paths, filter.property('value'));
     });
 
-  selectActiveFilter(filterContainer, defaultFilter);
+  filter
+    .selectAll('options')
+    .data(filters)
+    .enter()
+    .append('option')
+    .text(d => labelMap[d])
+    .attr('value', d => d);
 }
 
 // Draw the map

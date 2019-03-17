@@ -33,8 +33,3 @@ export function parseStats(data) {
   });
   return cleanStats;
 }
-
-export function selectActiveFilter(group, filter) {
-  group.select('.selected').attr('class', '');
-  group.select(`#${filter}`).attr('class', 'selected');
-}
