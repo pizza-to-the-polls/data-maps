@@ -5,6 +5,8 @@ import { parseStats } from '../utils';
 import createTable from '../table';
 import { defaultFilter, labelMap } from '../constants';
 import { addTooltip, removeTooltip } from './tooltip';
+import * as states from '../data/us.json';
+import * as districts from '../data/us-congress-113.json';
 
 const filterContainer = d3.select('#filters');
 
@@ -106,12 +108,7 @@ function addFilters(paths, filters) {
 }
 
 // Draw the map
-function drawMap(data) {
-  // Data = results from the three json calls
-  const states = data[0];
-  const districts = data[1];
-  const stats = data[2];
-
+function drawMap(stats) {
   const statesGeo = topojson.feature(states, states.objects.states);
   const districtsGeo = topojson.feature(districts, districts.objects.districts);
   const cleanStats = parseStats(stats);

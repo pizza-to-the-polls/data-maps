@@ -1,5 +1,5 @@
 import { select, json } from 'd3';
-import { statesURL, districtsURL, labelMap } from './constants';
+import { labelMap } from './constants';
 import { buildSheetsURL, parseRow } from './utils';
 import { getContent, showContent } from './content';
 import { removeTooltip } from './map/tooltip';
@@ -9,10 +9,7 @@ const state = {};
 
 function build(tab) {
   const sheetsURL = buildSheetsURL(tab);
-  const files = [statesURL, districtsURL, sheetsURL];
-  const promises = [];
-  files.forEach(url => promises.push(json(url)));
-  Promise.all(promises).then(drawMap);
+  json(sheetsURL).then(drawMap);
   select('#header').text(state.currentDataset.issuelabel);
   removeTooltip();
 }
