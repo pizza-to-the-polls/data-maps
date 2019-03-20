@@ -6,7 +6,7 @@ import createTable from '../table';
 import { defaultFilter, labelMap } from '../constants';
 import { addTooltip, removeTooltip } from './tooltip';
 import * as states from '../data/us.json';
-import * as districts from '../data/us-congress-113.json';
+import * as districts from '../data/districts.json';
 
 const filterContainer = d3.select('#filters');
 
