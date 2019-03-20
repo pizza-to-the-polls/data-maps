@@ -22,8 +22,7 @@ function createRows(table, data, keys) {
 }
 
 function createTable(data) {
-  const keys = Object.keys(data[Object.keys(data)[0]]);
-  keys.pop('fips');
+  const keys = Object.keys(data[Object.keys(data)[0]]).filter(k => ['fips', 'content'].indexOf(k) === -1);
   tableContainer.selectAll('*').remove();
   const table = tableContainer.append('table');
 
