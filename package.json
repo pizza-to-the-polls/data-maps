@@ -2,27 +2,28 @@
   "name": "data-for-progress-maps",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
-    "watch": "webpack --watch --mode=development",
-    "build": "webpack && cp index.html dist && cp -rf styles dist && cp -rf img dist",
-    "deploy": "git subtree push --prefix dist origin gh-pages"
+    "dev": "parcel index.html",
+    "build": "parcel build index.html",
+    "predeploy": "rm -rf dist && parcel build index.html --public-url /data-maps",
+    "deploy": "gh-pages -d dist"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/noahmanger/data-for-progress-maps.git"
+    "url": "git+https://github.com/noahmanger/data-maps.git"
   },
   "author": "Noah Manger",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/noahmanger/data-for-progress-maps/issues"
+    "url": "https://github.com/noahmanger/data-maps/issues"
   },
-  "homepage": "https://github.com/noahmanger/data-for-progress-maps#readme",
+  "homepage": "https://github.com/noahmanger/data-maps#readme",
   "devDependencies": {
-    "eslint": "^5.15.2",
+    "eslint": "^5.15.3",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.16.0",
-    "webpack-cli": "^3.3.0"
+    "gh-pages": "^2.0.1",
+    "parcel": "^1.12.2"
   },
   "dependencies": {
     "d3": "^5.9.2",
