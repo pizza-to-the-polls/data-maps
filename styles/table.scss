@@ -1,0 +1,56 @@
+.table-container {
+  padding: 10px;
+  background: #f1f0f0;
+  border: 1px solid #ccc;
+  margin-top: 30px;
+}
+
+.table-container summary {
+  padding: 10px 0;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#table {
+  height: 300px;
+  overflow-y: scroll;
+  border: 1px solid #cecece;
+  margin-top: 10px;
+}
+
+#table table {
+  font-size: 12px;
+  border-collapse: collapse;
+  width: 100%;
+  font-family: monospace;
+}
+
+#table thead {
+  background: #bdbdbd;
+  text-align: left;
+}
+
+.sortable {
+  background-image: url("/img/sort.png");
+  background-repeat: no-repeat;
+  background-position: 100% 4px;
+  background-size: 12px;
+  cursor: pointer;
+}
+
+.sort--ascending {
+  background-image: url("/img/sort-up.png");
+}
+
+.sort--descending {
+  background-image: url("/img/sort-down.png");
+}
+
+#table table tr:nth-child(odd) {
+  background: #fff;
+}
+
+#table td,
+#table th {
+  padding: 4px;
+}

@@ -1,0 +1,30 @@
+svg {
+  max-height: 400px;
+}
+
+.state,
+.district {
+  fill: none;
+  stroke: #ccc;
+  stroke-linejoin: round;
+}
+
+.district:hover,
+.state:hover {
+  fill-opacity: 1;
+  cursor: pointer;
+  stroke: #000;
+}
+
+#vis {
+  display: flex;
+  margin: 0;
+  position: relative;
+  border: 2px solid #ccc;
+}
+
+#map {
+  width: 100%;
+  max-height: 400px;
+  padding-left: 20px;
+}

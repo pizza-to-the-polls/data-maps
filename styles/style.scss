@@ -1,0 +1,14 @@
+@import "map";
+@import "details";
+@import "controls";
+@import "table";
+
+body {
+  font-family: sans-serif;
+  color: #333;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+}

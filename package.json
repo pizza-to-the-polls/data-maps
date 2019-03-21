@@ -26,7 +26,8 @@
     "eslint-plugin-prettier": "^3.0.1",
     "gh-pages": "^2.0.1",
     "parcel": "^1.12.2",
-    "prettier": "^1.16.4"
+    "prettier": "^1.16.4",
+    "sass": "^1.17.3"
   },
   "dependencies": {
     "d3": "^5.9.2",
