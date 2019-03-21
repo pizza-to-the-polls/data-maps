@@ -76,8 +76,7 @@ const drawDistricts = districts =>
     .on("mouseover", addTooltip)
     .on("mouseout", removeTooltip);
 
-const updatePaths = (paths, filter) =>
-  paths.transition().style("fill", d => colorScale(d[filter]));
+const updatePaths = (paths, filter) => paths.transition().style("fill", d => colorScale(d[filter]));
 
 const addFilters = (paths, filters) => {
   // Add some filters
@@ -116,10 +115,7 @@ const drawMap = stats => {
 
   // If the first row's FIPS code is over 100 we know it's district data
   if (cleanStats[0].fips > 100) {
-    const districtsWithStats = addStatsToFeatures(
-      districtsGeo.features,
-      cleanStats
-    );
+    const districtsWithStats = addStatsToFeatures(districtsGeo.features, cleanStats);
     const districtPaths = drawDistricts(districtsWithStats);
     addFilters(districtPaths, filters);
   } else {

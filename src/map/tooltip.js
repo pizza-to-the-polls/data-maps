@@ -16,9 +16,7 @@ function createTooltipContent(data) {
   const keys = getTooltipKeys(data);
   keys.forEach(key => {
     if (key !== "content") {
-      content += `<tr><td>${labelMap[key]}</td><td>${formatAsPercentage(
-        data[key]
-      )}</td></tr>`;
+      content += `<tr><td>${labelMap[key]}</td><td>${formatAsPercentage(data[key])}</td></tr>`;
     }
   });
   content += "</tbody></table>";

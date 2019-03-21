@@ -37,13 +37,9 @@ function createTable(data) {
     .enter()
     .append("th")
     .text(d => labelMap[d])
-    .attr("class", d =>
-      !Number.isNaN(data[0][d]) ? "sortable" : "not-sortable"
-    )
+    .attr("class", d => (!Number.isNaN(data[0][d]) ? "sortable" : "not-sortable"))
     .on("click", (d, i, h) => {
-      tableHeaders.attr("class", t =>
-        !Number.isNaN(data[0][t]) ? "sortable" : "not-sortable"
-      );
+      tableHeaders.attr("class", t => (!Number.isNaN(data[0][t]) ? "sortable" : "not-sortable"));
       const th = h[i];
       if (!Number.isNaN(data[0][d])) {
         if (sortAscending) {
