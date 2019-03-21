@@ -3,20 +3,25 @@
   display: flex;
   justify-content: space-between;
   padding: 20px 0;
+  border-top: 2px solid $gray1;
 }
 
 .control {
-  width: 30%;
-}
+  width: 32%;
 
-.control label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
+  select {
+    width: 100%;
+    display: block;
+    font-size: 16px;
+    border: 1px solid $gray2;
+    background: #fff;
+    padding: 5px;
+    height: 32px;
+  }
 
-.control select {
-  width: 100%;
-  display: block;
-  font-size: 18px;
+  label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
 }

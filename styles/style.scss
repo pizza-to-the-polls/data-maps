@@ -1,14 +1,26 @@
+@import "variables";
 @import "map";
-@import "details";
 @import "controls";
 @import "table";
 
 body {
   font-family: sans-serif;
   color: #333;
+  background: $gray3;
 }
 
 .container {
   max-width: 960px;
   margin: 0 auto;
+  border: 1px solid $gray2;
+  padding: 20px;
+  background: #fff;
+}
+
+#content {
+  max-width: 600px;
+  margin: 0 auto;
+  p {
+    line-height: 1.5;
+  }
 }

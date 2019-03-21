@@ -1,12 +1,11 @@
 .table-container {
   padding: 10px;
-  background: #f1f0f0;
-  border: 1px solid #ccc;
-  margin-top: 30px;
+  background: $gray3;
+  border: 1px solid $gray2;
+  margin-top: 20px;
 }
 
 .table-container summary {
-  padding: 10px 0;
   font-weight: bold;
   cursor: pointer;
 }
@@ -14,7 +13,7 @@
 #table {
   height: 300px;
   overflow-y: scroll;
-  border: 1px solid #cecece;
+  border: 1px solid $gray2;
   margin-top: 10px;
 }
 
@@ -22,12 +21,13 @@
   font-size: 12px;
   border-collapse: collapse;
   width: 100%;
-  font-family: monospace;
+  font-family: $mono;
 }
 
 #table thead {
-  background: #bdbdbd;
+  background: $gray3;
   text-align: left;
+  border-bottom: 1px solid $gray2;
 }
 
 .sortable {

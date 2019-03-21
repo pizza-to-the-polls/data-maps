@@ -73,8 +73,7 @@ const drawDistricts = districts =>
     .attr("d", geoPathGenerator)
     .attr("class", "district")
     .style("fill", d => colorScale(d[defaultFilter]))
-    .on("mouseover", addTooltip)
-    .on("mouseout", removeTooltip);
+    .on("click", addTooltip);
 
 const updatePaths = (paths, filter) => paths.transition().style("fill", d => colorScale(d[filter]));
 
