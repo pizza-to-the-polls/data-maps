@@ -1,4 +1,4 @@
-import { sheetsBaseUrl, sheetsID } from './constants';
+import { sheetsBaseUrl, sheetsID } from "./constants";
 
 export function buildSheetsURL(tab) {
   return `${sheetsBaseUrl}/${sheetsID}/${tab}/public/basic?alt=json`;
@@ -8,9 +8,9 @@ export function parseRow(row) {
   // Takes a string and converts it into an object with keys for each column
 
   const pieces = {};
-  row.split(', ').forEach((r) => {
-    const key = r.split(': ')[0];
-    const value = r.split(': ')[1];
+  row.split(", ").forEach(r => {
+    const key = r.split(": ")[0];
+    const value = r.split(": ")[1];
     pieces[key] = Number.isNaN(Number(value)) ? value : Number(value);
   });
   return pieces;
@@ -26,7 +26,7 @@ export function formatAsPercentage(value) {
 
 export function parseStats(data) {
   const cleanStats = [];
-  data.feed.entry.forEach((d) => {
+  data.feed.entry.forEach(d => {
     const row = parseRow(d.content.$t);
     row.fips = Number(d.title.$t); // Need to add the first column manually
     cleanStats.push(row);

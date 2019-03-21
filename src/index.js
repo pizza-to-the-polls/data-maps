@@ -1,63 +1,71 @@
-import { select, json } from 'd3';
-import { labelMap } from './constants';
-import { buildSheetsURL, parseRow } from './utils';
-import { getContent, showContent } from './content';
-import { removeTooltip } from './map/tooltip';
-import drawMap from './map';
+import { select, json } from "d3";
+import { labelMap } from "./constants";
+import { buildSheetsURL, parseRow } from "./utils";
+import { getContent, showContent } from "./content";
+import { removeTooltip } from "./map/tooltip";
+import drawMap from "./map";
 
 const state = {};
 
 function build(tab) {
   const sheetsURL = buildSheetsURL(tab);
   json(sheetsURL).then(drawMap);
-  select('#header').text(state.currentDataset.issuelabel);
+  select("#header").text(state.currentDataset.issuelabel);
   removeTooltip();
 }
 
 // Map switcher
 const settingsURL = buildSheetsURL(1);
-const mapSelectorContainer = select('#selector');
-const toggleContainer = select('#toggle');
+const mapSelectorContainer = select("#selector");
+const toggleContainer = select("#toggle");
 const datasets = {};
 
-mapSelectorContainer.append('label').attr('for', 'map-selector').text('Issue');
+mapSelectorContainer
+  .append("label")
+  .attr("for", "map-selector")
+  .text("Issue");
 
 function addStateAndDistrictToggle(dataset) {
-  toggleContainer.selectAll('*').remove();
+  toggleContainer.selectAll("*").remove();
   if (dataset.state && dataset.house) {
-    toggleContainer.append('label').attr('for', 'toggle').text('View by');
+    toggleContainer
+      .append("label")
+      .attr("for", "toggle")
+      .text("View by");
 
-    const toggle = toggleContainer.append('select').attr('name', 'toggle').on('change', () => {
-      const selected = dataset[toggle.property('value')];
-      state.currentDataset = selected;
-      build(selected.tab);
-    });
+    const toggle = toggleContainer
+      .append("select")
+      .attr("name", "toggle")
+      .on("change", () => {
+        const selected = dataset[toggle.property("value")];
+        state.currentDataset = selected;
+        build(selected.tab);
+      });
 
     toggle
-      .selectAll('option')
-      .data(['state', 'house'])
+      .selectAll("option")
+      .data(["state", "house"])
       .enter()
-      .append('option')
-      .attr('value', d => d.toLowerCase())
+      .append("option")
+      .attr("value", d => d.toLowerCase())
       .text(d => labelMap[d]);
   }
 }
 
 const mapSelector = mapSelectorContainer
-  .append('select')
-  .attr('name', 'map-selector')
-  .on('change', () => {
-    const selected = state.datasets[mapSelector.property('value')];
+  .append("select")
+  .attr("name", "map-selector")
+  .on("change", () => {
+    const selected = state.datasets[mapSelector.property("value")];
     state.currentDataset = selected;
     build(selected.defaultTab);
     addStateAndDistrictToggle(selected);
     showContent(state.currentDataset.issuekey);
   });
 
-
 // Get the Settings tab which lists all the datasets (other tabs) we'll later get
-json(settingsURL).then((response) => {
-  response.feed.entry.forEach((entry) => {
+json(settingsURL).then(response => {
+  response.feed.entry.forEach(entry => {
     const dataset = parseRow(entry.content.$t);
     const key = entry.title.$t;
     if (!Object.prototype.hasOwnProperty.call(datasets, key)) {
@@ -75,11 +83,11 @@ json(settingsURL).then((response) => {
 
   const datasetKeys = Object.keys(datasets);
   mapSelector
-    .selectAll('option')
+    .selectAll("option")
     .data(datasetKeys)
     .enter()
-    .append('option')
-    .attr('value', d => d)
+    .append("option")
+    .attr("value", d => d)
     .text(d => datasets[d].issuelabel);
 
   const firstDataset = datasets[datasetKeys[0]];
