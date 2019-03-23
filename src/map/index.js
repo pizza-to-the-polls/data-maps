@@ -4,7 +4,7 @@ import * as topojson from "topojson";
 import { parseStats } from "../utils";
 import createTable from "../table";
 import { defaultFilter, labelMap } from "../constants";
-import { addTooltip, removeTooltip } from "./tooltip";
+import { addTooltip } from "./tooltip";
 import * as states from "../data/us.json";
 import * as districts from "../data/districts.json";
 
@@ -43,10 +43,10 @@ const addStatsToFeatures = (features, stats) => {
   return combinedData;
 };
 
-const drawStatesWithData = states =>
+const drawStatesWithData = data =>
   svg
     .selectAll("path")
-    .data(states)
+    .data(data)
     .enter()
     .append("path")
     .style("fill", d => colorScale(d[defaultFilter]))
@@ -54,20 +54,10 @@ const drawStatesWithData = states =>
     .attr("class", "state")
     .on("click", addTooltip);
 
-const drawStates = states =>
+const drawDistricts = data =>
   svg
     .selectAll("path")
-    .data(states)
-    .enter()
-    .append("path")
-    .attr("d", geoPathGenerator)
-    .attr("class", "state")
-    .on("click", addTooltip);
-
-const drawDistricts = districts =>
-  svg
-    .selectAll("path")
-    .data(districts)
+    .data(data)
     .enter()
     .append("path")
     .attr("d", geoPathGenerator)
