@@ -23,6 +23,7 @@
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.16.0",
     "gh-pages": "^2.0.1",
+    "mapshaper": "^0.4.108",
     "parcel": "^1.12.2"
   },
   "dependencies": {

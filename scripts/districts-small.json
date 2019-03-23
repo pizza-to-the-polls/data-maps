@@ -1,0 +1,164 @@
+[
+  {
+    "district": "PA-1",
+    "long": "Pennsylvania District 1",
+    "id": "4201",
+    "state": "PA"
+  },
+  {
+    "district": "PA-10",
+    "long": "Pennsylvania District 10",
+    "id": "4210",
+    "state": "PA"
+  },
+  {
+    "district": "PA-11",
+    "long": "Pennsylvania District 11",
+    "id": "4211",
+    "state": "PA"
+  },
+  {
+    "district": "PA-12",
+    "long": "Pennsylvania District 12",
+    "id": "4212",
+    "state": "PA"
+  },
+  {
+    "district": "PA-13",
+    "long": "Pennsylvania District 13",
+    "id": "4213",
+    "state": "PA"
+  },
+  {
+    "district": "PA-14",
+    "long": "Pennsylvania District 14",
+    "id": "4214",
+    "state": "PA"
+  },
+  {
+    "district": "PA-15",
+    "long": "Pennsylvania District 15",
+    "id": "4215",
+    "state": "PA"
+  },
+  {
+    "district": "PA-16",
+    "long": "Pennsylvania District 16",
+    "id": "4216",
+    "state": "PA"
+  },
+  {
+    "district": "PA-17",
+    "long": "Pennsylvania District 17",
+    "id": "4217",
+    "state": "PA"
+  },
+  {
+    "district": "PA-18",
+    "long": "Pennsylvania District 18",
+    "id": "4218",
+    "state": "PA"
+  },
+  {
+    "district": "PA-2",
+    "long": "Pennsylvania District 2",
+    "id": "4202",
+    "state": "PA"
+  },
+  {
+    "district": "PA-3",
+    "long": "Pennsylvania District 3",
+    "id": "4203",
+    "state": "PA"
+  },
+  {
+    "district": "PA-4",
+    "long": "Pennsylvania District 4",
+    "id": "4204",
+    "state": "PA"
+  },
+  {
+    "district": "PA-5",
+    "long": "Pennsylvania District 5",
+    "id": "4205",
+    "state": "PA"
+  },
+  {
+    "district": "PA-6",
+    "long": "Pennsylvania District 6",
+    "id": "4206",
+    "state": "PA"
+  },
+  {
+    "district": "PA-7",
+    "long": "Pennsylvania District 7",
+    "id": "4207",
+    "state": "PA"
+  },
+  {
+    "district": "PA-8",
+    "long": "Pennsylvania District 8",
+    "id": "4208",
+    "state": "PA"
+  },
+  {
+    "district": "PA-9",
+    "long": "Pennsylvania District 9",
+    "id": "4209",
+    "state": "PA"
+  },
+  {
+    "district": "SD-1",
+    "long": "South Dakota District 1",
+    "id": "4601",
+    "state": "SD"
+  },
+  {
+    "district": "UT-1",
+    "long": "Utah District 1",
+    "id": "4901",
+    "state": "UT"
+  },
+  {
+    "district": "UT-2",
+    "long": "Utah District 2",
+    "id": "4902",
+    "state": "UT"
+  },
+  {
+    "district": "UT-3",
+    "long": "Utah District 3",
+    "id": "4903",
+    "state": "UT"
+  },
+  {
+    "district": "UT-4",
+    "long": "Utah District 4",
+    "id": "4904",
+    "state": "UT"
+  },
+  {
+    "district": "WV-1",
+    "long": "West Virginia District 1",
+    "id": "5401",
+    "state": "WV"
+  },
+  {
+    "district": "WV-2",
+    "long": "West Virginia District 2",
+    "id": "5402",
+    "state": "WV"
+  },
+  {
+    "district": "WV-3",
+    "long": "West Virginia District 3",
+    "id": "5403",
+    "state": "WV"
+  },
+  {
+    "district": "WY-1",
+    "long": "Wyoming District 1",
+    "id": "5601",
+    "state": "WY"
+  }
+]
