@@ -5,8 +5,6 @@ import { parseStats } from "../utils";
 import createTable from "../table";
 import { defaultFilter, labelMap } from "../constants";
 import { addTooltip } from "./tooltip";
-import * as states from "../data/us.json";
-import * as districts from "../data/districts.json";
 
 const filterContainer = d3.select("#filters");
 
@@ -91,7 +89,7 @@ const addFilters = (paths, filters) => {
 };
 
 // Draw the map
-const drawMap = stats => {
+const drawMap = (stats, { states, districts }) => {
   const statesGeo = topojson.feature(states, states.objects.states);
   const districtsGeo = topojson.feature(districts, districts.objects.districts);
   const cleanStats = parseStats(stats);

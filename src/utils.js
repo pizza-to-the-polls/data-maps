@@ -1,10 +1,10 @@
-import { sheetsBaseUrl, sheetsID } from "./constants";
+import { sheetsBaseUrl, sheetsID, rootURL } from "./constants";
 
-export function buildSheetsURL(tab) {
-  return `${sheetsBaseUrl}/${sheetsID}/${tab}/public/basic?alt=json`;
-}
+export const buildSheetsURL = tab => (`${sheetsBaseUrl}/${sheetsID}/${tab}/public/basic?alt=json`);
 
-export function parseRow(row) {
+export const buildMapURL = map => (`${rootURL}/${map}.json`);
+
+export const parseRow = row => {
   // Takes a string and converts it into an object with keys for each column
 
   const pieces = {};
@@ -16,7 +16,7 @@ export function parseRow(row) {
   return pieces;
 }
 
-export function formatAsPercentage(value) {
+export const formatAsPercentage = value => {
   if (isNaN(value)) {
     return value;
   }
@@ -24,7 +24,7 @@ export function formatAsPercentage(value) {
   return `${percentage.toFixed(0)}%`;
 }
 
-export function parseStats(data) {
+export const parseStats = data => {
   const cleanStats = [];
   data.feed.entry.forEach(d => {
     const row = parseRow(d.content.$t);

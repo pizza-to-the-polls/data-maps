@@ -1,18 +1,29 @@
 import { select, json } from "d3";
 import { labelMap } from "./constants";
-import { buildSheetsURL, parseRow } from "./utils";
+import { buildMapURL, buildSheetsURL, parseRow } from "./utils";
 import { getContent, showContent } from "./content";
 import { removeTooltip } from "./map/tooltip";
 import drawMap from "./map";
 
-const state = {};
+const state = { maps: {}, data: {} };
 
-function build(tab) {
-  const sheetsURL = buildSheetsURL(tab);
-  json(sheetsURL).then(drawMap);
+["states", "districts"].map(map => json(buildMapURL(map)).then(data => (state.maps[map] = data)));
+
+const build = tab => {
+  if (!state.data[tab])
+    return json(buildSheetsURL(tab)).then(raw => {
+      state.data[tab] = raw;
+      build(tab)
+    });
+
+  if (!state.maps.states) return setTimeout(() => build(tab), 500);
+
+  drawMap(state.data[tab], state.maps);
+
   select("#header").text(state.currentDataset.issuelabel);
+
   removeTooltip();
-}
+};
 
 // Map switcher
 const settingsURL = buildSheetsURL(1);
@@ -25,7 +36,7 @@ mapSelectorContainer
   .attr("for", "map-selector")
   .text("Issue");
 
-function addStateAndDistrictToggle(dataset) {
+const addStateAndDistrictToggle = dataset => {
   toggleContainer.selectAll("*").remove();
   if (dataset.state && dataset.house) {
     toggleContainer
@@ -50,7 +61,7 @@ function addStateAndDistrictToggle(dataset) {
       .attr("value", d => d.toLowerCase())
       .text(d => labelMap[d]);
   }
-}
+};
 
 const mapSelector = mapSelectorContainer
   .append("select")
