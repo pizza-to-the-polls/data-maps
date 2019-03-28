@@ -32,6 +32,11 @@
   "dependencies": {
     "d3": "^5.9.2",
     "marked": "^0.6.1",
+    "parcel-plugin-static-files-copy": "^2.0.0",
     "topojson": "^3.0.2"
-  }
+  },
+    "staticFiles": {
+        "staticPath": "public",
+        "watcherGlob": "**"
+    }
 }
