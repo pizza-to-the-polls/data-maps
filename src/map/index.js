@@ -3,31 +3,33 @@ import * as topojson from "topojson";
 
 import { parseStats } from "../utils";
 import createTable from "../table";
-import { defaultFilter, labelMap } from "../constants";
+import { defaultFilter, labelMap, prefix } from "../constants";
 import { addTooltip } from "./tooltip";
 
-const filterContainer = d3.select("#filters");
+let filterContainer;
+let svg;
 
-const svg = d3.select("svg");
-const svgWidth = +svg.attr("viewBox").split(" ")[2];
-const svgHeight = +svg.attr("viewBox").split(" ")[3];
+let geoPathGenerator;
+let colorScale;
 
-const projection = d3.geoAlbersUsa().translate([svgWidth / 2, svgHeight / 2]);
+export const initMap = container => {
+  filterContainer = d3.select(container).select(`.${prefix}filters`);
+  svg = d3.select(container).select("svg");
 
-const geoPathGenerator = d3.geoPath().projection(projection);
-const colorScale = d3.scaleSequential(d3.interpolateRdBu).domain([0, 1]);
+  const svgWidth = +svg.attr("viewBox").split(" ")[2];
+  const svgHeight = +svg.attr("viewBox").split(" ")[3];
+  const projection = d3.geoAlbersUsa().translate([svgWidth / 2, svgHeight / 2]);
 
-const zoomed = () =>
-  svg
-    .selectAll("path") // To prevent stroke width from scaling
-    .attr("transform", d3.event.transform);
+  geoPathGenerator = d3.geoPath().projection(projection);
+  colorScale = d3.scaleSequential(d3.interpolateRdBu).domain([0, 1]);
 
-const zoom = d3
-  .zoom()
-  .scaleExtent([1, 20])
-  .on("zoom", zoomed);
-
-svg.call(zoom);
+  svg.call(
+    d3
+      .zoom()
+      .scaleExtent([1, 20])
+      .on("zoom", () => svg.selectAll("path").attr("transform", d3.event.transform))
+  );
+};
 
 const addStatsToFeatures = (features, stats) => {
   const combinedData = [];
@@ -83,13 +85,14 @@ const addFilters = (paths, filters) => {
     .selectAll("options")
     .data(filters)
     .enter()
+    .filter(d => labelMap[d])
     .append("option")
     .text(d => labelMap[d])
     .attr("value", d => d);
 };
 
 // Draw the map
-const drawMap = (stats, { states, districts }) => {
+export const drawMap = (stats, { states, districts }) => {
   const statesGeo = topojson.feature(states, states.objects.states);
   const districtsGeo = topojson.feature(districts, districts.objects.districts);
   const cleanStats = parseStats(stats);
@@ -114,4 +117,3 @@ const drawMap = (stats, { states, districts }) => {
 
   createTable(cleanStats);
 };
-export default drawMap;

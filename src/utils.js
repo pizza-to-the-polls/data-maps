@@ -1,6 +1,6 @@
-import { sheetsBaseUrl, sheetsID, rootURL } from "./constants";
+import { sheetsBaseUrl, rootURL } from "./constants";
 
-export const buildSheetsURL = tab => (`${sheetsBaseUrl}/${sheetsID}/${tab}/public/basic?alt=json`);
+export const buildSheetsURL = (tab, sheetsID)  => (`${sheetsBaseUrl}/${sheetsID}/${tab}/public/basic?alt=json`);
 
 export const buildMapURL = map => (`${rootURL}/${map}.json`);
 

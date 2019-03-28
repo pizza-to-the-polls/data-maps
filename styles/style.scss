@@ -3,13 +3,13 @@
 @import "controls";
 @import "table";
 
-body {
+.data-progress-maps {
   font-family: sans-serif;
   color: #333;
   background: $gray3;
 }
 
-.container {
+.#{$prefix}container {
   max-width: 960px;
   margin: 0 auto;
   border: 1px solid $gray2;
@@ -17,7 +17,7 @@ body {
   background: #fff;
 }
 
-#content {
+.#{$prefix}content {
   max-width: 600px;
   margin: 0 auto;
   p {

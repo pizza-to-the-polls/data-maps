@@ -1,56 +1,54 @@
-.table-container {
+.#{$prefix}table-container {
   padding: 10px;
   background: $gray3;
   border: 1px solid $gray2;
   margin-top: 20px;
+   summary {
+    font-weight: bold;
+    cursor: pointer;
+  }
 }
 
-.table-container summary {
-  font-weight: bold;
-  cursor: pointer;
-}
 
-#table {
+.#{$prefix}table {
   height: 300px;
   overflow-y: scroll;
   border: 1px solid $gray2;
   margin-top: 10px;
-}
 
-#table table {
-  font-size: 12px;
-  border-collapse: collapse;
-  width: 100%;
-  font-family: $mono;
-}
+  table {
+    font-size: 12px;
+    border-collapse: collapse;
+    width: 100%;
+    font-family: $mono;
+  }
+  thead {
+    background: $gray3;
+    text-align: left;
+    border-bottom: 1px solid $gray2;
+  }
+  .sortable {
+    background-image: url("/img/sort.png");
+    background-repeat: no-repeat;
+    background-position: 100% 4px;
+    background-size: 12px;
+    cursor: pointer;
+  }
 
-#table thead {
-  background: $gray3;
-  text-align: left;
-  border-bottom: 1px solid $gray2;
-}
+  .sort--ascending {
+    background-image: url("/img/sort-up.png");
+  }
 
-.sortable {
-  background-image: url("/img/sort.png");
-  background-repeat: no-repeat;
-  background-position: 100% 4px;
-  background-size: 12px;
-  cursor: pointer;
-}
+  .sort--descending {
+    background-image: url("/img/sort-down.png");
+  }
 
-.sort--ascending {
-  background-image: url("/img/sort-up.png");
-}
+  table tr:nth-child(odd) {
+    background: #fff;
+  }
 
-.sort--descending {
-  background-image: url("/img/sort-down.png");
-}
-
-#table table tr:nth-child(odd) {
-  background: #fff;
-}
-
-#table td,
-#table th {
-  padding: 4px;
+  td,
+  th {
+    padding: 4px;
+  }
 }

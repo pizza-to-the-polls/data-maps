@@ -1,16 +1,17 @@
-import * as d3 from "d3";
+import { select } from "d3";
 import marked from "marked";
 import { formatAsPercentage } from "../utils";
 import { excludedKeys, labelMap } from "../constants";
+import { prefix } from "../constants";
 
 // Tooltip
-const tooltip = d3.select("#details").append("p");
+let tooltip;
 
-function getTooltipKeys(data) {
+const getTooltipKeys = data => {
   return Object.keys(data).filter(k => excludedKeys.indexOf(k) === -1);
 }
 
-function createTooltipContent(data) {
+const createTooltipContent = data => {
   let content = `<strong>${data.label}</strong>`;
   content += "<table><tbody>";
   const keys = getTooltipKeys(data);
@@ -27,10 +28,14 @@ function createTooltipContent(data) {
   return content;
 }
 
-export function addTooltip(d) {
+export const addTooltip = d => {
   tooltip.html(createTooltipContent(d));
 }
 
-export function removeTooltip() {
+export const removeTooltip = d => {
   tooltip.selectAll("*").remove();
+}
+
+export const initTooltip = container => {
+  tooltip = select(container).select(`.${prefix}details`).append("p");
 }
