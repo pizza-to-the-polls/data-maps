@@ -4,7 +4,8 @@
   margin: 0;
   position: relative;
   background: #fff;
-  box-shadow: 0 3px 21px 1px rgba($gray1, 0.3);
+  border: 1px solid $gray2;
+  border-radius: 8px;
 
   @media screen and (min-width: 600px) {
     flex-direction: row;
@@ -41,6 +42,7 @@ svg {
   border-right: 1px solid $gray2;
   background: $gray3;
   color: $gray1;
+  border-radius: 8px 0 0 8px;
 
   p {
     margin-top: 0;
