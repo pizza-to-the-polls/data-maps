@@ -35,8 +35,8 @@
     "parcel-plugin-static-files-copy": "^2.0.0",
     "topojson": "^3.0.2"
   },
-    "staticFiles": {
-        "staticPath": "public",
-        "watcherGlob": "**"
-    }
+  "staticFiles": {
+    "staticPath": "public",
+    "watcherGlob": "**"
+  }
 }
