@@ -68,7 +68,7 @@ const drawDistricts = data =>
 
 const updatePaths = (paths, filter) => paths.transition().style("fill", d => colorScale(d[filter]));
 
-const addFilters = (paths, filters, stats) => {
+const addFilters = (paths, filters) => {
   // Add some filters
   filterContainer.selectAll("*").remove();
   filterContainer
@@ -108,12 +108,12 @@ export const drawMap = (stats, { states, districts }) => {
   if (cleanStats[0].fips > 100) {
     const districtsWithStats = addStatsToFeatures(districtsGeo.features, cleanStats);
     const districtPaths = drawDistricts(districtsWithStats);
-    addFilters(districtPaths, filters, cleanStats);
+    addFilters(districtPaths, filters);
   } else {
     // Otherwise we know it's states
     const statesWithStats = addStatsToFeatures(statesGeo.features, cleanStats);
     const statePaths = drawStatesWithData(statesWithStats);
-    addFilters(statePaths, filters, cleanStats);
+    addFilters(statePaths, filters);
   }
   buildLegend(colorScale);
   createTable(cleanStats);
