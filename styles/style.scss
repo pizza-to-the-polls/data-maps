@@ -3,15 +3,12 @@
 @import "controls";
 @import "table";
 
-body {
-  margin: 0;
-  padding: 20px;
-  background: $gray3;
-}
-
 .data-progress-maps {
   font-family: sans-serif;
   color: #333;
+  margin: 0;
+  padding: 20px;
+  background: $gray3;
 }
 
 .#{$prefix}container {
