@@ -16,3 +16,5 @@ export const rootURL =
   process.env.NODE_ENV === "development"
     ? "http://localhost:1234/"
     : "https://noahmanger.me/data-maps/";
+export const legendWidth = 200;
+export const legendHeight = 40;

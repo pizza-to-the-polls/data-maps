@@ -5,6 +5,7 @@ import { parseStats } from "../utils";
 import createTable from "../table";
 import { defaultFilter, labelMap, prefix } from "../constants";
 import { addTooltip } from "./tooltip";
+import buildLegend from "./legend";
 
 let filterContainer;
 let svg;
@@ -114,6 +115,6 @@ export const drawMap = (stats, { states, districts }) => {
     const statePaths = drawStatesWithData(statesWithStats);
     addFilters(statePaths, filters);
   }
-
+  buildLegend(colorScale);
   createTable(cleanStats);
 };

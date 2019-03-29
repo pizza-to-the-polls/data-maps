@@ -47,6 +47,10 @@
     margin-top: 0;
   }
 
+  a {
+    color: $blue;
+  }
+
   table {
     padding-bottom: 10px;
     width: 100%;
@@ -71,4 +75,11 @@
   td:nth-child(2) {
     font-family: $mono;
   }
+}
+
+.#{$prefix}legend svg {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 200px;
 }
