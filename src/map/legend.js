@@ -54,7 +54,7 @@ const buildLegend = scale => {
     .attr("x", d => {
       const position = legendWidth * (d / 100);
       if (position === legendWidth) {
-        return position - 30;
+        return position - 31;
       }
       return position;
     });
