@@ -50,11 +50,15 @@ export const initDom = outer => {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("viewBox", "0 0 960 600");
   map.appendChild(svg);
-  vis.appendChild(map);
-  container.appendChild(vis);
+
   const legend = document.createElement("div");
   legend.className = `${prefix}legend`;
-  vis.appendChild(legend);
+  map.appendChild(legend);
+
+  vis.appendChild(map);
+  container.appendChild(vis);
+
+
   const legendSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   legendSvg.setAttribute("viewBox", `0 0 ${legendWidth} ${legendHeight}`);
   legend.appendChild(legendSvg);
