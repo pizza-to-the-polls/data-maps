@@ -1,4 +1,4 @@
-#controls {
+.#{$prefix}controls {
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -6,7 +6,7 @@
   border-top: 2px solid $gray1;
 }
 
-.control {
+.#{$prefix}control {
   width: 32%;
 
   select {

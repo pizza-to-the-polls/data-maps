@@ -1,40 +1,36 @@
-import { select, json } from "d3";
-import { labelMap } from "./constants";
+import { selectAll, select, json } from "d3";
+import { labelMap, prefix } from "./constants";
 import { buildMapURL, buildSheetsURL, parseRow } from "./utils";
-import { getContent, showContent } from "./content";
-import { removeTooltip } from "./map/tooltip";
-import drawMap from "./map";
+import { getContent, showContent, initDom } from "./content";
+import { removeTooltip, initTooltip } from "./map/tooltip";
+import { drawMap, initMap } from "./map";
+import { initTable } from "./table";
 
-const state = { maps: {}, data: {} };
+let currentDataset;
+let mapSelectorContainer;
+let toggleContainer;
+let title;
+let sheetKey;
 
-["states", "districts"].map(map => json(buildMapURL(map)).then(data => (state.maps[map] = data)));
+const datasets = {};
+const sheets = {};
+const maps = {};
 
 const build = tab => {
-  if (!state.data[tab])
-    return json(buildSheetsURL(tab)).then(raw => {
-      state.data[tab] = raw;
-      build(tab)
+  if (!sheets[tab])
+    return json(buildSheetsURL(tab, sheetKey)).then(raw => {
+      sheets[tab] = raw;
+      build(tab);
     });
 
-  if (!state.maps.states) return setTimeout(() => build(tab), 500);
+  if (!maps.states) return setTimeout(() => build(tab), 500);
 
-  drawMap(state.data[tab], state.maps);
+  drawMap(sheets[tab], maps);
 
-  select("#header").text(state.currentDataset.issuelabel);
+  title.text(currentDataset.issuelabel);
 
   removeTooltip();
 };
-
-// Map switcher
-const settingsURL = buildSheetsURL(1);
-const mapSelectorContainer = select("#selector");
-const toggleContainer = select("#toggle");
-const datasets = {};
-
-mapSelectorContainer
-  .append("label")
-  .attr("for", "map-selector")
-  .text("Issue");
 
 const addStateAndDistrictToggle = dataset => {
   toggleContainer.selectAll("*").remove();
@@ -49,7 +45,7 @@ const addStateAndDistrictToggle = dataset => {
       .attr("name", "toggle")
       .on("change", () => {
         const selected = dataset[toggle.property("value")];
-        state.currentDataset = selected;
+        currentDataset = selected;
         build(selected.tab);
       });
 
@@ -63,47 +59,70 @@ const addStateAndDistrictToggle = dataset => {
   }
 };
 
-const mapSelector = mapSelectorContainer
-  .append("select")
-  .attr("name", "map-selector")
-  .on("change", () => {
-    const selected = state.datasets[mapSelector.property("value")];
-    state.currentDataset = selected;
-    build(selected.defaultTab);
-    addStateAndDistrictToggle(selected);
-    showContent(state.currentDataset.issuekey);
+const initDataMap = container => {
+  sheetKey = container ? container.getAttribute("data-spreadsheet-key") : null;
+  if (!sheetKey) {
+    console.error("Cannot init maps without a key - set the data-spreadsheet-key attribute");
+    return;
+  }
+  initDom(container);
+  initMap(container);
+  initTable(container);
+  initTooltip(container);
+
+  title = select(container).select(`.${prefix}header`);
+  mapSelectorContainer = select(container).select(`.${prefix}selector`);
+  toggleContainer = select(container).select(`.${prefix}toggle`);
+
+  mapSelectorContainer
+    .append("label")
+    .attr("for", "map-selector")
+    .text("Issue");
+
+  const mapSelector = mapSelectorContainer
+    .append("select")
+    .attr("name", "map-selector")
+    .on("change", () => {
+      const selected = datasets[mapSelector.property("value")];
+      currentDataset = selected;
+      build(selected.defaultTab);
+      addStateAndDistrictToggle(selected);
+      showContent(currentDataset.issuekey);
+    });
+
+  // Load the states and district maps
+  ["states", "districts"].map(map => json(buildMapURL(map)).then(geojson => (maps[map] = geojson)));
+
+  // Get the Settings tab which lists all the datasets (other tabs) we'll later get
+  json(buildSheetsURL(1, sheetKey)).then(response => {
+    response.feed.entry.forEach(entry => {
+      const dataset = parseRow(entry.content.$t);
+      const key = entry.title.$t;
+      if (!Object.prototype.hasOwnProperty.call(datasets, key)) {
+        datasets[key] = {};
+        datasets[key].issuelabel = dataset.issuelabel;
+        datasets[key].defaultTab = dataset.tab;
+        datasets[key].defaultView = dataset.dataset.toLowerCase();
+        datasets[key].issuekey = key;
+      }
+      datasets[key][dataset.dataset.toLowerCase()] = dataset;
+    });
+
+    const datasetKeys = Object.keys(datasets);
+    mapSelector
+      .selectAll("option")
+      .data(datasetKeys)
+      .enter()
+      .append("option")
+      .attr("value", d => d)
+      .text(d => datasets[d].issuelabel);
+
+    const firstDataset = datasets[datasetKeys[0]];
+    addStateAndDistrictToggle(firstDataset);
+    currentDataset = firstDataset;
+    build(firstDataset.defaultTab);
+    getContent(firstDataset.issuekey, sheetKey);
   });
+};
 
-// Get the Settings tab which lists all the datasets (other tabs) we'll later get
-json(settingsURL).then(response => {
-  response.feed.entry.forEach(entry => {
-    const dataset = parseRow(entry.content.$t);
-    const key = entry.title.$t;
-    if (!Object.prototype.hasOwnProperty.call(datasets, key)) {
-      datasets[key] = {};
-      datasets[key].issuelabel = dataset.issuelabel;
-      datasets[key].defaultTab = dataset.tab;
-      datasets[key].defaultView = dataset.dataset.toLowerCase();
-      datasets[key].issuekey = key;
-    }
-    datasets[key][dataset.dataset.toLowerCase()] = dataset;
-  });
-
-  // Save to state
-  state.datasets = datasets;
-
-  const datasetKeys = Object.keys(datasets);
-  mapSelector
-    .selectAll("option")
-    .data(datasetKeys)
-    .enter()
-    .append("option")
-    .attr("value", d => d)
-    .text(d => datasets[d].issuelabel);
-
-  const firstDataset = datasets[datasetKeys[0]];
-  addStateAndDistrictToggle(firstDataset);
-  state.currentDataset = firstDataset;
-  build(firstDataset.defaultTab, firstDataset.issuelabel);
-  getContent(firstDataset.issuekey);
-});
+initDataMap(document.querySelector(".data-progress-maps"));

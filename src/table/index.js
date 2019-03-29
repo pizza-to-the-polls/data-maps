@@ -1,12 +1,16 @@
-import * as d3 from "d3";
+import { select } from "d3";
 import { formatAsPercentage } from "../utils";
-import { labelMap } from "../constants";
+import { labelMap, prefix } from "../constants";
 
 let sortAscending = true;
 
-const tableContainer = d3.select("#table");
+let tableContainer;
 
-function createRows(table, data, keys) {
+export const initTable = container => {
+  tableContainer = select(container).select(`.${prefix}table`)
+}
+
+const createRows = (table, data, keys) => {
   return table
     .append("tbody")
     .selectAll("tr")
@@ -19,9 +23,9 @@ function createRows(table, data, keys) {
     .append("td")
     .attr("data-th", d => d.key)
     .text(d => formatAsPercentage(d.value));
-}
+};
 
-function createTable(data) {
+const createTable = data => {
   const keys = Object.keys(data[Object.keys(data)[0]]).filter(
     k => ["fips", "content"].indexOf(k) === -1
   );
@@ -56,6 +60,6 @@ function createTable(data) {
         rows = createRows(table, data, keys);
       }
     });
-}
+};
 
 export default createTable;
