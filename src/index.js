@@ -72,7 +72,7 @@ const initDataMap = container => {
 
   title = select(container).select(`.${prefix}header`);
   mapSelectorContainer = select(container).select(`.${prefix}selector`);
-  toggleContainer = select(container).select(`${prefix}toggle`);
+  toggleContainer = select(container).select(`.${prefix}toggle`);
 
   mapSelectorContainer
     .append("label")
