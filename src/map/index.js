@@ -5,6 +5,7 @@ import { parseStats } from "../utils";
 import createTable from "../table";
 import { defaultFilter, labelMap, prefix } from "../constants";
 import { addTooltip } from "./tooltip";
+import buildLegend from "./legend";
 
 let filterContainer;
 let svg;
@@ -67,7 +68,7 @@ const drawDistricts = data =>
 
 const updatePaths = (paths, filter) => paths.transition().style("fill", d => colorScale(d[filter]));
 
-const addFilters = (paths, filters) => {
+const addFilters = (paths, filters, stats) => {
   // Add some filters
   filterContainer.selectAll("*").remove();
   filterContainer
@@ -107,13 +108,13 @@ export const drawMap = (stats, { states, districts }) => {
   if (cleanStats[0].fips > 100) {
     const districtsWithStats = addStatsToFeatures(districtsGeo.features, cleanStats);
     const districtPaths = drawDistricts(districtsWithStats);
-    addFilters(districtPaths, filters);
+    addFilters(districtPaths, filters, cleanStats);
   } else {
     // Otherwise we know it's states
     const statesWithStats = addStatsToFeatures(statesGeo.features, cleanStats);
     const statePaths = drawStatesWithData(statesWithStats);
-    addFilters(statePaths, filters);
+    addFilters(statePaths, filters, cleanStats);
   }
-
+  buildLegend(colorScale);
   createTable(cleanStats);
 };

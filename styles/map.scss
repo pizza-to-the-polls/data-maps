@@ -72,3 +72,10 @@
     font-family: $mono;
   }
 }
+
+.#{$prefix}legend svg {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 200px;
+}

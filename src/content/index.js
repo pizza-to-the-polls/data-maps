@@ -1,14 +1,13 @@
 import { select, selectAll, json } from "d3";
 import marked from "marked";
-import { prefix } from "../constants";
+import { legendWidth, legendHeight, prefix } from "../constants";
 
 import { buildSheetsURL } from "../utils";
 
-
-export const showContent = (issueKey) => {
+export const showContent = issueKey => {
   selectAll(`.${prefix}content section`).style("display", "none");
   select(`[data-issue=${issueKey}]`).style("display", "block");
-}
+};
 
 export const getContent = (currentIssueKey, sheetsID) => {
   json(buildSheetsURL(2, sheetsID)).then(response => {
@@ -21,55 +20,61 @@ export const getContent = (currentIssueKey, sheetsID) => {
     });
     showContent(currentIssueKey);
   });
-}
+};
 
 export const initDom = outer => {
-  const container = document.createElement('div');
-  container.className = `${prefix}container`
+  const container = document.createElement("div");
+  container.className = `${prefix}container`;
 
-  const header = document.createElement('h1');
-  header.className = `${prefix}header`
+  const header = document.createElement("h1");
+  header.className = `${prefix}header`;
   container.appendChild(header);
 
-  const controls = document.createElement('div');
+  const controls = document.createElement("div");
   controls.className = `${prefix}controls`;
-  ['selector', 'toggle', 'filters'].forEach(name => {
-    const elem = document.createElement('div');
-    elem.className = `${prefix}${name} ${prefix}control`
-    controls.appendChild(elem)
-  })
+  ["selector", "toggle", "filters"].forEach(name => {
+    const elem = document.createElement("div");
+    elem.className = `${prefix}${name} ${prefix}control`;
+    controls.appendChild(elem);
+  });
   container.appendChild(controls);
 
-  const vis = document.createElement('figure');
-  vis.className = `${prefix}vis`
-  const details = document.createElement('div');
-  details.className = `${prefix}details`
+  const vis = document.createElement("figure");
+  vis.className = `${prefix}vis`;
+  const details = document.createElement("div");
+  details.className = `${prefix}details`;
   vis.appendChild(details);
 
-  const map = document.createElement('div');
+  const map = document.createElement("div");
   map.className = `${prefix}map`;
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
-  svg.setAttribute('viewBox', '0 0 960 600');
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 960 600");
   map.appendChild(svg);
   vis.appendChild(map);
   container.appendChild(vis);
+  const legend = document.createElement("div");
+  legend.className = `${prefix}legend`;
+  vis.appendChild(legend);
+  const legendSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  legendSvg.setAttribute("viewBox", `0 0 ${legendWidth} ${legendHeight}`);
+  legend.appendChild(legendSvg);
 
-  const tableContainer = document.createElement('details');
-  tableContainer.className = `${prefix}table-container`
-  const summary = document.createElement('summary');
-  summary.innerText = 'Table';
+  const tableContainer = document.createElement("details");
+  tableContainer.className = `${prefix}table-container`;
+  const summary = document.createElement("summary");
+  summary.innerText = "Table";
   tableContainer.appendChild(summary);
 
-  const table = document.createElement('div');
+  const table = document.createElement("div");
   table.className = `${prefix}table`;
-  tableContainer.appendChild(table)
+  tableContainer.appendChild(table);
   container.appendChild(tableContainer);
 
-  const content = document.createElement('div');
-  content.className = `${prefix}content`
+  const content = document.createElement("div");
+  content.className = `${prefix}content`;
   container.appendChild(content);
 
   outer.appendChild(container);
-}
+};
 
 export default getContent;
