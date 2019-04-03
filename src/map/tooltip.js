@@ -1,7 +1,7 @@
 import { select } from "d3";
 import marked from "marked";
-import { formatAsPercentage } from "../utils";
-import { excludedKeys, labelMap } from "../constants";
+import { formatAsPercentage, makeLabel } from "../utils";
+import { excludedKeys } from "../constants";
 import { prefix } from "../constants";
 
 // Tooltip
@@ -17,7 +17,7 @@ const createTooltipContent = data => {
   const keys = getTooltipKeys(data);
   keys.forEach(key => {
     if (key !== "content") {
-      content += `<tr><td>${labelMap[key]}</td><td>${formatAsPercentage(data[key])}</td></tr>`;
+      content += `<tr><td>${makeLabel(key)}</td><td>${formatAsPercentage(data[key])}</td></tr>`;
     }
   });
   content += "</tbody></table>";

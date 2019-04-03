@@ -1,14 +1,10 @@
 import * as d3 from "d3";
 import { legendWidth, prefix } from "../constants";
+import { formatAsPercentage } from "../utils";
 
-const intervals = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
-
-const getStops = scale => {
-  return intervals.map(i => [i, scale(i)]);
-};
-
-const buildLegend = scale => {
-  const stops = getStops(scale);
+const buildLegend = (scale, domain) => {
+  const stops = d3.range(domain[0], domain[1], (domain[1] - domain[0])/11)
+                  .map(i => [i, scale(i)]);
 
   const legendSvg = d3.select(`.${prefix}legend`).select("svg");
 
@@ -44,20 +40,14 @@ const buildLegend = scale => {
 
   legendSvg
     .selectAll("text")
-    .data([0, 100])
+    .data(domain)
     .enter()
     .append("text")
-    .text(d => `${d.toString()}%`)
+    .text(formatAsPercentage)
     .attr("fill", "#000")
     .attr("font-size", "12px")
     .attr("y", "25")
-    .attr("x", d => {
-      const position = legendWidth * (d / 100);
-      if (position === legendWidth) {
-        return position - 31;
-      }
-      return position;
-    });
+    .attr("x", (d, i) => (i > 0 ? legendWidth - 31 : 0));
 };
 
 export default buildLegend;

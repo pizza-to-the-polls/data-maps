@@ -1,4 +1,4 @@
-import { sheetsBaseUrl, rootURL } from "./constants";
+import { sheetsBaseUrl, rootURL, labelMap } from "./constants";
 
 export const buildSheetsURL = (tab, sheetsID)  => (`${sheetsBaseUrl}/${sheetsID}/${tab}/public/basic?alt=json`);
 
@@ -20,7 +20,7 @@ export const formatAsPercentage = value => {
   if (isNaN(value)) {
     return value;
   }
-  const percentage = value * 100;
+  const percentage = value <= 1 ? value * 100 : value;
   return `${percentage.toFixed(0)}%`;
 }
 
@@ -33,3 +33,5 @@ export const parseStats = data => {
   });
   return cleanStats;
 }
+
+export const makeLabel = key => (key ? labelMap[key] || key.replace(/(?:^|\s|-)\S/g, x => x.toUpperCase()) : '')
