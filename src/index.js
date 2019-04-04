@@ -1,6 +1,6 @@
 import { selectAll, select, json } from "d3";
 import { labelMap, prefix } from "./constants";
-import { buildMapURL, buildSheetsURL, parseRow } from "./utils";
+import { buildMapURL, buildSheetsURL, parseRow, floatOrNull } from "./utils";
 import { getContent, showContent, initDom } from "./content";
 import { removeTooltip, initTooltip } from "./map/tooltip";
 import { drawMap, initMap } from "./map";
@@ -25,7 +25,7 @@ const build = tab => {
 
   if (!maps.states) return setTimeout(() => build(tab), 500);
 
-  drawMap(sheets[tab], maps);
+  drawMap(sheets[tab], maps, currentDataset);
 
   title.text(currentDataset.issuelabel);
 
@@ -104,6 +104,8 @@ const initDataMap = container => {
         datasets[key].defaultTab = dataset.tab;
         datasets[key].defaultView = dataset.dataset.toLowerCase();
         datasets[key].issuekey = key;
+        if( dataset.max ) datasets[key].max = floatOrNull(dataset.max);
+        if( dataset.min ) datasets[key].min = floatOrNull(dataset.min);
       }
       datasets[key][dataset.dataset.toLowerCase()] = dataset;
     });

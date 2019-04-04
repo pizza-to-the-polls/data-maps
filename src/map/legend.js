@@ -46,7 +46,9 @@ const buildLegend = (scale, domain) => {
     .attr("fill", "#000")
     .attr("font-size", "12px")
     .attr("y", "25")
-    .attr("x", (_, i) => (i > 0 ? legendWidth - 31 : 0));
+    .attr("x", (d, i) =>
+      (i > 0 ? legendWidth - formatAsPercentage(d).length * 8 : 0)
+    );
 };
 
 export default buildLegend;

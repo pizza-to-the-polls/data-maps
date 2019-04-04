@@ -62,21 +62,32 @@ const drawDistricts = data =>
     .attr("class", "district")
     .on("click", addTooltip);
 
-const updatePaths = (paths, filter) => {
+const updatePaths = (paths, filter, { max: setMax, min: setMin }) => {
   const data = paths.data().map(d => d[filter]).filter(p => p);
   const max = Math.max.apply(null, data);
   const min = Math.min.apply(null, data);
+  const domain = [];
 
-  const domain = min < 0
-    ? [min < -1 ? -100 : -1, max > 1 ? 100 : 1] // Assume equal distribution around zero
-    : [0, max > 1 ? 100 : 1] // Assume floor is zero
+  if( setMin ) {
+    domain.push(setMin)
+  } else {
+    domain.push(min < 0
+      ? min < -1 ? -100 : -1 // Assume equal distribution around zero
+      : 0 // Assume floor is zero
+    )
+  }
+  if( setMax ) {
+    domain.push(setMax)
+  } else {
+    domain.push(max > 1 ? 100 : 1)
+  }
 
   const colorScale = d3.scaleSequential(d3.interpolateRdBu).domain(domain);
   paths.transition().style("fill", d => colorScale(d[filter]));
   buildLegend(colorScale, domain);
 }
 
-const addFilters = (paths, filters) => {
+const addFilters = (paths, filters, dataSetConfig) => {
   // Add some filters
   filterContainer.selectAll("*").remove();
   filterContainer
@@ -87,7 +98,7 @@ const addFilters = (paths, filters) => {
     .append("select")
     .attr("name", "filter")
     .on("change", () => {
-      updatePaths(paths, filter.property("value"));
+      updatePaths(paths, filter.property("value"), dataSetConfig);
     });
 
   filter
@@ -100,7 +111,7 @@ const addFilters = (paths, filters) => {
 };
 
 // Draw the map
-export const drawMap = (stats, { states, districts }) => {
+export const drawMap = (stats, { states, districts }, dataSetConfig) => {
   const statesGeo = topojson.feature(states, states.objects.states);
   const districtsGeo = topojson.feature(districts, districts.objects.districts);
   const cleanStats = parseStats(stats);
@@ -110,19 +121,19 @@ export const drawMap = (stats, { states, districts }) => {
   const filters = Object.keys(cleanStats[0]).filter(
     key => ["label", "fips", "state"].indexOf(key) === -1
   );
-
+  console.log(dataSetConfig)
   // If the first row's FIPS code is over 100 we know it's district data
   if (cleanStats[0].fips > 100) {
     const districtsWithStats = addStatsToFeatures(districtsGeo.features, cleanStats);
     const districtPaths = drawDistricts(districtsWithStats);
-    addFilters(districtPaths, filters);
-    updatePaths(districtPaths, filters[0]);
+    addFilters(districtPaths, filters, dataSetConfig);
+    updatePaths(districtPaths, filters[0], dataSetConfig);
   } else {
     // Otherwise we know it's states
     const statesWithStats = addStatsToFeatures(statesGeo.features, cleanStats);
     const statePaths = drawStatesWithData(statesWithStats);
-    addFilters(statePaths, filters);
-    updatePaths(statePaths, filters[0]);
+    addFilters(statePaths, filters, dataSetConfig);
+    updatePaths(statePaths, filters[0], dataSetConfig);
   }
 
   createTable(cleanStats);

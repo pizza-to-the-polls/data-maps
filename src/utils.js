@@ -34,4 +34,7 @@ export const parseStats = data => {
   return cleanStats;
 }
 
+export const floatOrNull = num =>
+  ( isNaN(parseFloat(num)) ? null : parseFloat(num) )
+
 export const makeLabel = key => (key ? labelMap[key] || key.replace(/(?:^|\s|-)\S/g, x => x.toUpperCase()) : '')
