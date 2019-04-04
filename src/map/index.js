@@ -121,7 +121,7 @@ export const drawMap = (stats, { states, districts }, dataSetConfig) => {
   const filters = Object.keys(cleanStats[0]).filter(
     key => ["label", "fips", "state"].indexOf(key) === -1
   );
-  console.log(dataSetConfig)
+
   // If the first row's FIPS code is over 100 we know it's district data
   if (cleanStats[0].fips > 100) {
     const districtsWithStats = addStatsToFeatures(districtsGeo.features, cleanStats);
