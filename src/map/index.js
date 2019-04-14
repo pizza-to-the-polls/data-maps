@@ -149,24 +149,26 @@ const updatePaths = (paths, filter, { max: setMax, min: setMin }) => {
 const addFilters = (paths, filters, dataSetConfig) => {
   // Add some filters
   filterContainer.selectAll("*").remove();
-  filterContainer
-    .append("label")
-    .attr("for", "filter")
-    .text("Group");
-  const filter = filterContainer
-    .append("select")
-    .attr("name", "filter")
-    .on("change", () => {
-      updatePaths(paths, filter.property("value"), dataSetConfig);
-    });
+  if (filters.length > 1) {
+    filterContainer
+      .append("label")
+      .attr("for", "filter")
+      .text("Group");
+    const filter = filterContainer
+      .append("select")
+      .attr("name", "filter")
+      .on("change", () => {
+        updatePaths(paths, filter.property("value"), dataSetConfig);
+      });
 
-  filter
-    .selectAll("options")
-    .data(filters)
-    .enter()
-    .append("option")
-    .text(makeLabel)
-    .attr("value", d => d);
+    filter
+      .selectAll("options")
+      .data(filters)
+      .enter()
+      .append("option")
+      .text(makeLabel)
+      .attr("value", d => d);
+  }
 };
 
 // Draw the map
@@ -174,27 +176,23 @@ export const drawMap = (stats, { states, districts }, dataSetConfig) => {
   const statesGeo = topojson.feature(states, states.objects.states);
   const districtsGeo = topojson.feature(districts, districts.objects.districts);
   const cleanStats = parseStats(stats);
-
-  // Clear the map out
+  let currentGeography;
   svg.selectAll("path").remove();
 
   const filters = Object.keys(cleanStats[0]).filter(
-    key => ["label", "fips", "state"].indexOf(key) === -1
+    key => ["label", "fips", "state", "content"].indexOf(key) === -1
   );
 
   // If the first row's FIPS code is over 100 we know it's district data
   if (cleanStats[0].fips > 100) {
     const districtsWithStats = addStatsToFeatures(districtsGeo.features, cleanStats);
-    const districtPaths = drawDistricts(districtsWithStats);
-    addFilters(districtPaths, filters, dataSetConfig);
-    updatePaths(districtPaths, filters[0], dataSetConfig);
+    currentGeography = drawDistricts(districtsWithStats);
   } else {
     // Otherwise we know it's states
     const statesWithStats = addStatsToFeatures(statesGeo.features, cleanStats);
-    const statePaths = drawStatesWithData(statesWithStats);
-    addFilters(statePaths, filters, dataSetConfig);
-    updatePaths(statePaths, filters[0], dataSetConfig);
+    currentGeography = drawStatesWithData(statesWithStats);
   }
-
+  addFilters(currentGeography, filters, dataSetConfig);
+  updatePaths(currentGeography, filters[0], dataSetConfig);
   createTable(cleanStats);
 };
