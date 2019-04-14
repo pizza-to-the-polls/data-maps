@@ -12,6 +12,32 @@ let svg;
 
 let geoPathGenerator;
 
+const addPattern = svg => {
+  svg
+    .append("defs")
+    .append("pattern")
+    .attr("id", "hoverPattern")
+    .attr("patternUnits", "userSpaceOnUse")
+    .attr("width", 10)
+    .attr("height", 10)
+    .append("image")
+    .attr(
+      "xlink:href",
+      "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+CiAgPHJlY3Qgd2lkdGg9JzEwJyBoZWlnaHQ9JzEwJyBmaWxsPSd3aGl0ZScvPgogIDxwYXRoIGQ9J00tMSwxIGwyLC0yCiAgICAgICAgICAgTTAsMTAgbDEwLC0xMAogICAgICAgICAgIE05LDExIGwyLC0yJyBzdHJva2U9J2JsYWNrJyBzdHJva2Utd2lkdGg9JzInLz4KPC9zdmc+"
+    )
+    .attr("width", 10)
+    .attr("height", 10);
+  svg
+    .append("mask")
+    .attr("id", "hoverMask")
+    .append("rect")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .attr("fill", "url(#hoverPattern)");
+};
+
 export const initMap = container => {
   filterContainer = d3.select(container).select(`.${prefix}filters`);
   svg = d3.select(container).select("svg");
@@ -21,7 +47,7 @@ export const initMap = container => {
   const projection = d3.geoAlbersUsa().translate([svgWidth / 2, svgHeight / 2]);
 
   geoPathGenerator = d3.geoPath().projection(projection);
-
+  addPattern(svg);
   svg.call(
     d3
       .zoom()
@@ -63,29 +89,35 @@ const drawDistricts = data =>
     .on("click", addTooltip);
 
 const updatePaths = (paths, filter, { max: setMax, min: setMin }) => {
-  const data = paths.data().map(d => d[filter]).filter(p => p);
+  const data = paths
+    .data()
+    .map(d => d[filter])
+    .filter(p => p);
   const max = Math.max.apply(null, data);
   const min = Math.min.apply(null, data);
   const domain = [];
 
-  if( setMin ) {
-    domain.push(setMin)
+  if (setMin) {
+    domain.push(setMin);
   } else {
-    domain.push(min < 0
-      ? min < -1 ? -100 : -1 // Assume equal distribution around zero
-      : 0 // Assume floor is zero
-    )
+    domain.push(
+      min < 0
+        ? min < -1
+          ? -100
+          : -1 // Assume equal distribution around zero
+        : 0 // Assume floor is zero
+    );
   }
-  if( setMax ) {
-    domain.push(setMax)
+  if (setMax) {
+    domain.push(setMax);
   } else {
-    domain.push(max > 1 ? 100 : 1)
+    domain.push(max > 1 ? 100 : 1);
   }
 
   const colorScale = d3.scaleSequential(d3.interpolateRdBu).domain(domain);
   paths.transition().style("fill", d => colorScale(d[filter]));
   buildLegend(colorScale, domain);
-}
+};
 
 const addFilters = (paths, filters, dataSetConfig) => {
   // Add some filters
@@ -117,7 +149,8 @@ export const drawMap = (stats, { states, districts }, dataSetConfig) => {
   const cleanStats = parseStats(stats);
 
   // Clear the map out
-  svg.selectAll("*").remove();
+  svg.selectAll("paths").remove();
+
   const filters = Object.keys(cleanStats[0]).filter(
     key => ["label", "fips", "state"].indexOf(key) === -1
   );

@@ -23,9 +23,8 @@
 
   .district:hover,
   .state:hover {
-    fill-opacity: 1;
+    mask: url(#hoverMask);
     cursor: pointer;
-    stroke: #000;
   }
 }
 
