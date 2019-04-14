@@ -3,7 +3,7 @@ import * as topojson from "topojson";
 
 import { parseStats, makeLabel } from "../utils";
 import createTable from "../table";
-import { defaultFilter, prefix } from "../constants";
+import { prefix } from "../constants";
 import { addTooltip } from "./tooltip";
 import buildLegend from "./legend";
 
@@ -12,7 +12,7 @@ let svg;
 
 let geoPathGenerator;
 
-const addPattern = svg => {
+const addPattern = () => {
   svg
     .append("defs")
     .append("pattern")
@@ -149,7 +149,7 @@ export const drawMap = (stats, { states, districts }, dataSetConfig) => {
   const cleanStats = parseStats(stats);
 
   // Clear the map out
-  svg.selectAll("paths").remove();
+  svg.selectAll("path").remove();
 
   const filters = Object.keys(cleanStats[0]).filter(
     key => ["label", "fips", "state"].indexOf(key) === -1
