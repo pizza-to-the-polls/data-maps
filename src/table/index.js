@@ -1,14 +1,14 @@
 import { select } from "d3";
-import { formatAsPercentage } from "../utils";
-import { labelMap, prefix } from "../constants";
+import { makeLabel, formatAsPercentage } from "../utils";
+import { prefix } from "../constants";
 
 let sortAscending = true;
 
 let tableContainer;
 
 export const initTable = container => {
-  tableContainer = select(container).select(`.${prefix}table`)
-}
+  tableContainer = select(container).select(`.${prefix}table`);
+};
 
 const createRows = (table, data, keys) => {
   return table
@@ -40,7 +40,7 @@ const createTable = data => {
     .data(keys)
     .enter()
     .append("th")
-    .text(d => labelMap[d])
+    .text(d => makeLabel(d))
     .attr("class", d => (!Number.isNaN(data[0][d]) ? "sortable" : "not-sortable"))
     .on("click", (d, i, h) => {
       tableHeaders.attr("class", t => (!Number.isNaN(data[0][t]) ? "sortable" : "not-sortable"));

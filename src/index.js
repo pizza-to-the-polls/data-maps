@@ -1,6 +1,6 @@
 import { selectAll, select, json } from "d3";
-import { labelMap, prefix } from "./constants";
-import { buildMapURL, buildSheetsURL, parseRow, floatOrNull } from "./utils";
+import { prefix } from "./constants";
+import { buildMapURL, buildSheetsURL, parseRow, floatOrNull, makeLabel } from "./utils";
 import { getContent, showContent, initDom } from "./content";
 import { removeDetails, initDetails } from "./map/details";
 import { initTooltip, removeTooltip } from "./map/tooltip";
@@ -57,7 +57,7 @@ const addStateAndDistrictToggle = dataset => {
       .enter()
       .append("option")
       .attr("value", d => d.toLowerCase())
-      .text(d => labelMap[d]);
+      .text(d => makeLabel(d));
   }
 };
 
