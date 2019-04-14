@@ -3,14 +3,41 @@ import * as topojson from "topojson";
 
 import { parseStats, makeLabel } from "../utils";
 import createTable from "../table";
-import { defaultFilter, prefix } from "../constants";
-import { addTooltip } from "./tooltip";
+import { prefix } from "../constants";
+import { addDetails } from "./details";
 import buildLegend from "./legend";
+import { addTooltip, removeTooltip } from "./tooltip";
 
 let filterContainer;
 let svg;
 
 let geoPathGenerator;
+
+const addPattern = () => {
+  svg
+    .append("defs")
+    .append("pattern")
+    .attr("id", "hoverPattern")
+    .attr("patternUnits", "userSpaceOnUse")
+    .attr("width", 10)
+    .attr("height", 10)
+    .attr("patternTransform", "rotate(45)")
+    .append("rect")
+    .attr("transform", "translate(0,0)")
+    .attr("fill", "white")
+    .attr("width", 5)
+    .attr("height", 20);
+  svg
+    .select("defs")
+    .append("mask")
+    .attr("id", "hoverMask")
+    .append("rect")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .attr("fill", "url(#hoverPattern)");
+};
 
 export const initMap = container => {
   filterContainer = d3.select(container).select(`.${prefix}filters`);
@@ -21,7 +48,7 @@ export const initMap = container => {
   const projection = d3.geoAlbersUsa().translate([svgWidth / 2, svgHeight / 2]);
 
   geoPathGenerator = d3.geoPath().projection(projection);
-
+  addPattern(svg);
   svg.call(
     d3
       .zoom()
@@ -42,6 +69,14 @@ const addStatsToFeatures = (features, stats) => {
   return combinedData;
 };
 
+const handleClick = (d, key, allPaths) => {
+  // d3.select('.selected-path')
+  const thisPath = allPaths[key];
+  d3.selectAll(".selected-path").classed("selected-path", false);
+  thisPath.classList += " selected-path";
+  addDetails(d);
+};
+
 const drawStatesWithData = data =>
   svg
     .selectAll("path")
@@ -50,7 +85,7 @@ const drawStatesWithData = data =>
     .append("path")
     .attr("d", geoPathGenerator)
     .attr("class", "state")
-    .on("click", addTooltip);
+    .on("click", handleClick);
 
 const drawDistricts = data =>
   svg
@@ -60,54 +95,80 @@ const drawDistricts = data =>
     .append("path")
     .attr("d", geoPathGenerator)
     .attr("class", "district")
-    .on("click", addTooltip);
+    .on("click", handleClick);
 
 const updatePaths = (paths, filter, { max: setMax, min: setMin }) => {
-  const data = paths.data().map(d => d[filter]).filter(p => p);
+  const data = paths
+    .data()
+    .map(d => d[filter])
+    .filter(p => p);
   const max = Math.max.apply(null, data);
   const min = Math.min.apply(null, data);
   const domain = [];
 
-  if( setMin ) {
-    domain.push(setMin)
+  if (setMin) {
+    domain.push(setMin);
   } else {
-    domain.push(min < 0
-      ? min < -1 ? -100 : -1 // Assume equal distribution around zero
-      : 0 // Assume floor is zero
-    )
+    domain.push(
+      min < 0
+        ? min < -1
+          ? -100
+          : -1 // Assume equal distribution around zero
+        : 0 // Assume floor is zero
+    );
   }
-  if( setMax ) {
-    domain.push(setMax)
+  if (setMax) {
+    domain.push(setMax);
   } else {
-    domain.push(max > 1 ? 100 : 1)
+    domain.push(max > 1 ? 100 : 1);
   }
 
-  const colorScale = d3.scaleSequential(d3.interpolateRdBu).domain(domain);
-  paths.transition().style("fill", d => colorScale(d[filter]));
-  buildLegend(colorScale, domain);
-}
+  const quantScale = d3.scaleQuantize(domain, [
+    "#67001f",
+    "#b2182b",
+    "#d6604d",
+    "#f4a582",
+    "#92c5de",
+    "#4393c3",
+    "#2166ac",
+    "#053061"
+  ]);
+
+  paths.transition().style("fill", d => quantScale(d[filter]));
+  paths
+    .on("mouseenter", d => {
+      addTooltip(d, filter);
+    })
+    .on("mouseleave", d => {
+      removeTooltip(d);
+    });
+
+  buildLegend(quantScale, domain);
+};
 
 const addFilters = (paths, filters, dataSetConfig) => {
   // Add some filters
   filterContainer.selectAll("*").remove();
-  filterContainer
-    .append("label")
-    .attr("for", "filter")
-    .text("Group");
-  const filter = filterContainer
-    .append("select")
-    .attr("name", "filter")
-    .on("change", () => {
-      updatePaths(paths, filter.property("value"), dataSetConfig);
-    });
+  if (filters.length > 1) {
+    filterContainer
+      .append("label")
+      .attr("for", "filter")
+      .text("Group");
+    const filter = filterContainer
+      .append("select")
+      .attr("name", "filter")
+      .on("change", () => {
+        updatePaths(paths, filter.property("value"), dataSetConfig);
+      });
 
-  filter
-    .selectAll("options")
-    .data(filters)
-    .enter()
-    .append("option")
-    .text(makeLabel)
-    .attr("value", d => d);
+    filter
+      .selectAll("options")
+      .data(filters)
+      .enter()
+      .append("option")
+      .text(makeLabel)
+      .attr("value", d => d);
+  }
 };
 
 // Draw the map
@@ -115,26 +176,23 @@ export const drawMap = (stats, { states, districts }, dataSetConfig) => {
   const statesGeo = topojson.feature(states, states.objects.states);
   const districtsGeo = topojson.feature(districts, districts.objects.districts);
   const cleanStats = parseStats(stats);
+  let currentGeography;
+  svg.selectAll("path").remove();
 
-  // Clear the map out
-  svg.selectAll("*").remove();
   const filters = Object.keys(cleanStats[0]).filter(
-    key => ["label", "fips", "state"].indexOf(key) === -1
+    key => ["label", "fips", "state", "content"].indexOf(key) === -1
   );
 
   // If the first row's FIPS code is over 100 we know it's district data
   if (cleanStats[0].fips > 100) {
     const districtsWithStats = addStatsToFeatures(districtsGeo.features, cleanStats);
-    const districtPaths = drawDistricts(districtsWithStats);
-    addFilters(districtPaths, filters, dataSetConfig);
-    updatePaths(districtPaths, filters[0], dataSetConfig);
+    currentGeography = drawDistricts(districtsWithStats);
   } else {
     // Otherwise we know it's states
     const statesWithStats = addStatsToFeatures(statesGeo.features, cleanStats);
-    const statePaths = drawStatesWithData(statesWithStats);
-    addFilters(statePaths, filters, dataSetConfig);
-    updatePaths(statePaths, filters[0], dataSetConfig);
+    currentGeography = drawStatesWithData(statesWithStats);
   }
-
+  addFilters(currentGeography, filters, dataSetConfig);
+  updatePaths(currentGeography, filters[0], dataSetConfig);
   createTable(cleanStats);
 };

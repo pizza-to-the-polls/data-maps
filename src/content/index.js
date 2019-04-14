@@ -41,9 +41,6 @@ export const initDom = outer => {
 
   const vis = document.createElement("figure");
   vis.className = `${prefix}vis`;
-  const details = document.createElement("div");
-  details.className = `${prefix}details`;
-  vis.appendChild(details);
 
   const map = document.createElement("div");
   map.className = `${prefix}map`;
@@ -57,7 +54,6 @@ export const initDom = outer => {
 
   vis.appendChild(map);
   container.appendChild(vis);
-
 
   const legendSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   legendSvg.setAttribute("viewBox", `0 0 ${legendWidth} ${legendHeight}`);

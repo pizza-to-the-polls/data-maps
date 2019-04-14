@@ -1,41 +1,37 @@
 import { select } from "d3";
-import marked from "marked";
-import { formatAsPercentage, makeLabel } from "../utils";
-import { excludedKeys } from "../constants";
+import { formatAsPercentage } from "../utils";
 import { prefix } from "../constants";
 
 // Tooltip
 let tooltip;
 
-const getTooltipKeys = data => {
-  return Object.keys(data).filter(k => excludedKeys.indexOf(k) === -1);
-}
-
-const createTooltipContent = data => {
-  let content = `<strong>${data.label}</strong>`;
-  content += "<table><tbody>";
-  const keys = getTooltipKeys(data);
-  keys.forEach(key => {
-    if (key !== "content") {
-      content += `<tr><td>${makeLabel(key)}</td><td>${formatAsPercentage(data[key])}</td></tr>`;
-    }
-  });
-  content += "</tbody></table>";
-  if (data.content) {
-    content += `<p class="details-content">${marked(data.content)}</p>`;
-  }
-
+const createTooltipContent = (data, filter) => {
+  let content = `<strong>${data.label}:</strong> `;
+  content += `${formatAsPercentage(data[filter])}`;
   return content;
-}
+};
 
-export const addTooltip = d => {
-  tooltip.html(createTooltipContent(d));
-}
+const handleMouseMove = e => {
+  tooltip.style("left", `${e.pageX - 20}px`).style("top", `${e.pageY + 20}px`);
+};
 
-export const removeTooltip = d => {
-  tooltip.selectAll("*").remove();
-}
+export const addTooltip = (d, filter) => {
+  tooltip.style("display", "block").html(createTooltipContent(d, filter));
+};
+
+export const removeTooltip = () => {
+  tooltip
+    .style("display", "none")
+    .selectAll("*")
+    .remove();
+};
 
 export const initTooltip = container => {
-  tooltip = select(container).select(`.${prefix}details`).append("p");
-}
+  tooltip = select(container)
+    .select(`.${prefix}container`)
+    .append("div")
+    .attr("class", `${prefix}tooltip`)
+    .style("display", "none");
+
+  document.addEventListener("mousemove", handleMouseMove);
+};

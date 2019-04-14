@@ -1,8 +1,9 @@
 import { selectAll, select, json } from "d3";
-import { labelMap, prefix } from "./constants";
-import { buildMapURL, buildSheetsURL, parseRow, floatOrNull } from "./utils";
+import { prefix } from "./constants";
+import { buildMapURL, buildSheetsURL, parseRow, floatOrNull, makeLabel } from "./utils";
 import { getContent, showContent, initDom } from "./content";
-import { removeTooltip, initTooltip } from "./map/tooltip";
+import { removeDetails, initDetails } from "./map/details";
+import { initTooltip, removeTooltip } from "./map/tooltip";
 import { drawMap, initMap } from "./map";
 import { initTable } from "./table";
 
@@ -29,6 +30,7 @@ const build = tab => {
 
   title.text(currentDataset.issuelabel);
 
+  removeDetails();
   removeTooltip();
 };
 
@@ -55,7 +57,7 @@ const addStateAndDistrictToggle = dataset => {
       .enter()
       .append("option")
       .attr("value", d => d.toLowerCase())
-      .text(d => labelMap[d]);
+      .text(d => makeLabel(d));
   }
 };
 
@@ -68,6 +70,7 @@ const initDataMap = container => {
   initDom(container);
   initMap(container);
   initTable(container);
+  initDetails(container);
   initTooltip(container);
 
   title = select(container).select(`.${prefix}header`);
@@ -104,8 +107,8 @@ const initDataMap = container => {
         datasets[key].defaultTab = dataset.tab;
         datasets[key].defaultView = dataset.dataset.toLowerCase();
         datasets[key].issuekey = key;
-        if( dataset.max ) datasets[key].max = floatOrNull(dataset.max);
-        if( dataset.min ) datasets[key].min = floatOrNull(dataset.min);
+        if (dataset.max) datasets[key].max = floatOrNull(dataset.max);
+        if (dataset.min) datasets[key].min = floatOrNull(dataset.min);
       }
       datasets[key][dataset.dataset.toLowerCase()] = dataset;
     });
