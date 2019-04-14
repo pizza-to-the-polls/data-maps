@@ -21,7 +21,7 @@ const buildLegend = scale => {
     .attr("class", "legendQuant")
     .attr("fill", d => d[1])
     .attr("transform", (d, i) => {
-      return `translate(${size * i}, 0)`;
+      return `translate(${size * i + 2 * i}, 0)`;
     });
 
   legendSvg
@@ -34,7 +34,7 @@ const buildLegend = scale => {
     .attr("fill", "#000")
     .attr("font-size", "6px")
     .attr("y", "30")
-    .attr("x", (d, i) => size * i);
+    .attr("x", (d, i) => size * i + 2 * i);
 };
 
 export default buildLegend;
