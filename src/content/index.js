@@ -45,6 +45,7 @@ export const initDom = outer => {
   const map = document.createElement("div");
   map.className = `${prefix}map`;
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("id", `${prefix}map-svg`);
   svg.setAttribute("viewBox", "0 0 960 600");
   map.appendChild(svg);
 

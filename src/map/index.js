@@ -4,7 +4,7 @@ import * as topojson from "topojson";
 import { parseStats, makeLabel } from "../utils";
 import createTable from "../table";
 import { prefix } from "../constants";
-import { addDetails } from "./details";
+import { addDetails, removeDetails } from "./details";
 import buildLegend from "./legend";
 import { addTooltip, removeTooltip } from "./tooltip";
 
@@ -55,6 +55,13 @@ export const initMap = container => {
       .scaleExtent([1, 20])
       .on("zoom", () => svg.selectAll("path").attr("transform", d3.event.transform))
   );
+
+  document.addEventListener("click", e => {
+    if (e.target.nodeName !== "path") {
+      svg.selectAll("path").style("opacity", 1);
+      removeDetails();
+    }
+  });
 };
 
 const addStatsToFeatures = (features, stats) => {
@@ -74,6 +81,8 @@ const handleClick = (d, key, allPaths) => {
   const thisPath = allPaths[key];
   d3.selectAll(".selected-path").classed("selected-path", false);
   thisPath.classList += " selected-path";
+  svg.selectAll("path").style("opacity", 0.3);
+  thisPath.style.opacity = 1;
   addDetails(d);
 };
 
