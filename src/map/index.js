@@ -123,8 +123,18 @@ const updatePaths = (paths, filter, { max: setMax, min: setMin }) => {
     domain.push(max > 1 ? 100 : 1);
   }
 
-  const colorScale = d3.scaleSequential(d3.interpolateRdBu).domain(domain);
-  paths.transition().style("fill", d => colorScale(d[filter]));
+  const quantScale = d3.scaleQuantize(domain, [
+    "#67001f",
+    "#b2182b",
+    "#d6604d",
+    "#f4a582",
+    "#92c5de",
+    "#4393c3",
+    "#2166ac",
+    "#053061"
+  ]);
+
+  paths.transition().style("fill", d => quantScale(d[filter]));
   paths
     .on("mouseenter", d => {
       addTooltip(d, filter);
@@ -133,7 +143,7 @@ const updatePaths = (paths, filter, { max: setMax, min: setMin }) => {
       removeTooltip(d);
     });
 
-  buildLegend(colorScale, domain);
+  buildLegend(quantScale, domain);
 };
 
 const addFilters = (paths, filters, dataSetConfig) => {
