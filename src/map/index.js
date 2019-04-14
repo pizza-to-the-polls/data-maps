@@ -6,6 +6,7 @@ import createTable from "../table";
 import { prefix } from "../constants";
 import { addDetails } from "./details";
 import buildLegend from "./legend";
+import { addTooltip, removeTooltip } from "./tooltip";
 
 let filterContainer;
 let svg;
@@ -24,8 +25,8 @@ const addPattern = () => {
     .append("rect")
     .attr("transform", "translate(0,0)")
     .attr("fill", "white")
-    .attr("width", 8)
-    .attr("height", 10);
+    .attr("width", 5)
+    .attr("height", 20);
   svg
     .select("defs")
     .append("mask")
@@ -68,6 +69,14 @@ const addStatsToFeatures = (features, stats) => {
   return combinedData;
 };
 
+const handleClick = (d, key, allPaths) => {
+  // d3.select('.selected-path')
+  const thisPath = allPaths[key];
+  d3.selectAll(".selected-path").classed("selected-path", false);
+  thisPath.classList += " selected-path";
+  addDetails(d);
+};
+
 const drawStatesWithData = data =>
   svg
     .selectAll("path")
@@ -76,7 +85,7 @@ const drawStatesWithData = data =>
     .append("path")
     .attr("d", geoPathGenerator)
     .attr("class", "state")
-    .on("click", addDetails);
+    .on("click", handleClick);
 
 const drawDistricts = data =>
   svg
@@ -86,7 +95,7 @@ const drawDistricts = data =>
     .append("path")
     .attr("d", geoPathGenerator)
     .attr("class", "district")
-    .on("click", addDetails);
+    .on("click", handleClick);
 
 const updatePaths = (paths, filter, { max: setMax, min: setMin }) => {
   const data = paths
@@ -116,6 +125,14 @@ const updatePaths = (paths, filter, { max: setMax, min: setMin }) => {
 
   const colorScale = d3.scaleSequential(d3.interpolateRdBu).domain(domain);
   paths.transition().style("fill", d => colorScale(d[filter]));
+  paths
+    .on("mouseenter", d => {
+      addTooltip(d, filter);
+    })
+    .on("mouseleave", d => {
+      removeTooltip(d);
+    });
+
   buildLegend(colorScale, domain);
 };
 

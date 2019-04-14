@@ -3,6 +3,7 @@ import { labelMap, prefix } from "./constants";
 import { buildMapURL, buildSheetsURL, parseRow, floatOrNull } from "./utils";
 import { getContent, showContent, initDom } from "./content";
 import { removeDetails, initDetails } from "./map/details";
+import { initTooltip, removeTooltip } from "./map/tooltip";
 import { drawMap, initMap } from "./map";
 import { initTable } from "./table";
 
@@ -30,6 +31,7 @@ const build = tab => {
   title.text(currentDataset.issuelabel);
 
   removeDetails();
+  removeTooltip();
 };
 
 const addStateAndDistrictToggle = dataset => {
@@ -69,6 +71,7 @@ const initDataMap = container => {
   initMap(container);
   initTable(container);
   initDetails(container);
+  initTooltip(container);
 
   title = select(container).select(`.${prefix}header`);
   mapSelectorContainer = select(container).select(`.${prefix}selector`);
