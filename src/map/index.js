@@ -20,14 +20,14 @@ const addPattern = svg => {
     .attr("patternUnits", "userSpaceOnUse")
     .attr("width", 10)
     .attr("height", 10)
-    .append("image")
-    .attr(
-      "xlink:href",
-      "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+CiAgPHJlY3Qgd2lkdGg9JzEwJyBoZWlnaHQ9JzEwJyBmaWxsPSd3aGl0ZScvPgogIDxwYXRoIGQ9J00tMSwxIGwyLC0yCiAgICAgICAgICAgTTAsMTAgbDEwLC0xMAogICAgICAgICAgIE05LDExIGwyLC0yJyBzdHJva2U9J2JsYWNrJyBzdHJva2Utd2lkdGg9JzInLz4KPC9zdmc+"
-    )
-    .attr("width", 10)
+    .attr("patternTransform", "rotate(45)")
+    .append("rect")
+    .attr("transform", "translate(0,0)")
+    .attr("fill", "white")
+    .attr("width", 8)
     .attr("height", 10);
   svg
+    .select("defs")
     .append("mask")
     .attr("id", "hoverMask")
     .append("rect")
