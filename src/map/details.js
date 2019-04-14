@@ -1,20 +1,19 @@
 import { select } from "d3";
 import marked from "marked";
 import { formatAsPercentage, makeLabel } from "../utils";
-import { excludedKeys } from "../constants";
-import { prefix } from "../constants";
+import { prefix, excludedKeys } from "../constants";
 
 // Tooltip
-let tooltip;
+let details;
 
-const getTooltipKeys = data => {
+const getDetailsKeys = data => {
   return Object.keys(data).filter(k => excludedKeys.indexOf(k) === -1);
-}
+};
 
-const createTooltipContent = data => {
+const createDetailsContent = data => {
   let content = `<strong>${data.label}</strong>`;
   content += "<table><tbody>";
-  const keys = getTooltipKeys(data);
+  const keys = getDetailsKeys(data);
   keys.forEach(key => {
     if (key !== "content") {
       content += `<tr><td>${makeLabel(key)}</td><td>${formatAsPercentage(data[key])}</td></tr>`;
@@ -26,16 +25,22 @@ const createTooltipContent = data => {
   }
 
   return content;
-}
+};
 
-export const addTooltip = d => {
-  tooltip.html(createTooltipContent(d));
-}
+export const addDetails = d => {
+  details.style("display", "block").html(createDetailsContent(d));
+};
 
-export const removeTooltip = d => {
-  tooltip.selectAll("*").remove();
-}
+export const removeDetails = () => {
+  details
+    .style("display", "none")
+    .selectAll("*")
+    .remove();
+};
 
-export const initTooltip = container => {
-  tooltip = select(container).select(`.${prefix}details`).append("p");
-}
+export const initDetails = container => {
+  details = select(container)
+    .select(`.${prefix}vis`)
+    .append("div")
+    .attr("class", `${prefix}details`);
+};

@@ -2,7 +2,7 @@ import { selectAll, select, json } from "d3";
 import { labelMap, prefix } from "./constants";
 import { buildMapURL, buildSheetsURL, parseRow, floatOrNull } from "./utils";
 import { getContent, showContent, initDom } from "./content";
-import { removeTooltip, initTooltip } from "./map/tooltip";
+import { removeDetails, initDetails } from "./map/details";
 import { drawMap, initMap } from "./map";
 import { initTable } from "./table";
 
@@ -29,7 +29,7 @@ const build = tab => {
 
   title.text(currentDataset.issuelabel);
 
-  removeTooltip();
+  removeDetails();
 };
 
 const addStateAndDistrictToggle = dataset => {
@@ -68,7 +68,7 @@ const initDataMap = container => {
   initDom(container);
   initMap(container);
   initTable(container);
-  initTooltip(container);
+  initDetails(container);
 
   title = select(container).select(`.${prefix}header`);
   mapSelectorContainer = select(container).select(`.${prefix}selector`);
@@ -104,8 +104,8 @@ const initDataMap = container => {
         datasets[key].defaultTab = dataset.tab;
         datasets[key].defaultView = dataset.dataset.toLowerCase();
         datasets[key].issuekey = key;
-        if( dataset.max ) datasets[key].max = floatOrNull(dataset.max);
-        if( dataset.min ) datasets[key].min = floatOrNull(dataset.min);
+        if (dataset.max) datasets[key].max = floatOrNull(dataset.max);
+        if (dataset.min) datasets[key].min = floatOrNull(dataset.min);
       }
       datasets[key][dataset.dataset.toLowerCase()] = dataset;
     });

@@ -4,7 +4,7 @@ import * as topojson from "topojson";
 import { parseStats, makeLabel } from "../utils";
 import createTable from "../table";
 import { prefix } from "../constants";
-import { addTooltip } from "./tooltip";
+import { addDetails } from "./details";
 import buildLegend from "./legend";
 
 let filterContainer;
@@ -76,7 +76,7 @@ const drawStatesWithData = data =>
     .append("path")
     .attr("d", geoPathGenerator)
     .attr("class", "state")
-    .on("click", addTooltip);
+    .on("click", addDetails);
 
 const drawDistricts = data =>
   svg
@@ -86,7 +86,7 @@ const drawDistricts = data =>
     .append("path")
     .attr("d", geoPathGenerator)
     .attr("class", "district")
-    .on("click", addTooltip);
+    .on("click", addDetails);
 
 const updatePaths = (paths, filter, { max: setMax, min: setMin }) => {
   const data = paths
