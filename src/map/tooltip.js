@@ -5,6 +5,15 @@ import { prefix } from "../constants";
 // Tooltip
 let tooltip;
 
+const getPosition = e => {
+  const visPosition = document.querySelectorAll(`.${prefix}vis`)[0].getBoundingClientRect();
+  const bodyPosition = document.body.getBoundingClientRect();
+  return {
+    x: e.pageX - 20 - visPosition.left + bodyPosition.left,
+    y: e.pageY + 20 - visPosition.top + bodyPosition.top
+  };
+};
+
 const createTooltipContent = (data, filter) => {
   let content = `<strong>${data.label}:</strong> `;
   content += `${formatAsPercentage(data[filter])}`;
@@ -12,7 +21,8 @@ const createTooltipContent = (data, filter) => {
 };
 
 const handleMouseMove = e => {
-  tooltip.style("left", `${e.pageX - 20}px`).style("top", `${e.pageY + 20}px`);
+  const position = getPosition(e);
+  tooltip.style("left", `${position.x}px`).style("top", `${position.y}px`);
 };
 
 export const addTooltip = (d, filter) => {
@@ -28,7 +38,7 @@ export const removeTooltip = () => {
 
 export const initTooltip = container => {
   tooltip = select(container)
-    .select(`.${prefix}container`)
+    .select(`.${prefix}vis`)
     .append("div")
     .attr("class", `${prefix}tooltip`)
     .style("display", "none");
