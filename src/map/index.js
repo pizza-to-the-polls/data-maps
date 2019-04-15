@@ -52,8 +52,14 @@ export const initMap = container => {
   svg.call(
     d3
       .zoom()
-      .scaleExtent([1, 20])
-      .on("zoom", () => svg.selectAll("path").attr("transform", d3.event.transform))
+      .scaleExtent([1, 4])
+      .translateExtent([[0, 0], [svgWidth, svgHeight]])
+      .on("zoom", () =>
+        svg
+          .selectAll("path")
+          .style("stroke-width", `${1 / d3.event.transform.k}px`)
+          .attr("transform", d3.event.transform)
+      )
   );
 
   document.addEventListener("click", e => {
