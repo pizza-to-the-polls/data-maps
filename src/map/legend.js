@@ -6,8 +6,8 @@ const size = 20;
 
 const buildLegend = scale => {
   const stops = scale.thresholds().map(i => [i, scale(i)]);
-  const legendSvg = d3.select(`.${prefix}legend`).select("svg");
 
+  const legendSvg = d3.select(`.${prefix}legend`).select("svg");
   legendSvg.selectAll("*").remove();
 
   legendSvg
