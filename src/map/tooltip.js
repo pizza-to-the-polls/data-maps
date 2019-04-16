@@ -9,7 +9,7 @@ const getPosition = e => {
   const visPosition = document.querySelectorAll(`.${prefix}vis`)[0].getBoundingClientRect();
   const bodyPosition = document.body.getBoundingClientRect();
   return {
-    x: e.pageX - 20 - visPosition.left + bodyPosition.left,
+    x: e.pageX - 20 - visPosition.left,
     y: e.pageY + 20 - visPosition.top + bodyPosition.top
   };
 };

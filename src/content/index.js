@@ -30,15 +30,6 @@ export const initDom = outer => {
   header.className = `${prefix}header`;
   container.appendChild(header);
 
-  const controls = document.createElement("div");
-  controls.className = `${prefix}controls`;
-  ["selector", "toggle", "filters"].forEach(name => {
-    const elem = document.createElement("div");
-    elem.className = `${prefix}${name} ${prefix}control`;
-    controls.appendChild(elem);
-  });
-  container.appendChild(controls);
-
   const vis = document.createElement("figure");
   vis.className = `${prefix}vis`;
 
@@ -53,12 +44,26 @@ export const initDom = outer => {
   legend.className = `${prefix}legend`;
   map.appendChild(legend);
 
+  const legendLabel = document.createElement("span");
+  legendLabel.innerText = "Issue support";
+  legendLabel.className = `${prefix}legend-label`;
+  legend.appendChild(legendLabel);
+
   vis.appendChild(map);
   container.appendChild(vis);
 
   const legendSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   legendSvg.setAttribute("viewBox", `0 0 ${legendWidth} ${legendHeight}`);
   legend.appendChild(legendSvg);
+
+  const controls = document.createElement("div");
+  controls.className = `${prefix}controls`;
+  ["selector", "toggle", "filters"].forEach(name => {
+    const elem = document.createElement("div");
+    elem.className = `${prefix}${name} ${prefix}control`;
+    controls.appendChild(elem);
+  });
+  container.appendChild(controls);
 
   const tableContainer = document.createElement("details");
   tableContainer.className = `${prefix}table-container`;

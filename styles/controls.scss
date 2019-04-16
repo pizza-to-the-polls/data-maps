@@ -3,7 +3,9 @@
   display: flex;
   justify-content: space-between;
   padding: 20px 0;
-  border-top: 2px solid $gray1;
+  // margin-top: 20px;
+  // border-top: 2px solid $gray1;
+  // border-bottom: 2px solid $gray1;
 }
 
 .#{$prefix}control {

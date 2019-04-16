@@ -28,7 +28,7 @@ const build = tab => {
 
   drawMap(sheets[tab], maps, currentDataset);
 
-  title.text(currentDataset.issuelabel);
+  title.text(`Support for ${currentDataset.issuelabel}`);
 
   removeDetails();
   removeTooltip();
