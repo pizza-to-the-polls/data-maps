@@ -11,7 +11,7 @@ const getDetailsKeys = data => {
 };
 
 const createDetailsContent = data => {
-  let content = `<strong>${data.label}</strong>`;
+  let content = `<h4>${data.label}</h4>`;
   content += "<table><tbody>";
   const keys = getDetailsKeys(data);
   keys.forEach(key => {
@@ -40,7 +40,7 @@ export const removeDetails = () => {
 
 export const initDetails = container => {
   details = select(container)
-    .select(`.${prefix}vis`)
+    .select(`.${prefix}map`)
     .append("div")
     .attr("class", `${prefix}details`);
 };

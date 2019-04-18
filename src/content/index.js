@@ -28,7 +28,6 @@ export const initDom = outer => {
 
   const header = document.createElement("h1");
   header.className = `${prefix}header`;
-  container.appendChild(header);
 
   const vis = document.createElement("figure");
   vis.className = `${prefix}vis`;
@@ -42,14 +41,15 @@ export const initDom = outer => {
 
   const legend = document.createElement("div");
   legend.className = `${prefix}legend`;
-  map.appendChild(legend);
 
   const legendLabel = document.createElement("span");
   legendLabel.innerText = "Issue support";
   legendLabel.className = `${prefix}legend-label`;
   legend.appendChild(legendLabel);
 
+  vis.appendChild(header);
   vis.appendChild(map);
+  vis.appendChild(legend);
   container.appendChild(vis);
 
   const legendSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
