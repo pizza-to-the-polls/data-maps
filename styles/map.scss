@@ -67,16 +67,15 @@ $border-radius: 4px;
   }
 }
 
-$details-color: $gray3;
+$details-color: $gray1;
 
 .#{$prefix}details {
   display: none;
   font-size: 14px;
   padding: 10px 20px;
   min-width: 225px;
-  // border-top: 1px solid $gray4;
   background: $details-color;
-  color: $gray4;
+  color: #fff;
   border-radius: 0 0 $border-radius $border-radius;
   position: relative;
 
