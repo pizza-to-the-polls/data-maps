@@ -32,12 +32,16 @@ export const initDom = outer => {
   const vis = document.createElement("figure");
   vis.className = `${prefix}vis`;
 
+  const clickInstructions = document.createElement("span");
+  clickInstructions.className = `${prefix}click-instructions`;
+
   const map = document.createElement("div");
   map.className = `${prefix}map`;
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("id", `${prefix}map-svg`);
   svg.setAttribute("viewBox", "0 0 960 600");
   map.appendChild(svg);
+  map.appendChild(clickInstructions);
 
   const legend = document.createElement("div");
   legend.className = `${prefix}legend`;
@@ -46,10 +50,6 @@ export const initDom = outer => {
   legendLabel.innerText = "Issue support";
   legendLabel.className = `${prefix}legend-label`;
   legend.appendChild(legendLabel);
-
-  const clickInstructions = document.createElement("span");
-  clickInstructions.className = `${prefix}click-instructions`;
-  legend.appendChild(clickInstructions);
 
   vis.appendChild(header);
   vis.appendChild(map);
