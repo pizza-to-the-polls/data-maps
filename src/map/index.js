@@ -48,6 +48,30 @@ const addPattern = () => {
     .attr("fill", "url(#hoverPattern)");
 };
 
+const addZoomButtons = zoomFunction => {
+  d3.select(`.${prefix}map`)
+    .append("button")
+    .text("+")
+    .attr("class", `${prefix}zoom-in`)
+    .on("click", () => {
+      svg
+        .transition()
+        .duration(1000)
+        .call(zoomFunction.scaleBy, 2);
+    });
+
+  d3.select(`.${prefix}map`)
+    .append("button")
+    .text("-")
+    .attr("class", `${prefix}zoom-out`)
+    .on("click", () => {
+      svg
+        .transition()
+        .duration(1000)
+        .call(zoomFunction.scaleBy, 0.5);
+    });
+};
+
 export const initMap = container => {
   filterContainer = d3.select(container).select(`.${prefix}filters`);
   svg = d3.select(container).select("svg");
@@ -55,21 +79,21 @@ export const initMap = container => {
   const svgWidth = +svg.attr("viewBox").split(" ")[2];
   const svgHeight = +svg.attr("viewBox").split(" ")[3];
   const projection = d3.geoAlbersUsa().translate([svgWidth / 2, svgHeight / 2]);
+  const zoom = d3
+    .zoom()
+    .scaleExtent([1, 4])
+    .translateExtent([[0, 0], [svgWidth, svgHeight]])
+    .on("zoom", () => {
+      svg
+        .selectAll("path")
+        .style("stroke-width", `${1 / d3.event.transform.k}px`)
+        .attr("transform", d3.event.transform);
+    });
 
   geoPathGenerator = d3.geoPath().projection(projection);
   addPattern(svg);
-  svg.call(
-    d3
-      .zoom()
-      .scaleExtent([1, 4])
-      .translateExtent([[0, 0], [svgWidth, svgHeight]])
-      .on("zoom", () => {
-        svg
-          .selectAll("path")
-          .style("stroke-width", `${1 / d3.event.transform.k}px`)
-          .attr("transform", d3.event.transform);
-      })
-  );
+  addZoomButtons(zoom);
+  svg.call(zoom);
 
   document.addEventListener("click", e => {
     if (e.target.nodeName !== "path") {
