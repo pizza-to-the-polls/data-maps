@@ -47,6 +47,10 @@ export const initDom = outer => {
   legendLabel.className = `${prefix}legend-label`;
   legend.appendChild(legendLabel);
 
+  const clickInstructions = document.createElement("span");
+  clickInstructions.className = `${prefix}click-instructions`;
+  legend.appendChild(clickInstructions);
+
   vis.appendChild(header);
   vis.appendChild(map);
   vis.appendChild(legend);

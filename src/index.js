@@ -34,6 +34,11 @@ const build = tab => {
   removeTooltip();
 };
 
+const updateClickInstructions = value => {
+  select(`.${prefix}click-instructions`).text(
+    `Click a ${value === "house" ? "district" : "state"} for details`
+  );
+};
 const addStateAndDistrictToggle = dataset => {
   toggleContainer.selectAll("*").remove();
   if (dataset.state && dataset.house) {
@@ -48,6 +53,7 @@ const addStateAndDistrictToggle = dataset => {
       .on("change", () => {
         const selected = dataset[toggle.property("value")];
         currentDataset = selected;
+        updateClickInstructions(toggle.property("value"));
         build(selected.tab);
       });
 
@@ -126,6 +132,7 @@ const initDataMap = container => {
     addStateAndDistrictToggle(firstDataset);
     currentDataset = firstDataset;
     build(firstDataset.defaultTab);
+    updateClickInstructions(firstDataset.defaultView);
     getContent(firstDataset.issuekey, sheetKey);
   });
 };

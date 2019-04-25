@@ -174,16 +174,15 @@ $details-color: $gray1;
     max-width: 250px;
     display: block;
   }
+}
 
-  &::after {
-    content: "Click for more details";
-    position: absolute;
-    top: -40px;
-    left: 50%;
-    left: 20px;
-    font-size: 14px;
-    font-weight: bold;
-    background: rgba(255, 255, 255, 0.6);
-    padding: 5px 10px;
-  }
+.#{$prefix}click-instructions {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  left: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 5px 10px;
 }
