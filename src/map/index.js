@@ -96,7 +96,7 @@ export const initMap = container => {
   svg.call(zoom);
 
   document.addEventListener("click", e => {
-    if (e.target.nodeName !== "path") {
+    if (e.target.nodeName !== "path" && !String(e.target.className).includes("zoom-")) {
       svg.selectAll("path").style("opacity", 1);
       removeDetails();
     }
