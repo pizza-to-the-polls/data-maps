@@ -220,9 +220,8 @@ const addFilters = (paths, filters, dataSetConfig) => {
 };
 
 // Draw the map
-export const drawMap = (stats, { states, districts }, dataSetConfig) => {
-  const statesGeo = topojson.feature(states, states.objects.states);
-  const districtsGeo = topojson.feature(districts, districts.objects.districts);
+export const drawMap = (stats, map, dataSetConfig) => {
+  const topoFeature = topojson.feature(map, map.objects.features);
   const cleanStats = parseStats(stats);
   let currentGeography;
   svg.selectAll("path").remove();
@@ -233,11 +232,11 @@ export const drawMap = (stats, { states, districts }, dataSetConfig) => {
 
   // If the first row's FIPS code is over 100 we know it's district data
   if (cleanStats[0].fips > 100) {
-    const districtsWithStats = addStatsToFeatures(districtsGeo.features, cleanStats);
+    const districtsWithStats = addStatsToFeatures(topoFeature.features, cleanStats);
     currentGeography = drawDistricts(districtsWithStats);
   } else {
     // Otherwise we know it's states
-    const statesWithStats = addStatsToFeatures(statesGeo.features, cleanStats);
+    const statesWithStats = addStatsToFeatures(topoFeature.features, cleanStats);
     currentGeography = drawStatesWithData(statesWithStats);
   }
   addFilters(currentGeography, filters, dataSetConfig);
