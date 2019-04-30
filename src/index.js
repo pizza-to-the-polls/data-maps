@@ -16,17 +16,32 @@ let sheetKey;
 const datasets = {};
 const sheets = {};
 const maps = {};
+const mapKeys = {};
 
-const build = tab => {
+const fetchMap = map => json(buildMapURL(map)).then(geojson => (maps[map] = geojson));
+
+const build = (tab, attempts) => {
   if (!sheets[tab])
     return json(buildSheetsURL(tab, sheetKey)).then(raw => {
       sheets[tab] = raw;
       build(tab);
     });
 
-  if (!maps.states) return setTimeout(() => build(tab), 500);
+  const map = maps[mapKeys[tab]];
 
-  drawMap(sheets[tab], maps, currentDataset);
+  if (!map) {
+    const attempt = attempts || 0;
+    if (attempt < 2) {
+      return setTimeout(() => build(tab, attempt + 1), 500);
+    } else {
+      console.error(
+        `Map ${mapKeys[tab]} never loaded - are you sure this row is configured correctly?`
+      );
+      return;
+    }
+  }
+
+  drawMap(sheets[tab], map, currentDataset);
 
   title.text(`Support for ${currentDataset.issuelabel}`);
 
@@ -36,7 +51,7 @@ const build = tab => {
 
 const updateClickInstructions = value => {
   select(`.${prefix}click-instructions`).text(
-    `Click a ${value === "house" ? "district" : "state"} for details`
+    `Click a ${value === "state" ? "state" : "district"} for details`
   );
 };
 const addStateAndDistrictToggle = dataset => {
@@ -100,23 +115,41 @@ const initDataMap = container => {
     });
 
   // Load the states and district maps
-  ["states", "districts"].map(map => json(buildMapURL(map)).then(geojson => (maps[map] = geojson)));
+  fetchMap("state");
 
   // Get the Settings tab which lists all the datasets (other tabs) we'll later get
   json(buildSheetsURL(1, sheetKey)).then(response => {
+    const loadedMaps = { state: true };
+
     response.feed.entry.forEach(entry => {
-      const dataset = parseRow(entry.content.$t);
-      const key = entry.title.$t;
-      if (!Object.prototype.hasOwnProperty.call(datasets, key)) {
-        datasets[key] = {};
-        datasets[key].issuelabel = dataset.issuelabel;
-        datasets[key].defaultTab = dataset.tab;
-        datasets[key].defaultView = dataset.dataset.toLowerCase();
-        datasets[key].issuekey = key;
-        if (dataset.max) datasets[key].max = floatOrNull(dataset.max);
-        if (dataset.min) datasets[key].min = floatOrNull(dataset.min);
+      try {
+        const dataset = parseRow(entry.content.$t);
+        const key = entry.title.$t;
+        const map = dataset.dataset.toLowerCase();
+
+        if (!loadedMaps[map]) {
+          fetchMap(map);
+          loadedMaps[map] = true;
+        }
+
+        if (!Object.prototype.hasOwnProperty.call(datasets, key)) {
+          datasets[key] = {};
+          datasets[key].issuelabel = dataset.issuelabel;
+          datasets[key].defaultTab = dataset.tab;
+          datasets[key].defaultView = dataset.dataset.toLowerCase();
+          datasets[key].issuekey = key;
+          datasets[key].maps = {};
+          if (dataset.max) datasets[key].max = floatOrNull(dataset.max);
+          if (dataset.min) datasets[key].min = floatOrNull(dataset.min);
+        }
+        datasets[key][dataset.dataset.toLowerCase()] = dataset;
+        mapKeys[dataset.tab] = map;
+      } catch (error) {
+        console.error(
+          `Could not import settings row ${entry.title.$t} ${entry.content.$t}, error:`
+        );
+        console.error(error);
       }
-      datasets[key][dataset.dataset.toLowerCase()] = dataset;
     });
 
     const datasetKeys = Object.keys(datasets);
