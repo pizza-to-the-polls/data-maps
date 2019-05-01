@@ -56,7 +56,8 @@ const updateClickInstructions = value => {
 };
 const addStateAndDistrictToggle = dataset => {
   toggleContainer.selectAll("*").remove();
-  if (dataset.state && dataset.house) {
+
+  if (dataset.maps.length > 1) {
     toggleContainer
       .append("label")
       .attr("for", "toggle")
@@ -74,11 +75,11 @@ const addStateAndDistrictToggle = dataset => {
 
     toggle
       .selectAll("option")
-      .data(["state", "house"])
+      .data(dataset.maps)
       .enter()
       .append("option")
       .attr("value", d => d.toLowerCase())
-      .text(d => makeLabel(d));
+      .text(d => dataset[d].dataset);
   }
 };
 
@@ -125,11 +126,11 @@ const initDataMap = container => {
       try {
         const dataset = parseRow(entry.content.$t);
         const key = entry.title.$t;
-        const map = dataset.dataset.toLowerCase();
+        const map_key = dataset.dataset.replace(/\s/g, '-').toLowerCase();;
 
-        if (!loadedMaps[map]) {
-          fetchMap(map);
-          loadedMaps[map] = true;
+        if (!loadedMaps[map_key]) {
+          fetchMap(map_key);
+          loadedMaps[map_key] = true;
         }
 
         if (!Object.prototype.hasOwnProperty.call(datasets, key)) {
@@ -138,12 +139,13 @@ const initDataMap = container => {
           datasets[key].defaultTab = dataset.tab;
           datasets[key].defaultView = dataset.dataset.toLowerCase();
           datasets[key].issuekey = key;
-          datasets[key].maps = {};
+          datasets[key].maps = [];
           if (dataset.max) datasets[key].max = floatOrNull(dataset.max);
           if (dataset.min) datasets[key].min = floatOrNull(dataset.min);
         }
-        datasets[key][dataset.dataset.toLowerCase()] = dataset;
-        mapKeys[dataset.tab] = map;
+        datasets[key][map_key] = dataset;
+        datasets[key].maps.push(map_key);
+        mapKeys[dataset.tab] = map_key;
       } catch (error) {
         console.error(
           `Could not import settings row ${entry.title.$t} ${entry.content.$t}, error:`

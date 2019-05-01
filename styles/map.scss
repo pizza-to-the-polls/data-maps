@@ -24,21 +24,18 @@ $border-radius: 4px;
     width: 100%;
   }
 
-  .state,
-  .district {
+  .feature {
     fill: none;
     stroke: #03172d;
     stroke-linejoin: round;
   }
 
-  .district:hover,
-  .state:hover {
+  .feature:hover {
     mask: url(#hoverMask);
     cursor: pointer;
   }
 
-  .district:active,
-  .state:active {
+  .feature:active {
     cursor: move;
     cursor: grab;
   }
