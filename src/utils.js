@@ -3,7 +3,7 @@ import { sheetsBaseUrl, rootURL } from "./constants";
 export const buildSheetsURL = (tab, sheetsID) =>
   `${sheetsBaseUrl}/${sheetsID}/${tab}/public/basic?alt=json`;
 
-export const buildMapURL = map => `${rootURL}/${map}.json`;
+export const buildMapURL = map => `${rootURL}${map}.json`;
 
 export const parseRow = row => {
   // Takes a string and converts it into an object with keys for each column
@@ -29,13 +29,14 @@ export const parseStats = data => {
   const cleanStats = [];
   data.feed.entry.forEach(d => {
     const row = parseRow(d.content.$t);
-    row.fips = Number(d.title.$t); // Need to add the first column manually
+    row.fips = fipsOrString(d.title.$t); // Need to add the first column manually
     cleanStats.push(row);
   });
   return cleanStats;
 };
 
 export const floatOrNull = num => (isNaN(parseFloat(num)) ? null : parseFloat(num));
+export const fipsOrString = fips => (isNaN(Number(fips)) ? fips : Number(fips));
 
 export const makeLabel = text => {
   let formatted = text.replace(/-/g, " ");

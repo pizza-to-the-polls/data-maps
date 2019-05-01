@@ -12,6 +12,8 @@ let filterContainer;
 let svg;
 
 let geoPathGenerator;
+let svgWidth;
+let svgHeight;
 
 const addPattern = () => {
   svg
@@ -72,16 +74,10 @@ const addZoomButtons = zoomFunction => {
     });
 };
 
-export const initMap = container => {
-  filterContainer = d3.select(container).select(`.${prefix}filters`);
-  svg = d3.select(container).select("svg");
-
-  const svgWidth = +svg.attr("viewBox").split(" ")[2];
-  const svgHeight = +svg.attr("viewBox").split(" ")[3];
-  const projection = d3.geoAlbersUsa().translate([svgWidth / 2, svgHeight / 2]);
+const buildZoom = (baseZoom = 1) => {
   const zoom = d3
     .zoom()
-    .scaleExtent([1, 4])
+    .scaleExtent([baseZoom, baseZoom * 4])
     .translateExtent([[0, 0], [svgWidth, svgHeight]])
     .on("zoom", () => {
       svg
@@ -89,11 +85,21 @@ export const initMap = container => {
         .style("stroke-width", `${1 / d3.event.transform.k}px`)
         .attr("transform", d3.event.transform);
     });
-
-  geoPathGenerator = d3.geoPath().projection(projection);
-  addPattern(svg);
   addZoomButtons(zoom);
   svg.call(zoom);
+  return zoom;
+};
+
+export const initMap = container => {
+  filterContainer = d3.select(container).select(`.${prefix}filters`);
+  svg = d3.select(container).select("svg");
+
+  svgWidth = +svg.attr("viewBox").split(" ")[2];
+  svgHeight = +svg.attr("viewBox").split(" ")[3];
+  const projection = d3.geoAlbersUsa().translate([svgWidth / 2, svgHeight / 2]);
+  geoPathGenerator = d3.geoPath().projection(projection);
+  addPattern(svg);
+  buildZoom();
 
   document.addEventListener("click", e => {
     if (e.target.nodeName !== "path" && !String(e.target.className).includes("zoom-")) {
@@ -103,17 +109,8 @@ export const initMap = container => {
   });
 };
 
-const addStatsToFeatures = (features, stats) => {
-  const combinedData = [];
-
-  features.forEach(feature => {
-    const data = stats.find(d => d.fips === feature.id);
-    const richDistrict = { ...feature, ...data };
-    combinedData.push(richDistrict);
-  });
-
-  return combinedData;
-};
+const addStatsToFeatures = (features, stats) =>
+  features.map(feature => ({ ...feature, ...stats.find(d => d.fips === feature.id) }));
 
 const handleClick = (d, key, allPaths) => {
   // d3.select('.selected-path')
@@ -125,24 +122,14 @@ const handleClick = (d, key, allPaths) => {
   addDetails(d);
 };
 
-const drawStatesWithData = data =>
+const drawFeatures = data =>
   svg
     .selectAll("path")
     .data(data)
     .enter()
     .append("path")
     .attr("d", geoPathGenerator)
-    .attr("class", "state")
-    .on("click", handleClick);
-
-const drawDistricts = data =>
-  svg
-    .selectAll("path")
-    .data(data)
-    .enter()
-    .append("path")
-    .attr("d", geoPathGenerator)
-    .attr("class", "district")
+    .attr("class", "feature")
     .on("click", handleClick);
 
 const updatePaths = (paths, filter, { max: setMax, min: setMin }) => {
@@ -195,7 +182,6 @@ const updatePaths = (paths, filter, { max: setMax, min: setMin }) => {
 };
 
 const addFilters = (paths, filters, dataSetConfig) => {
-  // Add some filters
   filterContainer.selectAll("*").remove();
   if (filters.length > 1) {
     filterContainer
@@ -225,20 +211,33 @@ export const drawMap = (stats, map, dataSetConfig) => {
   const cleanStats = parseStats(stats);
   let currentGeography;
   svg.selectAll("path").remove();
+  const bounds = geoPathGenerator.bounds(topoFeature);
+
+  const dx = bounds[1][0] - bounds[0][0];
+  const dy = bounds[1][1] - bounds[0][1];
+  const x = (bounds[0][0] + bounds[1][0]) / 2;
+  const y = (bounds[0][1] + bounds[1][1]) / 2;
+  const scale = Math.max(1, Math.min(8, 0.9 / Math.max(dx / svgWidth, dy / svgHeight)));
+  const translate = [svgWidth / 2 - scale * x, svgHeight / 2 - scale * y];
+
+  if (scale > 2) {
+    svg
+      .transition()
+      .duration(100)
+      .call(
+        buildZoom(scale).transform,
+        d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)
+      );
+  } else {
+    buildZoom()
+  }
 
   const filters = Object.keys(cleanStats[0]).filter(
     key => ["label", "fips", "state", "content"].indexOf(key) === -1
   );
 
-  // If the first row's FIPS code is over 100 we know it's district data
-  if (cleanStats[0].fips > 100) {
-    const districtsWithStats = addStatsToFeatures(topoFeature.features, cleanStats);
-    currentGeography = drawDistricts(districtsWithStats);
-  } else {
-    // Otherwise we know it's states
-    const statesWithStats = addStatsToFeatures(topoFeature.features, cleanStats);
-    currentGeography = drawStatesWithData(statesWithStats);
-  }
+  currentGeography = drawFeatures(addStatsToFeatures(topoFeature.features, cleanStats));
+
   addFilters(currentGeography, filters, dataSetConfig);
   updatePaths(currentGeography, filters[0], dataSetConfig);
   createTable(cleanStats);
