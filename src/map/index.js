@@ -88,6 +88,16 @@ export const initMap = container => {
         .selectAll("path")
         .style("stroke-width", `${1 / d3.event.transform.k}px`)
         .attr("transform", d3.event.transform);
+
+      svg
+        .selectAll("pattern")
+        .attr("width", `${10 / d3.event.transform.k}px`)
+        .attr("height", `${10 / d3.event.transform.k}px`);
+
+      svg
+        .selectAll("image")
+        .attr("width", `${10 / d3.event.transform.k}px`)
+        .attr("height", `${10 / d3.event.transform.k}px`);
     });
 
   geoPathGenerator = d3.geoPath().projection(projection);
