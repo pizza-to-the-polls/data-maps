@@ -174,13 +174,16 @@ $details-color: $gray1;
 }
 
 .#{$prefix}click-instructions {
-  position: absolute;
-  top: 10px;
-  left: 10px;
   font-size: 14px;
   font-weight: bold;
   background: rgba(255, 255, 255, 0.6);
   padding: 5px 10px;
+
+  @media screen and (min-width: 600px) {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+  }
 }
 
 .#{$prefix}zoom-in,
