@@ -1,4 +1,4 @@
-import { selectAll, select, json } from "d3";
+import { select, json } from "d3";
 import { prefix } from "./constants";
 import { buildMapURL, buildSheetsURL, parseRow, floatOrNull, makeLabel } from "./utils";
 import { getContent, showContent, initDom } from "./content";
@@ -33,12 +33,11 @@ const build = (tab, attempts) => {
     const attempt = attempts || 0;
     if (attempt < 2) {
       return setTimeout(() => build(tab, attempt + 1), 500);
-    } else {
-      console.error(
-        `Map ${mapKeys[tab]} never loaded - are you sure this row is configured correctly?`
-      );
-      return;
     }
+    console.error(
+      `Map ${mapKeys[tab]} never loaded - are you sure this row is configured correctly?`
+    );
+    return;
   }
 
   drawMap(sheets[tab], map, currentDataset);
@@ -83,19 +82,7 @@ const addStateAndDistrictToggle = dataset => {
   }
 };
 
-const initDataMap = container => {
-  sheetKey = container ? container.getAttribute("data-spreadsheet-key") : null;
-  if (!sheetKey) {
-    console.error("Cannot init maps without a key - set the data-spreadsheet-key attribute");
-    return;
-  }
-  initDom(container);
-  initMap(container);
-  initTable(container);
-  initDetails(container);
-  initTooltip(container);
-
-  title = select(container).select(`.${prefix}header`);
+const addMapSelector = (container, data) => {
   mapSelectorContainer = select(container).select(`.${prefix}selector`);
   toggleContainer = select(container).select(`.${prefix}toggle`);
 
@@ -115,6 +102,29 @@ const initDataMap = container => {
       showContent(currentDataset.issuekey);
     });
 
+  mapSelector
+    .selectAll("option")
+    .data(data)
+    .enter()
+    .append("option")
+    .attr("value", d => d)
+    .text(d => datasets[d].issuelabel);
+};
+
+const initDataMap = container => {
+  sheetKey = container ? container.getAttribute("data-spreadsheet-key") : null;
+  if (!sheetKey) {
+    console.error("Cannot init maps without a key - set the data-spreadsheet-key attribute");
+    return;
+  }
+  initDom(container);
+  initMap(container);
+  initTable(container);
+  initDetails(container);
+  initTooltip(container);
+
+  title = select(container).select(`.${prefix}header`);
+
   // Load the states and district maps
   fetchMap("state");
 
@@ -126,7 +136,7 @@ const initDataMap = container => {
       try {
         const dataset = parseRow(entry.content.$t);
         const key = entry.title.$t;
-        const map_key = dataset.dataset.replace(/\s/g, '-').toLowerCase();;
+        const map_key = dataset.dataset.replace(/\s/g, "-").toLowerCase();
 
         if (!loadedMaps[map_key]) {
           fetchMap(map_key);
@@ -155,16 +165,13 @@ const initDataMap = container => {
     });
 
     const datasetKeys = Object.keys(datasets);
-    mapSelector
-      .selectAll("option")
-      .data(datasetKeys)
-      .enter()
-      .append("option")
-      .attr("value", d => d)
-      .text(d => datasets[d].issuelabel);
-
     const firstDataset = datasets[datasetKeys[0]];
-    addStateAndDistrictToggle(firstDataset);
+
+    if (datasetKeys.length > 1) {
+      addMapSelector(container, datasetKeys);
+      addStateAndDistrictToggle(firstDataset);
+    }
+
     currentDataset = firstDataset;
     build(firstDataset.defaultTab);
     updateClickInstructions(firstDataset.defaultView);
