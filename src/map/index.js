@@ -7,6 +7,7 @@ import { prefix } from "../constants";
 import { addDetails, removeDetails } from "./details";
 import buildLegend from "./legend";
 import { addTooltip, removeTooltip } from "./tooltip";
+import { addShare } from "./share";
 
 let filterContainer;
 let svg;
@@ -110,9 +111,10 @@ export const initMap = container => {
   geoPathGenerator = d3.geoPath().projection(projection);
   addPattern(svg);
   buildZoom();
+  addShare();
 
-  document.addEventListener("click", e => {
-    if (e.target.nodeName !== "path" && !String(e.target.className).includes("zoom-")) {
+  document.addEventListener("click", event => {
+    if (event.target.id === `${prefix}map-svg`) {
       svg.selectAll("path").style("opacity", 1);
       removeDetails();
     }
@@ -179,7 +181,11 @@ const updatePaths = (paths, filter, { max: setMax, min: setMin }) => {
     "#053061"
   ]);
 
-  paths.transition().style("fill", d => quantScale(d[filter]));
+  paths
+    .transition()
+    .style("fill", d => quantScale(d[filter]))
+    .style("stroke", "#03172d")
+    .style("stroke-linejoin", "round");
   paths
     .on("mouseenter", d => {
       addTooltip(d, filter);
@@ -239,7 +245,7 @@ export const drawMap = (stats, map, dataSetConfig) => {
         d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)
       );
   } else {
-    buildZoom()
+    buildZoom();
   }
 
   const filters = Object.keys(cleanStats[0]).filter(

@@ -43,6 +43,11 @@ export const initDom = outer => {
   map.appendChild(svg);
   map.appendChild(clickInstructions);
 
+  const sharebutton = document.createElement("button");
+  sharebutton.className = `${prefix}share-button`;
+  sharebutton.innerText = 'Share Map'
+  map.appendChild(sharebutton);
+
   const legend = document.createElement("div");
   legend.className = `${prefix}legend`;
 

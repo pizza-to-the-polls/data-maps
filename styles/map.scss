@@ -1,4 +1,5 @@
 $border-radius: 4px;
+$details-color: $gray1;
 
 .#{$prefix}header {
   margin: 0;
@@ -20,14 +21,30 @@ $border-radius: 4px;
   border-top: none;
   box-shadow: 0 6px 10px rgba($gray2, 0.7);
 
-  ##{$prefix}map-svg {
-    width: 100%;
+  &.generating-screenshot {
+    padding-bottom: 14px;
+    border: 1px solid #aaa;
+    border-radius: $border-radius;
+    letter-spacing: 1px;
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+
+    .#{$prefix}share-button { display: none; }
+
+    .#{$prefix}zoom-in,
+    .#{$prefix}zoom-out,
+    .#{$prefix}click-instructions {
+      opacity: 0;
+    }
+    .#{$prefix}legend {
+      background-size: 40%;
+      background-position: 90% 50%;
+    }
   }
 
-  .feature {
-    fill: none;
-    stroke: #03172d;
-    stroke-linejoin: round;
+  ##{$prefix}map-svg {
+    width: 100%;
   }
 
   .feature:hover {
@@ -63,8 +80,6 @@ $border-radius: 4px;
     }
   }
 }
-
-$details-color: $gray1;
 
 .#{$prefix}details {
   display: none;
@@ -184,6 +199,24 @@ $details-color: $gray1;
     top: 10px;
     left: 10px;
   }
+}
+
+.#{$prefix}share-button {
+  position: absolute;
+  z-index: 4;
+  right: 30px;
+  bottom: 30px;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 5px 10px;
+}
+.#{$prefix}map-url {
+  position: absolute;
+  right: 20%;
+  font-size: 8px;
+  bottom: -20px;
+  max-width: 50%;
+  overflow: hidden;
 }
 
 .#{$prefix}zoom-in,
