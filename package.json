@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "d3": "^5.9.2",
+    "html2canvas": "^1.0.0-rc.1",
     "mapshaper": "^0.4.111",
     "marked": "^0.6.1",
     "parcel-plugin-static-files-copy": "^2.0.0",
