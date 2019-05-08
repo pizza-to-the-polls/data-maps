@@ -33,6 +33,7 @@ const buildLegend = scale => {
     .text(d => formatAsPercentage(d[0]))
     .attr("fill", "#000")
     .attr("font-size", "6px")
+    .attr("font-family", '"Montserrat", sans-serif')
     .attr("y", "30")
     .attr("x", (d, i) => size * i + 2 * i);
 };
