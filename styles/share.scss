@@ -1,0 +1,31 @@
+@import "variables";
+
+.#{$prefix}share-container {
+  display: none;
+  background: $gray1;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  position: absolute;
+  img {
+    display: block;
+    max-width: 80%;
+    margin: 30px auto 10px;
+    max-height: 400px;
+    cursor: pointer;
+  }
+  p {
+    text-align: center;
+    color: $gray3;
+    font-style: italic;
+  }
+  button {
+    display: block;
+    width: 20%;
+    min-width: 160px;
+    text-align: center;
+    margin: 30px auto 0;
+  }
+  z-index: 20;
+}

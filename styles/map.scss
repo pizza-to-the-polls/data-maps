@@ -37,6 +37,15 @@ $details-color: $gray1;
     .#{$prefix}click-instructions {
       opacity: 0;
     }
+    .#{$prefix}click-instructions {
+      display: none;
+    }
+    @media screen and (min-width: 600px) {
+      .#{$prefix}click-instructions {
+        display: block;
+      }
+    }
+
     .#{$prefix}legend {
       background-size: 40%;
       background-position: 90% 50%;
@@ -204,11 +213,14 @@ $details-color: $gray1;
 .#{$prefix}share-button {
   position: absolute;
   z-index: 4;
-  right: 30px;
-  bottom: 30px;
-  font-size: 14px;
-  font-weight: bold;
-  padding: 5px 10px;
+  right: 4px;
+  top: 590px;
+
+  @media screen and (min-width: 600px) {
+    bottom: 10px;
+    top: inherit;
+    right: 10px;
+  }
 }
 .#{$prefix}map-url {
   position: absolute;

@@ -2,9 +2,10 @@
 @import "map";
 @import "controls";
 @import "table";
+@import "loader";
+@import "share";
 
 body {
-  font-family: "Montserrat", sans-serif;
   max-width: 1040px;
   margin: 0 auto;
   padding: 20px;
@@ -20,6 +21,14 @@ body {
   margin: 0 auto;
   background: #fff;
   color: $gray1;
+  font-family: "Montserrat", sans-serif;
+
+  button {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: $border-radius;
+  }
 }
 
 .#{$prefix}content {

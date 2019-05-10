@@ -4,6 +4,29 @@ import { legendWidth, legendHeight, prefix } from "../constants";
 
 import { buildSheetsURL } from "../utils";
 
+let vis;
+let shareContainer;
+let shareImg;
+
+export const toggleLoading = (isLoading, elem = vis) => {
+  if (isLoading) {
+    elem.classList.add("is--loading");
+  } else {
+    // The animation looks better if it's given room to run a little
+    elem.classList.remove("is--loading");
+  }
+};
+
+export const toggleShare = (isOpen, dataURL) => {
+  if (isOpen) {
+    shareImg.setAttribute("src", dataURL);
+    shareContainer.style.display = "block";
+  } else {
+    shareImg.removeAttribute("src");
+    shareContainer.style.display = "none";
+  }
+};
+
 export const showContent = issueKey => {
   selectAll(`.${prefix}content section`).style("display", "none");
   select(`[data-issue=${issueKey}]`).style("display", "block");
@@ -29,8 +52,16 @@ export const initDom = outer => {
   const header = document.createElement("h1");
   header.className = `${prefix}header`;
 
-  const vis = document.createElement("figure");
+  vis = document.createElement("figure");
   vis.className = `${prefix}vis`;
+
+  const loader = document.createElement("div");
+  for (var i = 3; i >= 0; i--) {
+    const bar = document.createElement("div");
+    bar.className = "bar";
+    loader.appendChild(bar);
+  }
+  loader.className = `${prefix}loader`;
 
   const clickInstructions = document.createElement("span");
   clickInstructions.className = `${prefix}click-instructions`;
@@ -43,10 +74,38 @@ export const initDom = outer => {
   map.appendChild(svg);
   map.appendChild(clickInstructions);
 
-  const sharebutton = document.createElement("button");
-  sharebutton.className = `${prefix}share-button`;
-  sharebutton.innerText = 'Share Map'
-  map.appendChild(sharebutton);
+  // html2canvass only supported with promises
+  if (typeof Promise !== "undefined" && Promise.toString().indexOf("[native code]") !== -1) {
+    const sharebutton = document.createElement("button");
+    sharebutton.className = `${prefix}share-button`;
+    sharebutton.innerText = "Share Map";
+    map.appendChild(sharebutton);
+
+    shareContainer = document.createElement("div");
+    shareContainer.className = `${prefix}share-container`;
+
+    const shareInstructions = document.createElement("p");
+    shareInstructions.innerText = "Click to download the image.";
+
+    const closeButton = document.createElement("button");
+    closeButton.innerText = "Back to Map";
+    closeButton.onclick = () => toggleShare(false);
+    shareImg = document.createElement("img");
+
+    // This is a weird one - you can't just open data-urls anymore
+    // so we need to open a window then write html to it :P
+    shareImg.onclick = event => {
+      const newWindow = window.open();
+      newWindow.document.write(`
+        <body style="background: #1c313a; margin: 0; padding: 0;">
+          <img src=${event.target.getAttribute("src")} style="width: 100%;">
+        </body>
+      `);
+    };
+    shareContainer.appendChild(shareImg);
+    shareContainer.appendChild(shareInstructions);
+    shareContainer.appendChild(closeButton);
+  }
 
   const legend = document.createElement("div");
   legend.className = `${prefix}legend`;
@@ -59,6 +118,8 @@ export const initDom = outer => {
   vis.appendChild(header);
   vis.appendChild(map);
   vis.appendChild(legend);
+  vis.appendChild(loader);
+  vis.appendChild(shareContainer);
   container.appendChild(vis);
 
   const legendSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");

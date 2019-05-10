@@ -1,0 +1,117 @@
+@import "variables";
+
+$width: 20px;
+$border: 2px;
+$height: 60px;
+
+.is--loading .#{$prefix}loader {
+  display: block;
+}
+
+.#{$prefix}loader {
+  display: none;
+  position: absolute;
+  background: rgba(255, 255, 255, 0.75);
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+
+  .bar {
+    position: absolute;
+    bottom: 50%;
+    width: $width;
+    background: white;
+    transform-origin: center bottom;
+    border: $border solid $gray1;
+    left: 48%;
+    @for $i from 1 through 5 {
+       &:nth-child(#{$i}) {
+         margin-left: ($i - 1) * ($width + $border);;
+         animation: barUp#{$i} 2s infinite;
+        }
+    }
+
+  }
+}
+
+@keyframes barUp1 {
+  0% {
+    height: $height * 0.3;
+  }
+  5% {
+    height: $height * 0.3;
+  }
+  30% {
+    height: $height * 0.7;
+  }
+  48% {
+    height: $height * 0.4;
+  }
+  66% {
+    height: $height * 0.7;
+  }
+  100% {
+    height: $height * 0.3;
+  }
+}
+@keyframes barUp2 {
+  0% {
+    height: $height * 0.6;
+  }
+  5% {
+    height: $height * 0.6;
+  }
+  30% {
+    height: $height * 0.2;
+  }
+  48% {
+    height: $height * 0.8;
+  }
+  66% {
+    height: $height * 0.3;
+  }
+  100% {
+    height: $height * 0.6;
+  }
+}
+@keyframes barUp3 {
+  0% {
+    height: $height * 0.5;
+  }
+  5% {
+    height: $height * 0.5;
+  }
+  30% {
+    height: $height * 0.9;
+  }
+  48% {
+    height: $height * 0.2;
+  }
+  66% {
+    height: $height * 0.8;
+  }
+  100% {
+    height: $height * 0.5;
+  }
+}
+@keyframes barUp4 {
+  0% {
+    height: $height * 0.8;
+  }
+  5% {
+    height: $height * 0.8;
+  }
+  30% {
+    height: $height * 0.2;
+  }
+  48% {
+    height: $height * 0.6;
+  }
+  66% {
+    height: $height * 0.2;
+  }
+  100% {
+    height: $height * 0.8;
+  }
+}
