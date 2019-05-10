@@ -1,7 +1,7 @@
 import { select, json } from "d3";
 import { prefix } from "./constants";
 import { buildMapURL, buildSheetsURL, parseRow, floatOrNull, makeLabel } from "./utils";
-import { getContent, showContent, initDom } from "./content";
+import { getContent, showContent, initDom, toggleLoading } from "./content";
 import { removeDetails, initDetails } from "./map/details";
 import { initTooltip, removeTooltip } from "./map/tooltip";
 import { drawMap, initMap } from "./map";
@@ -21,6 +21,7 @@ const mapKeys = {};
 const fetchMap = map => json(buildMapURL(map)).then(geojson => (maps[map] = geojson));
 
 const build = (tab, attempts) => {
+  toggleLoading(true);
   if (!sheets[tab])
     return json(buildSheetsURL(tab, sheetKey)).then(raw => {
       sheets[tab] = raw;
@@ -40,6 +41,7 @@ const build = (tab, attempts) => {
     return;
   }
 
+  toggleLoading(false);
   drawMap(sheets[tab], map, currentDataset);
 
   title.text(`Support for ${currentDataset.issuelabel}`);
