@@ -1,7 +1,7 @@
 import { select } from "d3";
 
-import { prefix } from "../constants";
 import html2canvas from "html2canvas";
+import { prefix } from "../constants";
 import { toggleLoading, toggleShare } from "../content";
 
 export const addShare = () => {

@@ -2,12 +2,16 @@
 
 .#{$prefix}share-container {
   display: none;
-  background: $gray1;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
+  background: rgba($gray1, 0.9);
+  top: 0px;
+  right: 0px;
+  left: 0px;
+  bottom: 0px;
   position: absolute;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0 5px 20px 0 rgba($gray4, 0.8);
+
   img {
     display: block;
     max-width: 80%;
