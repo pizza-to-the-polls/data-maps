@@ -43,3 +43,18 @@ export const makeLabel = text => {
   formatted = formatted.charAt(0).toUpperCase() + formatted.slice(1);
   return formatted;
 };
+
+export const formatQualitativeScale = (key, kind) => {
+  const longLabels = {
+    no: "None",
+    yes_low: "Yes, but the policy is inadequate",
+    yes_no: "Yes, and the policy is adequate"
+  };
+
+  const shortLabels = {
+    no: "None",
+    yes_low: "Inadequate",
+    yes_high: "Adequate"
+  };
+  return kind === "short" ? shortLabels[key] : longLabels[key];
+};

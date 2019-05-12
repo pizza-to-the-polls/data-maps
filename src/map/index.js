@@ -3,9 +3,9 @@ import * as topojson from "topojson";
 
 import { parseStats, makeLabel } from "../utils";
 import createTable from "../table";
-import { prefix, neverFilters } from "../constants";
+import { prefix, nonFilters } from "../constants";
 import { addDetails, removeDetails } from "./details";
-import buildLegend from "./legend";
+import { buildQuantitativeLegend, buildQualitativeLegend } from "./legend";
 import { addTooltip, removeTooltip } from "./tooltip";
 import { addShare } from "./share";
 
@@ -112,8 +112,13 @@ export const initMap = container => {
   });
 };
 
-const addStatsToFeatures = (features, stats) =>
-  features.map(feature => ({ ...feature, ...stats.find(d => d.fips === feature.id) }));
+const addStatsToFeatures = (features, stats, scale, legendLabel) =>
+  features.map(feature => ({
+    scale,
+    legendLabel,
+    ...feature,
+    ...stats.find(d => d.fips === feature.id)
+  }));
 
 const handleClick = (d, key, allPaths) => {
   // d3.select('.selected-path')
@@ -135,7 +140,7 @@ const drawFeatures = (pathGenerator, data) =>
     .attr("class", "feature")
     .on("click", handleClick);
 
-const updatePaths = (paths, filter, { max: setMax, min: setMin }) => {
+const updatePaths = (paths, filter, { max: setMax, min: setMin, scale, legendLabel }) => {
   const data = paths
     .data()
     .map(d => d[filter])
@@ -161,6 +166,12 @@ const updatePaths = (paths, filter, { max: setMax, min: setMin }) => {
     domain.push(max > 1 ? 100 : 1);
   }
 
+  const qualScale = {
+    no: "#fff8f0",
+    yes_low: "#adb37f",
+    yes_high: "#127a39"
+  };
+
   const quantScale = d3.scaleQuantize(domain, [
     "#67001f",
     "#b2182b",
@@ -174,7 +185,7 @@ const updatePaths = (paths, filter, { max: setMax, min: setMin }) => {
 
   paths
     .transition()
-    .style("fill", d => quantScale(d[filter]))
+    .style("fill", d => (scale === "quantitative" ? quantScale(d[filter]) : qualScale[d[filter]]))
     .style("stroke", "#03172d")
     .style("stroke-linejoin", "round");
   paths
@@ -185,7 +196,11 @@ const updatePaths = (paths, filter, { max: setMax, min: setMin }) => {
       removeTooltip(d);
     });
 
-  buildLegend(quantScale, domain);
+  if (scale === "quantitative") {
+    buildQuantitativeLegend(quantScale, legendLabel);
+  } else {
+    buildQualitativeLegend(qualScale, legendLabel);
+  }
 };
 
 const addFilters = (paths, filters, dataSetConfig) => {
@@ -194,7 +209,7 @@ const addFilters = (paths, filters, dataSetConfig) => {
     filterContainer
       .append("label")
       .attr("for", "filter")
-      .text("Group");
+      .text(dataSetConfig.scale === "quantitative" ? "Group" : "Current vs. Proposed");
     const filter = filterContainer
       .append("select")
       .attr("name", "filter")
@@ -234,7 +249,6 @@ const buildPathGenerator = (config, svgWidth, svgHeight)  => {
 export const drawMap = (stats, map, dataSetConfig) => {
   const topoFeature = topojson.feature(map, map.objects.features);
   const cleanStats = parseStats(stats);
-  let currentGeography;
   svg.selectAll("path").remove();
 
   const svgWidth = +svg.attr("viewBox").split(" ")[2];
@@ -263,9 +277,16 @@ export const drawMap = (stats, map, dataSetConfig) => {
     buildZoom(1, svgWidth, svgHeight);
   }
 
-  const filters = Object.keys(cleanStats[0]).filter(key => !neverFilters.includes(key));
-
-  currentGeography = drawFeatures(geoPathGenerator, addStatsToFeatures(topoFeature.features, cleanStats));
+  const filters = Object.keys(cleanStats[0]).filter(key => !nonFilters.includes(key));
+  const currentGeography = drawFeatures(
+    geoPathGenerator,
+    addStatsToFeatures(
+      topoFeature.features,
+      cleanStats,
+      dataSetConfig.scale,
+      dataSetConfig.legendLabel
+    )
+  );
 
   addFilters(currentGeography, filters, dataSetConfig);
   updatePaths(currentGeography, filters[0], dataSetConfig);

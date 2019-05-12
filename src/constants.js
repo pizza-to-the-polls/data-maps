@@ -7,4 +7,13 @@ export const rootURL =
     : "https://pizza-to-the-polls.github.io/data-maps/";
 export const legendWidth = 200;
 export const legendHeight = 40;
-export const neverFilters = ["label", "fips", "state", "content"];
+export const nonFilters = [
+  "label",
+  "fips",
+  "state",
+  "content",
+  "currentdescription",
+  "proposeddescription",
+  "bill",
+  "link"
+];
