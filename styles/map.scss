@@ -30,7 +30,9 @@ $details-color: $gray1;
     left: -9999px;
     top: -9999px;
 
-    .#{$prefix}share-button { display: none; }
+    .#{$prefix}share-button {
+      display: none;
+    }
 
     .#{$prefix}zoom-in,
     .#{$prefix}zoom-out,
@@ -211,12 +213,15 @@ $details-color: $gray1;
 }
 
 .#{$prefix}share-button {
-  position: absolute;
   z-index: 4;
-  right: 4px;
-  top: 590px;
+  background-color: $blue;
+  color: #fff;
+  border: none;
+  margin: 5px;
 
   @media screen and (min-width: 600px) {
+    position: absolute;
+    right: 4px;
     bottom: 10px;
     top: inherit;
     right: 10px;
