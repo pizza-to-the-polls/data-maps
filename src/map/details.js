@@ -1,6 +1,6 @@
 import { select } from "d3";
 import marked from "marked";
-import { formatAsPercentage, makeLabel, formatQualitativeScale } from "../utils";
+import { formatAsPercentage, makeLabel, formatQualitativeScale, notNA } from "../utils";
 import { prefix, excludedKeys } from "../constants";
 
 // Tooltip
@@ -33,17 +33,16 @@ const qualitativeContent = data => {
     data.current,
     "long"
   )}</p>`;
-  content += `<p>${marked(data.currentdescription)}</p>`;
+  if (notNA(data.currentdescription)) content += `<p>${marked(data.currentdescription)}</p>`;
   content += `<p><strong>Proposed policy:</strong> ${formatQualitativeScale(
     data.proposed,
     "long"
   )}</p>`;
-  content += `<p>${marked(data.proposeddescription)}</p>`;
-  if (data.bill !== "NA" && data.bill !== "N/A") {
+  if (notNA(data.proposeddescription)) content += `<p>${marked(data.proposeddescription)}</p>`;
+  if (notNA(data.bill))
     content += `<p><strong>Policy</strong>: <a href=${data.link} target="blank">${
       data.bill
     }</a></p>`;
-  }
   return content;
 };
 

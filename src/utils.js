@@ -58,3 +58,5 @@ export const formatQualitativeScale = (key, kind) => {
   };
   return kind === "short" ? shortLabels[key] : longLabels[key];
 };
+
+export const notNA = value => ["NA", "N/A"].indexOf(value) === -1;
