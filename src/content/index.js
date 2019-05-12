@@ -20,7 +20,7 @@ export const toggleLoading = (isLoading, elem = vis) => {
 export const toggleShare = (isOpen, dataURL) => {
   if (isOpen) {
     shareImg.setAttribute("src", dataURL);
-    shareContainer.style.display = "block";
+    shareContainer.style.display = "flex";
   } else {
     shareImg.removeAttribute("src");
     shareContainer.style.display = "none";
@@ -56,7 +56,7 @@ export const initDom = outer => {
   vis.className = `${prefix}vis`;
 
   const loader = document.createElement("div");
-  for (var i = 3; i >= 0; i--) {
+  for (let i = 3; i >= 0; i--) {
     const bar = document.createElement("div");
     bar.className = "bar";
     loader.appendChild(bar);
