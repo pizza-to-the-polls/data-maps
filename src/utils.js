@@ -7,14 +7,17 @@ export const buildMapURL = map => `${rootURL}${map}.json`;
 
 export const parseRow = row => {
   // Takes a string and converts it into an object with keys for each column
-
-  const pieces = {};
-  row.split(", ").forEach(r => {
-    const key = r.split(": ")[0];
-    const value = r.split(": ")[1];
-    pieces[key] = Number.isNaN(Number(value)) ? value : Number(value);
-  });
-  return pieces;
+  let last;
+  return row.split(/, /).reduce((obj, el) => {
+    if (el.includes(":")) {
+      const [label, value] = el.split(":");
+      obj[label] = value.trim();
+      last = label;
+    } else {
+      obj[last] += `, ${el}`;
+    }
+    return obj;
+  }, {});
 };
 
 export const formatAsPercentage = value => {
