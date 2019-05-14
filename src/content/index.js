@@ -1,6 +1,7 @@
 import { select, selectAll, json } from "d3";
 import marked from "marked";
 import { legendWidth, legendHeight, prefix } from "../constants";
+import fs from "fs";
 
 import { buildSheetsURL } from "../utils";
 
@@ -74,6 +75,8 @@ export const initDom = outer => {
   map.appendChild(svg);
   map.appendChild(clickInstructions);
 
+  const legendImg = document.createElement("img");
+
   // html2canvass only supported with promises
   if (typeof Promise !== "undefined" && Promise.toString().indexOf("[native code]") !== -1) {
     const sharebutton = document.createElement("button");
@@ -105,6 +108,13 @@ export const initDom = outer => {
     shareContainer.appendChild(shareImg);
     shareContainer.appendChild(shareInstructions);
     shareContainer.appendChild(closeButton);
+
+    // html2canvass will only load images with the same domain as the visited page
+    // so we need to inline the dfp logo
+    legendImg.setAttribute(
+      "src",
+      `data:image/jpg;base64,${btoa(fs.readFileSync("img/dfp-logo-share.jpg", "binary"))}`
+    );
   }
 
   const legend = document.createElement("div");
@@ -114,21 +124,18 @@ export const initDom = outer => {
   legendLabel.innerText = "Issue support";
   legendLabel.className = `${prefix}legend-label`;
 
-  const legendImg = document.createElement("img");
-  legendImg.setAttribute('src', require("/img/dfp-logo.jpg"));
-
   const legendSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   legendSvg.setAttribute("viewBox", `0 0 ${legendWidth} ${legendHeight}`);
 
   legend.appendChild(legendLabel);
   legend.appendChild(legendSvg);
-  legend.appendChild(legendImg);
+  if (typeof shareContainer !== "undefined") legend.appendChild(legendImg);
 
   vis.appendChild(header);
   vis.appendChild(map);
   vis.appendChild(legend);
   vis.appendChild(loader);
-  vis.appendChild(shareContainer);
+  if (typeof shareContainer !== "undefined") vis.appendChild(shareContainer);
   container.appendChild(vis);
 
   const controls = document.createElement("div");
