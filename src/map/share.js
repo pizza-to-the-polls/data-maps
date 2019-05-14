@@ -15,7 +15,12 @@ export const addShare = () => {
     elem.classList.add("generating-screenshot");
 
     const mapSVG = elem.querySelector(`.${prefix}map svg`);
-    mapSVG.setAttribute("width", 960);
+    mapSVG.setAttribute(
+      "width",
+      window.innerWidth > 660 && elem.querySelector(".dfp-map__details").style.display === "block"
+        ? 775
+        : 990
+    );
     mapSVG.setAttribute("height", 600);
 
     const legendSVG = elem.querySelector(`.${prefix}legend svg`);
@@ -23,6 +28,8 @@ export const addShare = () => {
     legendSVG.setAttribute("viewBox", "0 0 150 40");
 
     html2canvas(elem).then(canvas => {
+      mapSVG.removeAttribute("width");
+      mapSVG.removeAttribute("height");
       toggleLoading(false);
       toggleShare(true, canvas.toDataURL("image/png"));
       elem.classList.remove("generating-screenshot");

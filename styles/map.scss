@@ -49,8 +49,17 @@ $details-color: $gray1;
     }
 
     .#{$prefix}legend {
-      background-size: 40%;
-      background-position: 90% 50%;
+      background-image: none;
+      img {
+        display: inline-block;
+        max-width: 60%;
+
+        @media screen and (min-width: 450px) {
+          float: right;
+          max-width: 30%;
+          margin: -54px 18px;
+        }
+      }
     }
   }
 
@@ -75,9 +84,13 @@ $details-color: $gray1;
   display: flex;
   flex-direction: column;
   background: #fff;
-  background-image: radial-gradient($gray2 1px, transparent 0),
-    radial-gradient($gray2 1px, transparent 0);
+  // Radial background don't work for share for some reason
+  background-image: url('/img/dot.png');
+  // background-image: radial-gradient($gray2 1px, transparent 0),
+  //   radial-gradient($gray2 1px, transparent 0);
   background-size: 10px 10px;
+  background-position: 0 0, 50px 50px;
+
   svg:active {
     cursor: move;
     cursor: grab;
@@ -179,13 +192,16 @@ $details-color: $gray1;
 
 .#{$prefix}legend {
   padding: 10px 10px 0 10px;
-  background: url("/img/dfp-logo.jpg");
+  background: url("/img/dfp-inline-logo.svg");
   background-position: 98% 50%;
   background-repeat: no-repeat;
   background-size: 20%;
   border-top: 1px solid $gray2;
   position: relative;
 
+  img {
+    display: none;
+  }
   span {
     font-size: 12px;
     display: block;

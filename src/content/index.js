@@ -113,7 +113,16 @@ export const initDom = outer => {
   const legendLabel = document.createElement("span");
   legendLabel.innerText = "Issue support";
   legendLabel.className = `${prefix}legend-label`;
+
+  const legendImg = document.createElement("img");
+  legendImg.setAttribute('src', require("/img/dfp-logo.jpg"));
+
+  const legendSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  legendSvg.setAttribute("viewBox", `0 0 ${legendWidth} ${legendHeight}`);
+
   legend.appendChild(legendLabel);
+  legend.appendChild(legendSvg);
+  legend.appendChild(legendImg);
 
   vis.appendChild(header);
   vis.appendChild(map);
@@ -121,10 +130,6 @@ export const initDom = outer => {
   vis.appendChild(loader);
   vis.appendChild(shareContainer);
   container.appendChild(vis);
-
-  const legendSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  legendSvg.setAttribute("viewBox", `0 0 ${legendWidth} ${legendHeight}`);
-  legend.appendChild(legendSvg);
 
   const controls = document.createElement("div");
   controls.className = `${prefix}controls`;
