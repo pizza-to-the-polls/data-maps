@@ -16,6 +16,7 @@ $height: 60px;
   left: 0;
   bottom: 0;
   right: 0;
+  z-index: 10;
 
   .bar {
     position: absolute;
@@ -27,11 +28,10 @@ $height: 60px;
     left: 48%;
     @for $i from 1 through 5 {
        &:nth-child(#{$i}) {
-         margin-left: ($i - 1) * ($width + $border);;
+         margin-left: ($i - 1) * ($width + $border) - $width * 4 / 2;
          animation: barUp#{$i} 2s infinite;
         }
     }
-
   }
 }
 
