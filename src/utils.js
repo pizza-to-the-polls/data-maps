@@ -9,9 +9,9 @@ export const parseRow = row => {
   // Takes a string and converts it into an object with keys for each column
   let last;
   return row.split(/, /).reduce((obj, el) => {
-    if (el.includes(":")) {
-      const [label, value] = el.split(":");
-      obj[label] = value.trim();
+    const [label, ...values] = el.split(": ");
+    if (values.length > 0) {
+      obj[label] = values.join(": ").trim();
       last = label;
     } else {
       obj[last] += `, ${el}`;
