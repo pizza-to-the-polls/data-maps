@@ -3,7 +3,7 @@ import * as topojson from "topojson";
 
 import { parseStats, makeLabel } from "../utils";
 import createTable from "../table";
-import { prefix } from "../constants";
+import { prefix, neverFilters } from "../constants";
 import { addDetails, removeDetails } from "./details";
 import buildLegend from "./legend";
 import { addTooltip, removeTooltip } from "./tooltip";
@@ -11,10 +11,6 @@ import { addShare } from "./share";
 
 let filterContainer;
 let svg;
-
-let geoPathGenerator;
-let svgWidth;
-let svgHeight;
 
 const addPattern = () => {
   svg
@@ -75,7 +71,7 @@ const addZoomButtons = zoomFunction => {
     });
 };
 
-const buildZoom = (baseZoom = 1) => {
+const buildZoom = (baseZoom, svgWidth, svgHeight) => {
   const zoom = d3
     .zoom()
     .scaleExtent([baseZoom, baseZoom * 4])
@@ -105,12 +101,7 @@ export const initMap = container => {
   filterContainer = d3.select(container).select(`.${prefix}filters`);
   svg = d3.select(container).select("svg");
 
-  svgWidth = +svg.attr("viewBox").split(" ")[2];
-  svgHeight = +svg.attr("viewBox").split(" ")[3];
-  const projection = d3.geoAlbersUsa().translate([svgWidth / 2, svgHeight / 2]);
-  geoPathGenerator = d3.geoPath().projection(projection);
   addPattern(svg);
-  buildZoom();
   addShare();
 
   document.addEventListener("click", event => {
@@ -134,13 +125,13 @@ const handleClick = (d, key, allPaths) => {
   addDetails(d);
 };
 
-const drawFeatures = data =>
+const drawFeatures = (pathGenerator, data) =>
   svg
     .selectAll("path")
     .data(data)
     .enter()
     .append("path")
-    .attr("d", geoPathGenerator)
+    .attr("d", pathGenerator)
     .attr("class", "feature")
     .on("click", handleClick);
 
@@ -221,12 +212,36 @@ const addFilters = (paths, filters, dataSetConfig) => {
   }
 };
 
+const buildPathGenerator = (config, svgWidth, svgHeight)  => {
+  config = config || {
+    projection: 'geoAlbersUsa'
+  };
+
+  let projection = d3[config.projection]();
+
+  if( config.rotate ) {
+    projection = projection.rotate(config.rotate);
+  }
+
+  if( config.scale ) {
+    projection = projection.scale(config.scale);
+  }
+
+  return d3.geoPath().projection(projection.translate([svgWidth / 2, svgHeight / 2]));
+}
+
 // Draw the map
 export const drawMap = (stats, map, dataSetConfig) => {
   const topoFeature = topojson.feature(map, map.objects.features);
   const cleanStats = parseStats(stats);
   let currentGeography;
   svg.selectAll("path").remove();
+
+  const svgWidth = +svg.attr("viewBox").split(" ")[2];
+  const svgHeight = +svg.attr("viewBox").split(" ")[3];
+
+  const geoPathGenerator = buildPathGenerator(map.config, svgWidth, svgHeight)
+
   const bounds = geoPathGenerator.bounds(topoFeature);
 
   const dx = bounds[1][0] - bounds[0][0];
@@ -241,18 +256,16 @@ export const drawMap = (stats, map, dataSetConfig) => {
       .transition()
       .duration(100)
       .call(
-        buildZoom(scale).transform,
+        buildZoom(scale, svgWidth, svgHeight).transform,
         d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)
       );
   } else {
-    buildZoom();
+    buildZoom(1, svgWidth, svgHeight);
   }
 
-  const filters = Object.keys(cleanStats[0]).filter(
-    key => ["label", "fips", "state", "content"].indexOf(key) === -1
-  );
+  const filters = Object.keys(cleanStats[0]).filter(key => !neverFilters.includes(key));
 
-  currentGeography = drawFeatures(addStatsToFeatures(topoFeature.features, cleanStats));
+  currentGeography = drawFeatures(geoPathGenerator, addStatsToFeatures(topoFeature.features, cleanStats));
 
   addFilters(currentGeography, filters, dataSetConfig);
   updatePaths(currentGeography, filters[0], dataSetConfig);
