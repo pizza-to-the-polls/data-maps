@@ -44,7 +44,6 @@ export const buildQualitativeLegend = (scale, label) => {
   legendSvg.selectAll("*").remove();
   d3.select(`.${prefix}legend-label`).text(label);
   const stops = Object.keys(scale).map(i => [i, scale[i]]);
-  console.log(stops);
 
   legendSvg
     .append("g")

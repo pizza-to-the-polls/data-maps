@@ -227,23 +227,23 @@ const addFilters = (paths, filters, dataSetConfig) => {
   }
 };
 
-const buildPathGenerator = (config, svgWidth, svgHeight)  => {
+const buildPathGenerator = (config, svgWidth, svgHeight) => {
   config = config || {
-    projection: 'geoAlbersUsa'
+    projection: "geoAlbersUsa"
   };
 
   let projection = d3[config.projection]();
 
-  if( config.rotate ) {
+  if (config.rotate) {
     projection = projection.rotate(config.rotate);
   }
 
-  if( config.scale ) {
+  if (config.scale) {
     projection = projection.scale(config.scale);
   }
 
   return d3.geoPath().projection(projection.translate([svgWidth / 2, svgHeight / 2]));
-}
+};
 
 // Draw the map
 export const drawMap = (stats, map, dataSetConfig) => {
@@ -254,7 +254,7 @@ export const drawMap = (stats, map, dataSetConfig) => {
   const svgWidth = +svg.attr("viewBox").split(" ")[2];
   const svgHeight = +svg.attr("viewBox").split(" ")[3];
 
-  const geoPathGenerator = buildPathGenerator(map.config, svgWidth, svgHeight)
+  const geoPathGenerator = buildPathGenerator(map.config, svgWidth, svgHeight);
 
   const bounds = geoPathGenerator.bounds(topoFeature);
 

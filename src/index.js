@@ -147,8 +147,8 @@ const initDataMap = container => {
 
         if (!Object.prototype.hasOwnProperty.call(datasets, key)) {
           datasets[key] = {};
-          datasets[key].label = dataset.label;
-          datasets[key].title = dataset.title;
+          datasets[key].label = dataset.label || dataset.issuelabel;
+          datasets[key].title = dataset.title || `Support for ${datasets[key].label}`;
           datasets[key].defaultTab = dataset.tab;
           datasets[key].scale = dataset.scale;
           datasets[key].legendLabel = dataset.legendlabel || "Issue support";
