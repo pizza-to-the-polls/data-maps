@@ -228,11 +228,9 @@ const addFilters = (paths, filters, dataSetConfig) => {
 };
 
 const buildPathGenerator = (config, svgWidth, svgHeight) => {
-  config = config || {
-    projection: "geoAlbersUsa"
-  };
+  config = config || {};
 
-  let projection = d3[config.projection]();
+  let projection = d3[config.projection || "geoAlbersUsa"]();
 
   if (config.rotate) {
     projection = projection.rotate(config.rotate);

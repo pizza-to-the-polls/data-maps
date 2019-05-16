@@ -150,7 +150,7 @@ const initDataMap = container => {
           datasets[key].label = dataset.label || dataset.issuelabel;
           datasets[key].title = dataset.title || `Support for ${datasets[key].label}`;
           datasets[key].defaultTab = dataset.tab;
-          datasets[key].scale = dataset.scale;
+          datasets[key].scale = dataset.scale || 'quantitative';
           datasets[key].legendLabel = dataset.legendlabel || "Issue support";
           datasets[key].defaultView = dataset.dataset.toLowerCase();
           datasets[key].issuekey = key;
