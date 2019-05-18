@@ -22,7 +22,7 @@ export const buildQuantitativeLegend = (scale, label) => {
     .attr("class", "legendQuant")
     .attr("fill", d => d[1])
     .attr("transform", (d, i) => {
-      return `translate(${size * i + 2 * i}, 0)`;
+      return `translate(${size * i + 4 * i}, 0)`;
     });
 
   legendSvg
@@ -36,27 +36,30 @@ export const buildQuantitativeLegend = (scale, label) => {
     .attr("font-size", "6px")
     .attr("font-family", '"Montserrat", sans-serif')
     .attr("y", "30")
-    .attr("x", (d, i) => size * i + 2 * i);
+    .attr("x", (d, i) => size * i + 4 * i);
 };
 
 export const buildQualitativeLegend = (scale, label) => {
   const legendSvg = d3.select(`.${prefix}legend`).select("svg");
   legendSvg.selectAll("*").remove();
   d3.select(`.${prefix}legend-label`).text(label);
-  const stops = Object.keys(scale).map(i => [i, scale[i]]);
-
+  const stops = ["no", "yes_low", "yes_high", "proposed_high", "proposed_low"].map(i => [
+    i,
+    scale[i]
+  ]);
   legendSvg
     .append("g")
     .selectAll("rect")
     .data(stops)
     .enter()
     .append("rect")
-    .attr("width", size * 2)
+    .attr("width", size * 3)
     .attr("height", size)
     .attr("class", "legendQuant")
     .attr("fill", d => d[1])
+    .attr("stroke", "#333")
     .attr("transform", (d, i) => {
-      return `translate(${size * i * 2 + 2 * i}, 0)`;
+      return `translate(${size * i * 3 + 4 * i}, 0)`;
     });
 
   legendSvg
@@ -67,7 +70,7 @@ export const buildQualitativeLegend = (scale, label) => {
     .append("text")
     .text(d => formatQualitativeScale(d[0], "short"))
     .attr("fill", "#000")
-    .attr("font-size", "6px")
+    .attr("font-size", "8px")
     .attr("y", "30")
-    .attr("x", (d, i) => size * i * 2 + 2 * i);
+    .attr("x", (d, i) => size * i * 3 + 4 * i);
 };

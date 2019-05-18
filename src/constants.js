@@ -5,7 +5,7 @@ export const rootURL =
   process.env.NODE_ENV === "development"
     ? "http://localhost:1234/"
     : "https://pizza-to-the-polls.github.io/data-maps/";
-export const legendWidth = 200;
+export const legendWidth = 320;
 export const legendHeight = 40;
 export const nonFilters = [
   "label",

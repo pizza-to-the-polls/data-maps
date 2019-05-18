@@ -12,7 +12,54 @@ import { addShare } from "./share";
 let filterContainer;
 let svg;
 
-const addPattern = () => {
+let geoPathGenerator;
+let svgWidth;
+let svgHeight;
+
+const qualKeys = [
+  "no",
+  "yes_low",
+  "yes_high",
+  "proposed_low",
+  "proposed_high",
+  "no-no",
+  "no-yes_low",
+  "no-yes_high",
+  "yes_low-no",
+  "yes_low-yes_low",
+  "yes_low-yes_high",
+  "yes_high-no",
+  "yes-high_yes-low",
+  "yes-high_yes-high"
+];
+
+const qualScale = {};
+
+qualKeys.map(key => (qualScale[key] = `url(#${key})`));
+
+const addQualPatterns = () => {
+  svg.append("defs");
+
+  const p = 10;
+
+  qualKeys.map(key =>
+    svg
+      .select("defs")
+      .append("pattern")
+      .attr("patternUnits", "userSpaceOnUse")
+      .attr("id", key)
+      .attr("width", p)
+      .attr("height", p)
+      .append("image")
+      .attr("xlink:href", `/${key}.svg`)
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("width", p)
+      .attr("height", p)
+  );
+};
+
+const addHoverPattern = () => {
   svg
     .append("defs")
     .append("pattern")
@@ -23,12 +70,7 @@ const addPattern = () => {
     .append("image")
     .attr(
       "xlink:href",
-      // dots
       "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+CiAgPHJlY3Qgd2lkdGg9JzEwJyBoZWlnaHQ9JzEwJyBmaWxsPSd3aGl0ZScgLz4KICA8Y2lyY2xlIGN4PScxLjUnIGN5PScxLjUnIHI9JzEuNScgZmlsbD0nYmxhY2snLz4KPC9zdmc+Cg=="
-      // crosshatch
-      // "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc4JyBoZWlnaHQ9JzgnPgogIDxyZWN0IHdpZHRoPSc4JyBoZWlnaHQ9JzgnIGZpbGw9JyNmZmYnLz4KICA8cGF0aCBkPSdNMCAwTDggOFpNOCAwTDAgOFonIHN0cm9rZS13aWR0aD0nMC41JyBzdHJva2U9JyNhYWEnLz4KPC9zdmc+Cg=="
-      // lines
-      // "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+CiAgPHJlY3Qgd2lkdGg9JzEwJyBoZWlnaHQ9JzEwJyBmaWxsPSd3aGl0ZScvPgogIDxwYXRoIGQ9J00tMSwxIGwyLC0yCiAgICAgICAgICAgTTAsMTAgbDEwLC0xMAogICAgICAgICAgIE05LDExIGwyLC0yJyBzdHJva2U9J2JsYWNrJyBzdHJva2Utd2lkdGg9JzEnLz4KPC9zdmc+Cg=="
     )
     .attr("x", 0)
     .attr("y", 0)
@@ -101,7 +143,12 @@ export const initMap = container => {
   filterContainer = d3.select(container).select(`.${prefix}filters`);
   svg = d3.select(container).select("svg");
 
-  addPattern(svg);
+  svgWidth = +svg.attr("viewBox").split(" ")[2];
+  svgHeight = +svg.attr("viewBox").split(" ")[3];
+  const projection = d3.geoAlbersUsa().translate([svgWidth / 2, svgHeight / 2]);
+  geoPathGenerator = d3.geoPath().projection(projection);
+  // addHoverPattern(svg);
+  buildZoom();
   addShare();
 
   document.addEventListener("click", event => {
@@ -166,12 +213,6 @@ const updatePaths = (paths, filter, { max: setMax, min: setMin, scale, legendLab
     domain.push(max > 1 ? 100 : 1);
   }
 
-  const qualScale = {
-    no: "#fff8f0",
-    yes_low: "#adb37f",
-    yes_high: "#127a39"
-  };
-
   const quantScale = d3.scaleQuantize(domain, [
     "#67001f",
     "#b2182b",
@@ -199,6 +240,7 @@ const updatePaths = (paths, filter, { max: setMax, min: setMin, scale, legendLab
   if (scale === "quantitative") {
     buildQuantitativeLegend(quantScale, legendLabel);
   } else {
+    addQualPatterns();
     buildQualitativeLegend(qualScale, legendLabel);
   }
 };
