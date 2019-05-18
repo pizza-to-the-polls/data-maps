@@ -51,7 +51,7 @@ export const formatQualitativeScale = (key, kind) => {
   const longLabels = {
     no: "None",
     yes_low: "Yes, but the policy is inadequate",
-    yes_no: "Yes, and the policy is adequate"
+    yes_high: "Yes, and the policy is adequate"
   };
 
   const shortLabels = {
