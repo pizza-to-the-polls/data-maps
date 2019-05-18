@@ -44,7 +44,7 @@ const build = (tab, attempts) => {
   toggleLoading(false);
   drawMap(sheets[tab], map, currentDataset);
 
-  title.text(`Support for ${currentDataset.issuelabel}`);
+  title.text(currentDataset.title);
 
   removeDetails();
   removeTooltip();
@@ -110,7 +110,7 @@ const addMapSelector = (container, data) => {
     .enter()
     .append("option")
     .attr("value", d => d)
-    .text(d => datasets[d].issuelabel);
+    .text(d => datasets[d].label);
 };
 
 const initDataMap = container => {
@@ -147,8 +147,11 @@ const initDataMap = container => {
 
         if (!Object.prototype.hasOwnProperty.call(datasets, key)) {
           datasets[key] = {};
-          datasets[key].issuelabel = dataset.issuelabel;
+          datasets[key].label = dataset.label || dataset.issuelabel;
+          datasets[key].title = dataset.title || `Support for ${datasets[key].label}`;
           datasets[key].defaultTab = dataset.tab;
+          datasets[key].scale = dataset.scale || "quantitative";
+          datasets[key].legendLabel = dataset.legendlabel || "Issue support";
           datasets[key].defaultView = dataset.dataset.toLowerCase();
           datasets[key].issuekey = key;
           datasets[key].maps = [];

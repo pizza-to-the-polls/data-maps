@@ -121,7 +121,6 @@ export const initDom = outer => {
   legend.className = `${prefix}legend`;
 
   const legendLabel = document.createElement("span");
-  legendLabel.innerText = "Issue support";
   legendLabel.className = `${prefix}legend-label`;
 
   const legendSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -140,7 +139,7 @@ export const initDom = outer => {
 
   const controls = document.createElement("div");
   controls.className = `${prefix}controls`;
-  ["selector", "toggle", "filters"].forEach(name => {
+  ["selector", "filters", "toggle"].forEach(name => {
     const elem = document.createElement("div");
     elem.className = `${prefix}${name} ${prefix}control`;
     controls.appendChild(elem);

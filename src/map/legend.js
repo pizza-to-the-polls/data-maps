@@ -1,13 +1,14 @@
 import * as d3 from "d3";
 import { prefix } from "../constants";
-import { formatAsPercentage } from "../utils";
+import { formatAsPercentage, formatQualitativeScale } from "../utils";
 
 const size = 20;
 
-const buildLegend = scale => {
-  const stops = scale.thresholds().map(i => [i, scale(i)]);
-
+export const buildQuantitativeLegend = (scale, label) => {
   const legendSvg = d3.select(`.${prefix}legend`).select("svg");
+  const stops = scale.thresholds().map(i => [i, scale(i)]);
+  d3.select(`.${prefix}legend-label`).text(label);
+
   legendSvg.selectAll("*").remove();
 
   legendSvg
@@ -21,7 +22,7 @@ const buildLegend = scale => {
     .attr("class", "legendQuant")
     .attr("fill", d => d[1])
     .attr("transform", (d, i) => {
-      return `translate(${size * i + 2 * i}, 0)`;
+      return `translate(${size * i + 4 * i}, 0)`;
     });
 
   legendSvg
@@ -35,7 +36,41 @@ const buildLegend = scale => {
     .attr("font-size", "6px")
     .attr("font-family", '"Montserrat", sans-serif')
     .attr("y", "30")
-    .attr("x", (d, i) => size * i + 2 * i);
+    .attr("x", (d, i) => size * i + 4 * i);
 };
 
-export default buildLegend;
+export const buildQualitativeLegend = (scale, label) => {
+  const legendSvg = d3.select(`.${prefix}legend`).select("svg");
+  legendSvg.selectAll("*").remove();
+  d3.select(`.${prefix}legend-label`).text(label);
+  const stops = ["no", "yes_low", "yes_high", "proposed_high", "proposed_low"].map(i => [
+    i,
+    scale[i]
+  ]);
+  legendSvg
+    .append("g")
+    .selectAll("rect")
+    .data(stops)
+    .enter()
+    .append("rect")
+    .attr("width", size * 3)
+    .attr("height", size)
+    .attr("class", "legendQuant")
+    .attr("fill", d => d[1])
+    .attr("stroke", "#333")
+    .attr("transform", (d, i) => {
+      return `translate(${size * i * 3 + 4 * i}, 0)`;
+    });
+
+  legendSvg
+    .append("g")
+    .selectAll("text")
+    .data(stops)
+    .enter()
+    .append("text")
+    .text(d => formatQualitativeScale(d[0], "short"))
+    .attr("fill", "#000")
+    .attr("font-size", "8px")
+    .attr("y", "30")
+    .attr("x", (d, i) => size * i * 3 + 4 * i);
+};

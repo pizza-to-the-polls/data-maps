@@ -1,6 +1,6 @@
 import { select } from "d3";
 import marked from "marked";
-import { formatAsPercentage, makeLabel } from "../utils";
+import { formatAsPercentage, makeLabel, formatQualitativeScale, notNA } from "../utils";
 import { prefix, excludedKeys } from "../constants";
 
 // Tooltip
@@ -10,7 +10,7 @@ const getDetailsKeys = data => {
   return Object.keys(data).filter(k => excludedKeys.indexOf(k) === -1);
 };
 
-const createDetailsContent = data => {
+const quantitativeContent = data => {
   let content = `<h4>${data.label}</h4>`;
   content += "<table><tbody>";
   const keys = getDetailsKeys(data);
@@ -27,8 +27,34 @@ const createDetailsContent = data => {
   return content;
 };
 
+const qualitativeContent = data => {
+  let content = `<h4>${data.label}</h4>`;
+  content += `<p><strong>Current policy:</strong> ${formatQualitativeScale(
+    data.current,
+    "long"
+  )}</p>`;
+  if (notNA(data.currentdescription)) content += `<p>${marked(data.currentdescription)}</p>`;
+  content += `<p><strong>Proposed policy:</strong> ${formatQualitativeScale(
+    data.proposed,
+    "long"
+  )}</p>`;
+  if (notNA(data.proposeddescription)) content += `<p>${marked(data.proposeddescription)}</p>`;
+  if (notNA(data.bill))
+    content += `<p><strong>Policy</strong>: <a href=${data.link} target="blank">${
+      data.bill
+    }</a></p>`;
+  return content;
+};
+
 export const addDetails = d => {
-  details.style("display", "block").html(createDetailsContent(d));
+  let content;
+  if (d.scale === "quantitative") {
+    content = quantitativeContent(d);
+  } else {
+    content = qualitativeContent(d);
+  }
+
+  details.style("display", "block").html(content);
 };
 
 export const removeDetails = () => {

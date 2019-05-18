@@ -7,14 +7,17 @@ export const buildMapURL = map => `${rootURL}${map}.json`;
 
 export const parseRow = row => {
   // Takes a string and converts it into an object with keys for each column
-
-  const pieces = {};
-  row.split(", ").forEach(r => {
-    const key = r.split(": ")[0];
-    const value = r.split(": ")[1];
-    pieces[key] = Number.isNaN(Number(value)) ? value : Number(value);
-  });
-  return pieces;
+  let last;
+  return row.split(/, /).reduce((obj, el) => {
+    const [label, ...values] = el.split(": ");
+    if (values.length > 0) {
+      obj[label] = values.join(": ").trim();
+      last = label;
+    } else {
+      obj[last] += `, ${el}`;
+    }
+    return obj;
+  }, {});
 };
 
 export const formatAsPercentage = value => {
@@ -43,3 +46,20 @@ export const makeLabel = text => {
   formatted = formatted.charAt(0).toUpperCase() + formatted.slice(1);
   return formatted;
 };
+
+export const formatQualitativeScale = (key, kind) => {
+  const longLabels = {
+    no: "None",
+    yes_low: "Yes, but the policy is inadequate",
+    yes_no: "Yes, and the policy is adequate"
+  };
+
+  const shortLabels = {
+    no: "None",
+    yes_low: "Inadequate",
+    yes_high: "Adequate"
+  };
+  return kind === "short" ? shortLabels[key] : longLabels[key];
+};
+
+export const notNA = value => ["NA", "N/A"].indexOf(value) === -1;
