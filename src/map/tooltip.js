@@ -1,5 +1,5 @@
 import { select } from "d3";
-import { formatAsPercentage } from "../utils";
+import { formatAsPercentage, formatQualitativeScale } from "../utils";
 import { prefix } from "../constants";
 
 // Tooltip
@@ -14,9 +14,13 @@ const getPosition = e => {
   };
 };
 
-const createTooltipContent = (data, filter) => {
+const createTooltipContent = (data, filter, scale) => {
   let content = `<strong>${data.label}:</strong> `;
-  content += `${formatAsPercentage(data[filter])}`;
+  if (scale === "qualitative") {
+    content += `${formatQualitativeScale(data[filter], "long")}`;
+  } else {
+    content += `${formatAsPercentage(data[filter])}`;
+  }
   return content;
 };
 
@@ -25,8 +29,8 @@ const handleMouseMove = e => {
   tooltip.style("left", `${position.x}px`).style("top", `${position.y}px`);
 };
 
-export const addTooltip = (d, filter) => {
-  tooltip.style("display", "block").html(createTooltipContent(d, filter));
+export const addTooltip = (d, filter, scale) => {
+  tooltip.style("display", "block").html(createTooltipContent(d, filter, scale));
 };
 
 export const removeTooltip = () => {

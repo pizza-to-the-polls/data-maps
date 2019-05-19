@@ -231,7 +231,7 @@ const updatePaths = (paths, filter, { max: setMax, min: setMin, scale, legendLab
     .style("stroke-linejoin", "round");
   paths
     .on("mouseenter", d => {
-      addTooltip(d, filter);
+      addTooltip(d, filter, scale);
     })
     .on("mouseleave", d => {
       removeTooltip(d);
