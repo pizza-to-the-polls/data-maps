@@ -55,9 +55,11 @@ export const formatQualitativeScale = (key, kind) => {
   };
 
   const shortLabels = {
-    no: "None",
+    no: "No policy",
     yes_low: "Insufficient",
-    yes_high: "Sufficient"
+    yes_high: "Sufficient",
+    proposed_low: "Insufficient",
+    proposed_high: "Sufficient"
   };
   return kind === "short" ? shortLabels[key] : longLabels[key];
 };

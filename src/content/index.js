@@ -1,7 +1,7 @@
 import { select, selectAll, json } from "d3";
 import marked from "marked";
-import { legendWidth, legendHeight, prefix } from "../constants";
 import fs from "fs";
+import { legendWidth, legendHeight, prefix } from "../constants";
 
 import { buildSheetsURL } from "../utils";
 

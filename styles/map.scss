@@ -206,7 +206,7 @@ $details-color: $gray1;
 }
 
 .#{$prefix}legend {
-  padding: 10px 10px 0 10px;
+  padding: 10px;
   background: url("/img/dfp-logo.jpg");
   background-position: 98% 50%;
   background-repeat: no-repeat;
@@ -217,17 +217,41 @@ $details-color: $gray1;
   img {
     display: none;
   }
-  span {
-    font-size: 12px;
-    display: block;
-    margin-bottom: 5px;
-  }
 
   svg {
     bottom: 10px;
     max-width: 250px;
     display: block;
   }
+}
+
+.#{$prefix}legend--qualitative {
+  margin-right: 15px;
+  display: inline-block;
+
+  span {
+    display: inline-block;
+    width: 62px;
+    margin-right: 5px;
+    font-size: 10px;
+  }
+}
+
+span.#{$prefix}legend-label {
+  font-size: 12px;
+  display: block;
+  margin-bottom: 5px;
+  width: 100%;
+  font-weight: bold;
+  font-family: futura;
+}
+
+.#{$prefix}legend-segment {
+  width: 60px;
+  height: 20px;
+  display: inline-block;
+  margin-right: 5px;
+  border: 1px solid $gray1;
 }
 
 .#{$prefix}click-instructions {
