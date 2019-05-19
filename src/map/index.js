@@ -229,9 +229,7 @@ const updatePaths = (paths, filter, { max: setMax, min: setMin, scale, legendLab
 
   paths
     .transition()
-    .style("fill", d =>
-      scale === "quantitative" ? quantScale(d[filter]) : qualMapScale[d[filter]]
-    )
+    .style("fill", d => (scale === "qualitative" ? qualMapScale[d[filter]] : quantScale(d[filter])))
     .style("stroke", "#03172d")
     .style("stroke-linejoin", "round");
   paths
@@ -242,11 +240,11 @@ const updatePaths = (paths, filter, { max: setMax, min: setMin, scale, legendLab
       removeTooltip(d);
     });
 
-  if (scale === "quantitative") {
-    buildQuantitativeLegend(quantScale, legendLabel);
-  } else {
+  if (scale === "qualitative") {
     addQualPatterns();
     buildQualitativeLegend(qualLegendScale, filter);
+  } else {
+    buildQuantitativeLegend(quantScale, legendLabel);
   }
 };
 
