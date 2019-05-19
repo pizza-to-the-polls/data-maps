@@ -43,7 +43,7 @@ qualKeys.map(key => {
 const addQualPatterns = () => {
   svg.append("defs");
 
-  const p = 10;
+  const p = 20;
 
   qualKeys.map(key =>
     svg

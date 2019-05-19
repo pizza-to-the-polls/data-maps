@@ -3,9 +3,35 @@
     <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
     <title>proposed_high</title>
     <desc>Created with Sketch.</desc>
-    <g id="proposed_high" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="square">
-        <path d="M0,0 L10,10" id="Line-Copy-3" stroke="#000000"></path>
-        <path d="M1.5,11.5 L-0.5,9.5" id="Line-Copy-5" stroke="#000000"></path>
-        <path d="M11.5,1.5 L9.5,-0.5" id="Line-Copy-6" stroke="#000000"></path>
+    <g id="proposed_high" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="alt-proposed-low" transform="translate(-2.000000, -2.000000)" fill="#00922D">
+            <g id="Group">
+                <g id="proposed-low" transform="translate(5.000000, 5.000000)">
+                    <g id="Rectangle-Copy-2">
+                        <rect x="0" y="0" width="4" height="4" rx="2"></rect>
+                    </g>
+                </g>
+                <g id="proposed-low-copy">
+                    <g id="proposed-low">
+                        <rect id="Rectangle-Copy-2" x="0" y="0" width="4" height="4" rx="2"></rect>
+                    </g>
+                </g>
+                <g id="proposed-low-copy-3" transform="translate(0.000000, 10.000000)">
+                    <g id="proposed-low">
+                        <rect id="Rectangle-Copy-2" x="0" y="0" width="4" height="4" rx="2"></rect>
+                    </g>
+                </g>
+                <g id="proposed-low-copy-2" transform="translate(10.000000, 0.000000)">
+                    <g id="proposed-low">
+                        <rect id="Rectangle-Copy-2" x="0" y="0" width="4" height="4" rx="2"></rect>
+                    </g>
+                </g>
+                <g id="proposed-low-copy-4" transform="translate(10.000000, 10.000000)">
+                    <g id="proposed-low">
+                        <rect id="Rectangle-Copy-2" x="0" y="0" width="4" height="4" rx="2"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
     </g>
 </svg>

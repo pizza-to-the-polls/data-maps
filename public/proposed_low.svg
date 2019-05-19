@@ -3,7 +3,15 @@
     <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
     <title>proposed_low</title>
     <desc>Created with Sketch.</desc>
-    <g id="proposed_low" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <rect id="Rectangle-Copy-3" fill="#000000" x="4" y="4" width="2" height="2" rx="1"></rect>
+    <g id="proposed_low" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="square">
+        <g id="yes-low-alt" transform="translate(-6.000000, -5.000000)" stroke="#FFDF90">
+            <g id="proposed-high">
+                <g stroke-width="2">
+                    <path d="M16,15 L6,5" id="Line-Copy"></path>
+                    <path d="M10,19 L0,9" id="Line-Copy-3"></path>
+                    <path d="M21,10 L11,0" id="Line-Copy-2"></path>
+                </g>
+            </g>
+        </g>
     </g>
 </svg>

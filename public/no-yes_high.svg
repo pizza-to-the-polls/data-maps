@@ -4,11 +4,37 @@
     <title>no-yes_high</title>
     <desc>Created with Sketch.</desc>
     <g id="no-yes_high" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="no" fill="#FFA8A4">
+        <g id="no" fill="#C53535">
             <rect id="Rectangle" x="0" y="0" width="10" height="10"></rect>
         </g>
-        <path d="M10,10 L0,0" id="Line-Copy" stroke="#000000" stroke-linecap="square"></path>
-        <path d="M10.5,0.5 L8.5,-1.5" id="Line-Copy-2" stroke="#000000" stroke-linecap="square"></path>
-        <path d="M0.5,10.5 L-1.5,8.5" id="Line-Copy-3" stroke="#000000" stroke-linecap="square"></path>
+        <g id="alt-proposed-low" transform="translate(-2.000000, -2.000000)" fill="#00922D">
+            <g id="Group">
+                <g id="proposed-low" transform="translate(5.000000, 5.000000)">
+                    <g id="Rectangle-Copy-2">
+                        <rect x="0" y="0" width="4" height="4" rx="2"></rect>
+                    </g>
+                </g>
+                <g id="proposed-low-copy">
+                    <g id="proposed-low">
+                        <rect id="Rectangle-Copy-2" x="0" y="0" width="4" height="4" rx="2"></rect>
+                    </g>
+                </g>
+                <g id="proposed-low-copy-3" transform="translate(0.000000, 10.000000)">
+                    <g id="proposed-low">
+                        <rect id="Rectangle-Copy-2" x="0" y="0" width="4" height="4" rx="2"></rect>
+                    </g>
+                </g>
+                <g id="proposed-low-copy-2" transform="translate(10.000000, 0.000000)">
+                    <g id="proposed-low">
+                        <rect id="Rectangle-Copy-2" x="0" y="0" width="4" height="4" rx="2"></rect>
+                    </g>
+                </g>
+                <g id="proposed-low-copy-4" transform="translate(10.000000, 10.000000)">
+                    <g id="proposed-low">
+                        <rect id="Rectangle-Copy-2" x="0" y="0" width="4" height="4" rx="2"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
     </g>
 </svg>

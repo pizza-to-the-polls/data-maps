@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { prefix } from "../constants";
+import { prefix, rootURL } from "../constants";
 import { formatAsPercentage, formatQualitativeScale } from "../utils";
 
 const size = 20;
@@ -59,7 +59,7 @@ const buildLegend = (stops, label) => {
     .attr("width", size * 3)
     .attr("height", size)
     .attr("class", `${prefix}legend-segment`)
-    .attr("style", d => `background-image: url(${d[1]})`);
+    .attr("style", d => `background-image: url(${rootURL}${d[1]})`);
 
   legend
     .append("div")
