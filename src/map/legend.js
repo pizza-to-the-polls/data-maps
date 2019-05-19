@@ -39,38 +39,49 @@ export const buildQuantitativeLegend = (scale, label) => {
     .attr("x", (d, i) => size * i + 4 * i);
 };
 
-export const buildQualitativeLegend = (scale, label) => {
-  const legendSvg = d3.select(`.${prefix}legend`).select("svg");
-  legendSvg.selectAll("*").remove();
-  d3.select(`.${prefix}legend-label`).text(label);
-  const stops = ["no", "yes_low", "yes_high", "proposed_high", "proposed_low"].map(i => [
-    i,
-    scale[i]
-  ]);
-  legendSvg
-    .append("g")
-    .selectAll("rect")
+const buildLegend = (stops, label) => {
+  const legend = d3
+    .select(`.${prefix}legend`)
+    .append("div")
+    .attr("class", `${prefix}legend--qualitative`);
+
+  legend
+    .append("span")
+    .attr("class", `${prefix}legend-label`)
+    .text(label);
+
+  legend
+    .append("div")
+    .selectAll("div")
     .data(stops)
     .enter()
-    .append("rect")
+    .append("div")
     .attr("width", size * 3)
     .attr("height", size)
-    .attr("class", "legendQuant")
-    .attr("fill", d => d[1])
-    .attr("stroke", "#333")
-    .attr("transform", (d, i) => {
-      return `translate(${size * i * 3 + 4 * i}, 0)`;
-    });
+    .attr("class", `${prefix}legend-segment`)
+    .attr("style", d => `background-image: url(${d[1]})`);
 
-  legendSvg
-    .append("g")
-    .selectAll("text")
+  legend
+    .append("div")
+    .selectAll("span")
     .data(stops)
     .enter()
-    .append("text")
-    .text(d => formatQualitativeScale(d[0], "short"))
-    .attr("fill", "#000")
-    .attr("font-size", "8px")
-    .attr("y", "30")
-    .attr("x", (d, i) => size * i * 3 + 4 * i);
+    .append("span")
+    .text(d => formatQualitativeScale(d[0], "short"));
+};
+
+export const buildQualitativeLegend = (scale, filter) => {
+  d3.select(`.${prefix}legend`)
+    .selectAll("*")
+    .remove();
+
+  const label = filter === "proposed" ? "Proposed policy" : "Current policy";
+  const stops = ["no", "yes_low", "yes_high"].map(i => [i, scale[i]]);
+
+  buildLegend(stops, label);
+
+  if (filter === "current-and-proposed") {
+    const proposedStops = ["proposed_low", "proposed_high"].map(i => [i, scale[i]]);
+    buildLegend(proposedStops, "Proposed policy");
+  }
 };

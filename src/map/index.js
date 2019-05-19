@@ -33,9 +33,12 @@ const qualKeys = [
   "yes-high_yes-high"
 ];
 
-const qualScale = {};
-
-qualKeys.map(key => (qualScale[key] = `url(#${key})`));
+const qualMapScale = {};
+const qualLegendScale = {};
+qualKeys.map(key => {
+  qualMapScale[key] = `url(#${key})`;
+  qualLegendScale[key] = `${key}.svg`;
+});
 
 const addQualPatterns = () => {
   svg.append("defs");
@@ -226,22 +229,22 @@ const updatePaths = (paths, filter, { max: setMax, min: setMin, scale, legendLab
 
   paths
     .transition()
-    .style("fill", d => (scale === "quantitative" ? quantScale(d[filter]) : qualScale[d[filter]]))
+    .style("fill", d => (scale === "qualitative" ? qualMapScale[d[filter]] : quantScale(d[filter])))
     .style("stroke", "#03172d")
     .style("stroke-linejoin", "round");
   paths
     .on("mouseenter", d => {
-      addTooltip(d, filter);
+      addTooltip(d, filter, scale);
     })
     .on("mouseleave", d => {
       removeTooltip(d);
     });
 
-  if (scale === "quantitative") {
-    buildQuantitativeLegend(quantScale, legendLabel);
-  } else {
+  if (scale === "qualitative") {
     addQualPatterns();
-    buildQualitativeLegend(qualScale, legendLabel);
+    buildQualitativeLegend(qualLegendScale, filter);
+  } else {
+    buildQuantitativeLegend(quantScale, legendLabel);
   }
 };
 

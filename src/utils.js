@@ -49,15 +49,17 @@ export const makeLabel = text => {
 
 export const formatQualitativeScale = (key, kind) => {
   const longLabels = {
-    no: "None",
-    yes_low: "Yes, but the policy is inadequate",
-    yes_no: "Yes, and the policy is adequate"
+    no: "No policy",
+    yes_low: "Yes, but insufficient",
+    yes_high: "Yes, and sufficient"
   };
 
   const shortLabels = {
-    no: "None",
-    yes_low: "Inadequate",
-    yes_high: "Adequate"
+    no: "No policy",
+    yes_low: "Insufficient",
+    yes_high: "Sufficient",
+    proposed_low: "Insufficient",
+    proposed_high: "Sufficient"
   };
   return kind === "short" ? shortLabels[key] : longLabels[key];
 };

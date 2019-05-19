@@ -29,20 +29,19 @@ const quantitativeContent = data => {
 
 const qualitativeContent = data => {
   let content = `<h4>${data.label}</h4>`;
-  content += `<p><strong>Current policy:</strong> ${formatQualitativeScale(
-    data.current,
-    "long"
-  )}</p>`;
+  content += `<div class="${prefix}current-policy"><h5>Current policy</h5>`;
   if (notNA(data.currentdescription)) content += `<p>${marked(data.currentdescription)}</p>`;
-  content += `<p><strong>Proposed policy:</strong> ${formatQualitativeScale(
-    data.proposed,
-    "long"
-  )}</p>`;
+  content += `<p><strong>Quality:</strong> ${formatQualitativeScale(
+    data.current,
+    "short"
+  )}</p></div>`;
+  content += `<h5>Proposed policy</h5>`;
   if (notNA(data.proposeddescription)) content += `<p>${marked(data.proposeddescription)}</p>`;
   if (notNA(data.bill))
     content += `<p><strong>Policy</strong>: <a href=${data.link} target="blank">${
       data.bill
     }</a></p>`;
+  content += `<p><strong>Quality:</strong> ${formatQualitativeScale(data.proposed, "short")}</p>`;
   return content;
 };
 
