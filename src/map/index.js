@@ -3,7 +3,7 @@ import * as topojson from "topojson";
 
 import { parseStats, makeLabel } from "../utils";
 import createTable from "../table";
-import { prefix, nonFilters, rootURL } from "../constants";
+import { prefix, nonFilters, rootURL, nonFilterPrefix } from "../constants";
 import { addDetails, removeDetails } from "./details";
 import { buildQuantitativeLegend, buildQualitativeLegend } from "./legend";
 import { addTooltip, removeTooltip } from "./tooltip";
@@ -62,35 +62,40 @@ const addQualPatterns = () => {
   );
 };
 
-const addHoverPattern = () => {
-  svg
-    .append("defs")
-    .append("pattern")
-    .attr("id", "hoverPattern")
-    .attr("patternUnits", "userSpaceOnUse")
-    .attr("width", 10)
-    .attr("height", 10)
-    .append("image")
-    .attr(
-      "xlink:href",
-      "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+CiAgPHJlY3Qgd2lkdGg9JzEwJyBoZWlnaHQ9JzEwJyBmaWxsPSd3aGl0ZScgLz4KICA8Y2lyY2xlIGN4PScxLjUnIGN5PScxLjUnIHI9JzEuNScgZmlsbD0nYmxhY2snLz4KPC9zdmc+Cg=="
-    )
-    .attr("x", 0)
-    .attr("y", 0)
-    .attr("width", 10)
-    .attr("height", 10);
+const toggleHoverPattern = (shouldAdd) => {
+  const defs = svg.select("defs");
+  if( shouldAdd && defs.empty() ) {
+    svg
+      .append("defs")
+      .append("pattern")
+      .attr("id", "hoverPattern")
+      .attr("patternUnits", "userSpaceOnUse")
+      .attr("width", 10)
+      .attr("height", 10)
+      .append("image")
+      .attr(
+        "xlink:href",
+        "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+CiAgPHJlY3Qgd2lkdGg9JzEwJyBoZWlnaHQ9JzEwJyBmaWxsPSd3aGl0ZScgLz4KICA8Y2lyY2xlIGN4PScxLjUnIGN5PScxLjUnIHI9JzEuNScgZmlsbD0nYmxhY2snLz4KPC9zdmc+Cg=="
+      )
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("width", 10)
+      .attr("height", 10);
 
-  svg
-    .select("defs")
-    .append("mask")
-    .attr("id", "hoverMask")
-    .append("rect")
-    .attr("x", 0)
-    .attr("y", 0)
-    .attr("width", "100%")
-    .attr("height", "100%")
-    .attr("fill", "url(#hoverPattern)");
-};
+    svg
+      .select("defs")
+      .append("mask")
+      .attr("id", "hoverMask")
+      .append("rect")
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("width", "100%")
+      .attr("height", "100%")
+      .attr("fill", "url(#hoverPattern)");
+  } else {
+    defs.remove()
+  }
+}
 
 const addZoomButtons = zoomFunction => {
   d3.select(`.${prefix}map`)
@@ -116,10 +121,11 @@ const addZoomButtons = zoomFunction => {
     });
 };
 
-const buildZoom = (baseZoom, svgWidth, svgHeight) => {
+const buildZoom = (baseZoom, svgWidth, svgHeight, mapConfig) => {
+  const zoomScaler = mapConfig.zoomScaler || 4;
   const zoom = d3
     .zoom()
-    .scaleExtent([baseZoom, baseZoom * 4])
+    .scaleExtent([baseZoom, baseZoom * zoomScaler])
     .translateExtent([[0, 0], [svgWidth, svgHeight]])
     .on("zoom", () => {
       svg
@@ -150,8 +156,6 @@ export const initMap = container => {
   svgHeight = +svg.attr("viewBox").split(" ")[3];
   const projection = d3.geoAlbersUsa().translate([svgWidth / 2, svgHeight / 2]);
   geoPathGenerator = d3.geoPath().projection(projection);
-  // addHoverPattern(svg);
-  buildZoom();
   addShare();
 
   document.addEventListener("click", event => {
@@ -272,8 +276,10 @@ const addFilters = (paths, filters, dataSetConfig) => {
   }
 };
 
-const buildPathGenerator = (config, svgWidth, svgHeight) => {
-  config = config || {};
+const buildPathGenerator = (map, topoFeature) => {
+  const svgWidth = +svg.attr("viewBox").split(" ")[2];
+  const svgHeight = +svg.attr("viewBox").split(" ")[3];
+  const config = map.config || {};
 
   let projection = d3[config.projection || "geoAlbersUsa"]();
 
@@ -285,19 +291,9 @@ const buildPathGenerator = (config, svgWidth, svgHeight) => {
     projection = projection.scale(config.scale);
   }
 
-  return d3.geoPath().projection(projection.translate([svgWidth / 2, svgHeight / 2]));
-};
-
-// Draw the map
-export const drawMap = (stats, map, dataSetConfig) => {
-  const topoFeature = topojson.feature(map, map.objects.features);
-  const cleanStats = parseStats(stats);
-  svg.selectAll("path").remove();
-
-  const svgWidth = +svg.attr("viewBox").split(" ")[2];
-  const svgHeight = +svg.attr("viewBox").split(" ")[3];
-
-  const geoPathGenerator = buildPathGenerator(map.config, svgWidth, svgHeight);
+  const geoPathGenerator = d3
+    .geoPath()
+    .projection(projection.translate([svgWidth / 2, svgHeight / 2]));
 
   const bounds = geoPathGenerator.bounds(topoFeature);
 
@@ -313,14 +309,30 @@ export const drawMap = (stats, map, dataSetConfig) => {
       .transition()
       .duration(100)
       .call(
-        buildZoom(scale, svgWidth, svgHeight).transform,
+        buildZoom(scale, svgWidth, svgHeight, config).transform,
         d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)
       );
   } else {
-    buildZoom(1, svgWidth, svgHeight);
+    buildZoom(1, svgWidth, svgHeight, config);
   }
 
-  const filters = Object.keys(cleanStats[0]).filter(key => !nonFilters.includes(key));
+  return geoPathGenerator;
+};
+
+// Draw the map
+export const drawMap = (stats, map, dataSetConfig) => {
+  const topoFeature = topojson.feature(map, map.objects.features);
+  const cleanStats = parseStats(stats);
+  svg.selectAll("path").remove();
+
+  const geoPathGenerator = buildPathGenerator(map, topoFeature);
+
+  const filters = Object.keys(cleanStats[0]).filter(
+    key => !nonFilters.includes(key) && key.search(nonFilterPrefix) !== 0
+  );
+
+  toggleHoverPattern(dataSetConfig.scale === 'quantitative')
+
   const currentGeography = drawFeatures(
     geoPathGenerator,
     addStatsToFeatures(

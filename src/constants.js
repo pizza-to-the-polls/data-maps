@@ -26,3 +26,4 @@ export const nonFilters = [
   "bill",
   "link"
 ];
+export const nonFilterPrefix = 'na_'
