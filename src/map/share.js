@@ -24,8 +24,10 @@ export const addShare = () => {
     mapSVG.setAttribute("height", 600);
 
     const legendSVG = elem.querySelector(`.${prefix}legend svg`);
-    legendSVG.setAttribute("width", legendSVG.getBBox().width * 100);
-    legendSVG.setAttribute("viewBox", "0 0 150 40");
+    if( legendSVG ) {
+      legendSVG.setAttribute("width", legendSVG.getBBox().width * 100);
+      legendSVG.setAttribute("viewBox", "0 0 150 40");
+    }
 
     html2canvas(elem).then(canvas => {
       mapSVG.removeAttribute("width");
@@ -33,7 +35,9 @@ export const addShare = () => {
       toggleLoading(false);
       toggleShare(true, canvas.toDataURL("image/png"));
       elem.classList.remove("generating-screenshot");
-      legendSVG.setAttribute("viewBox", "0 0 200 40");
+      if( legendSVG ) {
+        legendSVG.setAttribute("viewBox", "0 0 200 40");
+      }
       parent.removeChild(copy);
     });
   });
