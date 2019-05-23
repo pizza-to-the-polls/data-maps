@@ -1,6 +1,12 @@
 import { select } from "d3";
 import marked from "marked";
-import { formatAsPercentage, makeLabel, formatQualitativeScale, notNA } from "../utils";
+import {
+  formatAsPercentage,
+  makeLabel,
+  formatQualitativeScale,
+  notNA,
+  getFullLabel
+} from "../utils";
 import { prefix, excludedKeys } from "../constants";
 
 // Tooltip
@@ -11,7 +17,7 @@ const getDetailsKeys = data => {
 };
 
 const quantitativeContent = data => {
-  let content = `<h4>${data.label}</h4>`;
+  let content = `<h4>${getFullLabel(data.label)}</h4>`;
   content += "<table><tbody>";
   const keys = getDetailsKeys(data);
   keys.forEach(key => {
@@ -28,7 +34,7 @@ const quantitativeContent = data => {
 };
 
 const qualitativeContent = data => {
-  let content = `<h4>${data.label}</h4>`;
+  let content = `<h4>${getFullLabel(data.label)}</h4>`;
   content += `<div class="${prefix}current-policy"><h5>Current policy</h5>`;
   if (notNA(data.currentdescription)) content += `<p>${marked(data.currentdescription)}</p>`;
   content += `<p><strong>Quality:</strong> ${formatQualitativeScale(
@@ -47,10 +53,10 @@ const qualitativeContent = data => {
 
 export const addDetails = d => {
   let content;
-  if (d.scale === "quantitative") {
-    content = quantitativeContent(d);
-  } else {
+  if (d.scaleType === "qualitative") {
     content = qualitativeContent(d);
+  } else {
+    content = quantitativeContent(d);
   }
 
   details.style("display", "block").html(content);

@@ -87,9 +87,9 @@ export const initMap = container => {
   });
 };
 
-const addStatsToFeatures = (features, stats, scale, legendLabel) =>
+const addStatsToFeatures = (features, stats, scaleType, legendLabel) =>
   features.map(feature => ({
-    scale,
+    scaleType,
     legendLabel,
     ...feature,
     ...stats.find(d => d.fips === feature.id)
@@ -250,7 +250,7 @@ export const drawMap = (stats, map, dataSetConfig) => {
     addStatsToFeatures(
       topoFeature.features,
       cleanStats,
-      dataSetConfig.scale,
+      dataSetConfig.scaleType,
       dataSetConfig.legendLabel
     )
   );

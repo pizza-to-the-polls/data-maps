@@ -1,4 +1,4 @@
-import { sheetsBaseUrl, rootURL } from "./constants";
+import { sheetsBaseUrl, rootURL, stateLabels } from "./constants";
 
 export const buildSheetsURL = (tab, sheetsID) =>
   `${sheetsBaseUrl}/${sheetsID}/${tab}/public/basic?alt=json`;
@@ -65,3 +65,14 @@ export const formatQualitativeScale = (key, kind) => {
 };
 
 export const notNA = value => ["NA", "N/A"].indexOf(value) === -1;
+
+export const getFullLabel = value => {
+  if (value.search("_") > -1) {
+    const parts = value.split("_");
+    const state = stateLabels[parts[0]];
+    const district = Number(parts[1]);
+    return `${state} District ${district}`;
+  }
+
+  return stateLabels[value] || value;
+};
