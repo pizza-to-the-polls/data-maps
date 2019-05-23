@@ -3,7 +3,7 @@ import * as topojson from "topojson";
 
 import { parseStats, makeLabel } from "../utils";
 import createTable from "../table";
-import { prefix, nonFilters } from "../constants";
+import { prefix, nonFilters, rootURL } from "../constants";
 import { addDetails, removeDetails } from "./details";
 import { buildQuantitativeLegend, buildQualitativeLegend } from "./legend";
 import { addTooltip, removeTooltip } from "./tooltip";
@@ -54,7 +54,7 @@ const addQualPatterns = () => {
       .attr("width", p)
       .attr("height", p)
       .append("image")
-      .attr("xlink:href", `/${key}.svg`)
+      .attr("xlink:href", `${rootURL}${key}.svg`)
       .attr("x", 0)
       .attr("y", 0)
       .attr("width", p)
