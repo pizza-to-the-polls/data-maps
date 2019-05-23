@@ -145,14 +145,14 @@ const initDataMap = container => {
           loadedMaps[map_key] = true;
         }
 
-        dataset.scale = dataset.scale || "quantitative";
+        dataset.scaleType = dataset.scale || "quantitative";
 
         if (!Object.prototype.hasOwnProperty.call(datasets, key)) {
           datasets[key] = {};
           datasets[key].label = dataset.label || dataset.issuelabel;
           datasets[key].title = dataset.title || `Support for ${datasets[key].label}`;
           datasets[key].defaultTab = dataset.tab;
-          datasets[key].scale = dataset.scale;
+          datasets[key].scaleType = dataset.scaleType;
           datasets[key].legendLabel = dataset.legendlabel || "Issue support";
           datasets[key].defaultView = dataset.dataset.toLowerCase();
           datasets[key].issuekey = key;

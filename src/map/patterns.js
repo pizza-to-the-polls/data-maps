@@ -22,9 +22,9 @@ export const addQualPatterns = svg => {
   );
 };
 
-export const toggleHoverPattern = (shouldAdd, svg) => {
+export const toggleHoverPattern = (svg, shouldAdd) => {
   const defs = svg.select("defs");
-  if( shouldAdd && defs.empty() ) {
+  if (shouldAdd && defs.empty()) {
     svg
       .append("defs")
       .append("pattern")
@@ -53,6 +53,6 @@ export const toggleHoverPattern = (shouldAdd, svg) => {
       .attr("height", "100%")
       .attr("fill", "url(#hoverPattern)");
   } else {
-    defs.remove()
+    defs.remove();
   }
-}
+};

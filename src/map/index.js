@@ -243,7 +243,7 @@ export const drawMap = (stats, map, dataSetConfig) => {
     key => !nonFilters.includes(key) && key.search(nonFilterPrefix) !== 0
   );
 
-  toggleHoverPattern(dataSetConfig.scale === 'quantitative', svg);
+  toggleHoverPattern(svg, dataSetConfig.scaleType !== "qualitative");
 
   const currentGeography = drawFeatures(
     geoPathGenerator,
