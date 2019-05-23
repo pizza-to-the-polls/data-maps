@@ -1,5 +1,5 @@
 import { select } from "d3";
-import { formatAsPercentage, formatQualitativeScale } from "../utils";
+import { formatAsPercentage, formatQualitativeScale, getFullLabel } from "../utils";
 import { prefix } from "../constants";
 
 // Tooltip
@@ -15,7 +15,7 @@ const getPosition = e => {
 };
 
 const createTooltipContent = (data, filter, scale) => {
-  let content = `<strong>${data.label}:</strong> `;
+  let content = `<strong>${getFullLabel(data.label)}:</strong> `;
   if (scale === "qualitative") {
     content += `${formatQualitativeScale(data[filter], "long")}`;
   } else {
