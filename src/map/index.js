@@ -8,6 +8,8 @@ import { addDetails, removeDetails } from "./details";
 import { buildQuantitativeLegend, buildQualitativeLegend } from "./legend";
 import { addTooltip, removeTooltip } from "./tooltip";
 import { addShare } from "./share";
+import { getMapScale, getLegendScale } from "./scale";
+import { addQualPatterns, toggleHoverPattern } from "./patterns";
 
 let filterContainer;
 let svg;
@@ -15,87 +17,6 @@ let svg;
 let geoPathGenerator;
 let svgWidth;
 let svgHeight;
-
-const qualKeys = [
-  "no",
-  "yes_low",
-  "yes_high",
-  "proposed_low",
-  "proposed_high",
-  "no-no",
-  "no-yes_low",
-  "no-yes_high",
-  "yes_low-no",
-  "yes_low-yes_low",
-  "yes_low-yes_high",
-  "yes_high-no",
-  "yes-high_yes-low",
-  "yes-high_yes-high"
-];
-
-const qualMapScale = {};
-const qualLegendScale = {};
-qualKeys.map(key => {
-  qualMapScale[key] = `url(#${key})`;
-  qualLegendScale[key] = `${key}.svg`;
-});
-
-const addQualPatterns = () => {
-  svg.append("defs");
-
-  const p = 20;
-
-  qualKeys.map(key =>
-    svg
-      .select("defs")
-      .append("pattern")
-      .attr("patternUnits", "userSpaceOnUse")
-      .attr("id", key)
-      .attr("width", p)
-      .attr("height", p)
-      .append("image")
-      .attr("xlink:href", `${rootURL}${key}.svg`)
-      .attr("x", 0)
-      .attr("y", 0)
-      .attr("width", p)
-      .attr("height", p)
-  );
-};
-
-const toggleHoverPattern = (shouldAdd) => {
-  const defs = svg.select("defs");
-  if( shouldAdd && defs.empty() ) {
-    svg
-      .append("defs")
-      .append("pattern")
-      .attr("id", "hoverPattern")
-      .attr("patternUnits", "userSpaceOnUse")
-      .attr("width", 10)
-      .attr("height", 10)
-      .append("image")
-      .attr(
-        "xlink:href",
-        "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+CiAgPHJlY3Qgd2lkdGg9JzEwJyBoZWlnaHQ9JzEwJyBmaWxsPSd3aGl0ZScgLz4KICA8Y2lyY2xlIGN4PScxLjUnIGN5PScxLjUnIHI9JzEuNScgZmlsbD0nYmxhY2snLz4KPC9zdmc+Cg=="
-      )
-      .attr("x", 0)
-      .attr("y", 0)
-      .attr("width", 10)
-      .attr("height", 10);
-
-    svg
-      .select("defs")
-      .append("mask")
-      .attr("id", "hoverMask")
-      .append("rect")
-      .attr("x", 0)
-      .attr("y", 0)
-      .attr("width", "100%")
-      .attr("height", "100%")
-      .attr("fill", "url(#hoverPattern)");
-  } else {
-    defs.remove()
-  }
-}
 
 const addZoomButtons = zoomFunction => {
   d3.select(`.${prefix}map`)
@@ -194,7 +115,7 @@ const drawFeatures = (pathGenerator, data) =>
     .attr("class", "feature")
     .on("click", handleClick);
 
-const updatePaths = (paths, filter, { max: setMax, min: setMin, scale, legendLabel }) => {
+const updatePaths = (paths, filter, { max: setMax, min: setMin, scaleType, legendLabel }) => {
   const data = paths
     .data()
     .map(d => d[filter])
@@ -220,20 +141,11 @@ const updatePaths = (paths, filter, { max: setMax, min: setMin, scale, legendLab
     domain.push(max > 1 ? 100 : 1);
   }
 
-  const quantScale = d3.scaleQuantize(domain, [
-    "#67001f",
-    "#b2182b",
-    "#d6604d",
-    "#f4a582",
-    "#92c5de",
-    "#4393c3",
-    "#2166ac",
-    "#053061"
-  ]);
+  const scale = getMapScale(scaleType, domain);
 
   paths
     .transition()
-    .style("fill", d => (scale === "qualitative" ? qualMapScale[d[filter]] : quantScale(d[filter])))
+    .style("fill", d => scale(d[filter]))
     .style("stroke", "#03172d")
     .style("stroke-linejoin", "round");
   paths
@@ -244,11 +156,11 @@ const updatePaths = (paths, filter, { max: setMax, min: setMin, scale, legendLab
       removeTooltip(d);
     });
 
-  if (scale === "qualitative") {
-    addQualPatterns();
-    buildQualitativeLegend(qualLegendScale, filter);
+  if (scaleType === "qualitative") {
+    addQualPatterns(svg);
+    buildQualitativeLegend(getLegendScale(), filter);
   } else {
-    buildQuantitativeLegend(quantScale, legendLabel);
+    buildQuantitativeLegend(scale, legendLabel);
   }
 };
 
@@ -331,7 +243,7 @@ export const drawMap = (stats, map, dataSetConfig) => {
     key => !nonFilters.includes(key) && key.search(nonFilterPrefix) !== 0
   );
 
-  toggleHoverPattern(dataSetConfig.scale === 'quantitative')
+  toggleHoverPattern(dataSetConfig.scale === 'quantitative', svg);
 
   const currentGeography = drawFeatures(
     geoPathGenerator,
