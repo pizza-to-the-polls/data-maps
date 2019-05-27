@@ -7,7 +7,8 @@ export const excludedKeys = [
   "geometry",
   "label",
   "scale",
-  "legendLabel"
+  "legendLabel",
+  "scaleType"
 ];
 export const prefix = "dfp-map__";
 export const rootURL =
@@ -24,10 +25,11 @@ export const nonFilters = [
   "currentdescription",
   "proposeddescription",
   "bill",
-  "link"
+  "link",
+  "scaleType"
 ];
 
-export const nonFilterPrefix = 'na_'
+export const nonFilterPrefix = "na_";
 
 export const qualKeys = [
   "no",
