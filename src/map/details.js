@@ -7,7 +7,7 @@ import {
   notNA,
   getFullLabel
 } from "../utils";
-import { prefix, excludedKeys } from "../constants";
+import { prefix, excludedKeys, QUALITATIVE_SCALE } from "../constants";
 
 // Tooltip
 let details;
@@ -53,7 +53,7 @@ const qualitativeContent = data => {
 
 export const addDetails = d => {
   let content;
-  if (d.scaleType === "qualitative") {
+  if (d.scaleType === QUALITATIVE_SCALE) {
     content = qualitativeContent(d);
   } else {
     content = quantitativeContent(d);

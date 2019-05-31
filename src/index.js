@@ -1,6 +1,6 @@
 import { select, json } from "d3";
-import { prefix } from "./constants";
-import { buildMapURL, buildSheetsURL, parseRow, floatOrNull, makeLabel } from "./utils";
+import { prefix, DEFAULT_SCALE, DEFAULT_BUCKETS } from "./constants";
+import { buildMapURL, buildSheetsURL, parseRow, floatOrNull } from "./utils";
 import { getContent, showContent, initDom, toggleLoading } from "./content";
 import { removeDetails, initDetails } from "./map/details";
 import { initTooltip, removeTooltip } from "./map/tooltip";
@@ -138,14 +138,15 @@ const initDataMap = container => {
       try {
         const dataset = parseRow(entry.content.$t);
         const key = entry.title.$t;
-        const map_key = dataset.dataset.replace(/\s/g, "-").toLowerCase();
+        const mapKey = dataset.dataset.replace(/\s/g, "-").toLowerCase();
 
-        if (!loadedMaps[map_key]) {
-          fetchMap(map_key);
-          loadedMaps[map_key] = true;
+        if (!loadedMaps[mapKey]) {
+          fetchMap(mapKey);
+          loadedMaps[mapKey] = true;
         }
 
-        dataset.scaleType = dataset.scale || "quantitative";
+        dataset.scaleType = dataset.scale || DEFAULT_SCALE;
+        dataset.buckets = Number(dataset.buckets) || DEFAULT_BUCKETS;
 
         if (!Object.prototype.hasOwnProperty.call(datasets, key)) {
           datasets[key] = {};
@@ -157,12 +158,13 @@ const initDataMap = container => {
           datasets[key].defaultView = dataset.dataset.toLowerCase();
           datasets[key].issuekey = key;
           datasets[key].maps = [];
+          datasets[key].buckets = Number(dataset.buckets) || DEFAULT_BUCKETS;
           if (dataset.max) datasets[key].max = floatOrNull(dataset.max);
           if (dataset.min) datasets[key].min = floatOrNull(dataset.min);
         }
-        datasets[key][map_key] = dataset;
-        datasets[key].maps.push(map_key);
-        mapKeys[dataset.tab] = map_key;
+        datasets[key][mapKey] = dataset;
+        datasets[key].maps.push(mapKey);
+        mapKeys[dataset.tab] = mapKey;
       } catch (error) {
         console.error(
           `Could not import settings row ${entry.title.$t} ${entry.content.$t}, error:`

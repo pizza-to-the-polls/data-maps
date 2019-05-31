@@ -31,6 +31,14 @@ export const nonFilters = [
 
 export const nonFilterPrefix = "na_";
 
+export const QUALITATIVE_SCALE = "qualitative";
+export const RED_SCALE = "red";
+export const BLUE_SCALE = "blue";
+export const DIVERGENT_SCALE = "red-to-blue";
+export const INVERTED_SCALE = "blue-to-red";
+export const DEFAULT_SCALE = DIVERGENT_SCALE;
+export const DEFAULT_BUCKETS = 7;
+
 export const qualKeys = [
   "no",
   "yes_low",
@@ -46,17 +54,6 @@ export const qualKeys = [
   "yes_high-no",
   "yes-high_yes-low",
   "yes-high_yes-high"
-];
-
-export const quantitativeColors = [
-  "#67001f",
-  "#b2182b",
-  "#d6604d",
-  "#f4a582",
-  "#92c5de",
-  "#4393c3",
-  "#2166ac",
-  "#053061"
 ];
 
 export const stateLabels = {

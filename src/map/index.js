@@ -3,7 +3,7 @@ import * as topojson from "topojson";
 
 import { parseStats, makeLabel } from "../utils";
 import createTable from "../table";
-import { prefix, nonFilters, rootURL, nonFilterPrefix } from "../constants";
+import { prefix, nonFilters, nonFilterPrefix, QUALITATIVE_SCALE } from "../constants";
 import { addDetails, removeDetails } from "./details";
 import { buildQuantitativeLegend, buildQualitativeLegend } from "./legend";
 import { addTooltip, removeTooltip } from "./tooltip";
@@ -115,7 +115,11 @@ const drawFeatures = (pathGenerator, data) =>
     .attr("class", "feature")
     .on("click", handleClick);
 
-const updatePaths = (paths, filter, { max: setMax, min: setMin, scaleType, legendLabel }) => {
+const updatePaths = (
+  paths,
+  filter,
+  { max: setMax, min: setMin, scaleType, legendLabel, buckets }
+) => {
   const data = paths
     .data()
     .map(d => d[filter])
@@ -141,7 +145,7 @@ const updatePaths = (paths, filter, { max: setMax, min: setMin, scaleType, legen
     domain.push(max > 1 ? 100 : 1);
   }
 
-  const scale = getMapScale(scaleType, domain);
+  const scale = getMapScale(scaleType, domain, buckets);
 
   paths
     .transition()
@@ -156,7 +160,7 @@ const updatePaths = (paths, filter, { max: setMax, min: setMin, scaleType, legen
       removeTooltip(d);
     });
 
-  if (scaleType === "qualitative") {
+  if (scaleType === QUALITATIVE_SCALE) {
     addQualPatterns(svg);
     buildQualitativeLegend(getLegendScale(), filter);
   } else {
@@ -170,7 +174,7 @@ const addFilters = (paths, filters, dataSetConfig) => {
     filterContainer
       .append("label")
       .attr("for", "filter")
-      .text(dataSetConfig.scale === "quantitative" ? "Group" : "Current vs. Proposed");
+      .text(dataSetConfig.scale === QUALITATIVE_SCALE ? "Current vs. Proposed" : "Group");
     const filter = filterContainer
       .append("select")
       .attr("name", "filter")
@@ -243,7 +247,7 @@ export const drawMap = (stats, map, dataSetConfig) => {
     key => !nonFilters.includes(key) && key.search(nonFilterPrefix) !== 0
   );
 
-  toggleHoverPattern(svg, dataSetConfig.scaleType !== "qualitative");
+  toggleHoverPattern(svg, dataSetConfig.scaleType !== QUALITATIVE_SCALE);
 
   const currentGeography = drawFeatures(
     geoPathGenerator,

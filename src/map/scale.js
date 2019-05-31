@@ -1,8 +1,10 @@
 import * as d3 from "d3";
-import { quantitativeColors, qualKeys } from "../constants";
+import { qualKeys, RED_SCALE, BLUE_SCALE, QUALITATIVE_SCALE, INVERTED_SCALE } from "../constants";
 
-export const getMapScale = (scaleType, domain) => {
-  if (scaleType === "qualitative") {
+export const getMapScale = (scaleType, domain, buckets) => {
+  const colorSchemeIndex = buckets + 1; // Account for 0-indexing
+
+  if (scaleType === QUALITATIVE_SCALE) {
     const qualMapScale = {};
     qualKeys.map(key => {
       qualMapScale[key] = `url(#${key})`;
@@ -10,10 +12,16 @@ export const getMapScale = (scaleType, domain) => {
 
     return value => qualMapScale[value];
   }
-  if (scaleType === "invertedquantitative") {
-    return d3.scaleQuantize(domain, quantitativeColors.reverse());
+  if (scaleType === INVERTED_SCALE) {
+    return d3.scaleQuantize(domain, d3.schemeRdBu[colorSchemeIndex].reverse());
   }
-  return d3.scaleQuantize(domain, quantitativeColors);
+  if (scaleType === BLUE_SCALE) {
+    return d3.scaleQuantize(domain, d3.schemeBlues[colorSchemeIndex]);
+  }
+  if (scaleType === RED_SCALE) {
+    return d3.scaleQuantize(domain, d3.schemeReds[colorSchemeIndex]);
+  }
+  return d3.scaleQuantize(domain, d3.schemeRdBu[colorSchemeIndex]);
 };
 
 export const getLegendScale = () => {
