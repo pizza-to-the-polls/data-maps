@@ -7,7 +7,6 @@ import { prefix, nonFilters, nonFilterPrefix, QUALITATIVE_SCALE } from "../const
 import { addDetails, removeDetails } from "./details";
 import { buildQuantitativeLegend, buildQualitativeLegend } from "./legend";
 import { addTooltip, removeTooltip } from "./tooltip";
-import { addShare } from "./share";
 import { getMapScale, getLegendScale } from "./scale";
 import { addQualPatterns, toggleHoverPattern } from "./patterns";
 
@@ -77,7 +76,6 @@ export const initMap = container => {
   svgHeight = +svg.attr("viewBox").split(" ")[3];
   const projection = d3.geoAlbersUsa().translate([svgWidth / 2, svgHeight / 2]);
   geoPathGenerator = d3.geoPath().projection(projection);
-  addShare();
 
   document.addEventListener("click", event => {
     if (event.target.id === `${prefix}map-svg`) {
