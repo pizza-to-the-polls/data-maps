@@ -27,6 +27,7 @@
     "eslint-plugin-prettier": "^3.0.1",
     "gh-pages": "^2.0.1",
     "parcel": "^1.12.2",
+    "parcel-bundler": "^1.12.3",
     "prettier": "^1.16.4",
     "sass": "^1.17.3"
   },
@@ -36,6 +37,8 @@
     "mapshaper": "^0.4.111",
     "marked": "^0.6.1",
     "parcel-plugin-static-files-copy": "^2.0.0",
+    "preact": "^8.4.2",
+    "preact-habitat": "^3.2.2",
     "topojson": "^3.0.2"
   },
   "staticFiles": {
