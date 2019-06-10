@@ -2,7 +2,7 @@ import { sheetsBaseUrl, rootURL, stateLabels } from "./constants";
 
 export const buildSheetsURL = (tab, sheetsID) =>
   process.env.LOCAL_DATA === "true"
-    ? `${rootURL}/sheets/${sheetsID}/${tab}.json`
+    ? `${rootURL}sheets/${sheetsID}/${tab}.json`
     : `${sheetsBaseUrl}/${sheetsID}/${tab}/public/basic?alt=json`;
 
 export const buildMapURL = map => `${rootURL}${map}.json`;

@@ -1,7 +1,10 @@
 import { select, json } from "d3";
+import { h, render } from "preact";
+
 import { prefix, DEFAULT_SCALE, DEFAULT_BUCKETS } from "./constants";
+import App from "./components/App";
+
 import { buildMapURL, buildSheetsURL, parseRow, floatOrNull } from "./utils";
-import { getContent, showContent, initDom, toggleLoading } from "./content";
 import { removeDetails, initDetails } from "./map/details";
 import { initTooltip, removeTooltip } from "./map/tooltip";
 import { drawMap, initMap } from "./map";
@@ -17,8 +20,6 @@ const datasets = {};
 const sheets = {};
 const maps = {};
 const mapKeys = {};
-
-const fetchMap = map => json(buildMapURL(map)).then(geojson => (maps[map] = geojson));
 
 const build = (tab, attempts) => {
   toggleLoading(true);
@@ -50,11 +51,6 @@ const build = (tab, attempts) => {
   removeTooltip();
 };
 
-const updateClickInstructions = value => {
-  select(`.${prefix}click-instructions`).text(
-    `Click a ${value === "state" ? "state" : "district"} for details`
-  );
-};
 const addStateAndDistrictToggle = dataset => {
   toggleContainer.selectAll("*").remove();
 
@@ -70,7 +66,6 @@ const addStateAndDistrictToggle = dataset => {
       .on("change", () => {
         const selected = dataset[toggle.property("value")];
         currentDataset = selected;
-        updateClickInstructions(toggle.property("value"));
         build(selected.tab);
       });
 
@@ -119,7 +114,10 @@ const initDataMap = container => {
     console.error("Cannot init maps without a key - set the data-spreadsheet-key attribute");
     return;
   }
-  initDom(container);
+  render(<App sheetKey={sheetKey} />, container);
+
+  return null;
+
   initMap(container);
   initTable(container);
   initDetails(container);
@@ -183,7 +181,6 @@ const initDataMap = container => {
 
     currentDataset = firstDataset;
     build(firstDataset.defaultTab);
-    updateClickInstructions(firstDataset.defaultView);
     getContent(firstDataset.issuekey, sheetKey);
   });
 };
