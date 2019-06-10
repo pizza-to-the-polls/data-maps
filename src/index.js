@@ -84,7 +84,7 @@ const addStateAndDistrictToggle = dataset => {
   }
 };
 
-const addMapSelector = (container, data) => {
+const addMapSelector = (container, data, firstKey) => {
   mapSelectorContainer = select(container).select(`.${prefix}selector`);
   toggleContainer = select(container).select(`.${prefix}toggle`);
 
@@ -97,11 +97,13 @@ const addMapSelector = (container, data) => {
     .append("select")
     .attr("name", "map-selector")
     .on("change", () => {
-      const selected = datasets[mapSelector.property("value")];
+      const value = mapSelector.property("value");
+      const selected = datasets[value];
+      window.location = `#${value}`;
       currentDataset = selected;
       build(selected.defaultTab);
       addStateAndDistrictToggle(selected);
-      showContent(currentDataset.issuekey);
+      showContent(selected.issuekey);
     });
 
   mapSelector
@@ -111,6 +113,8 @@ const addMapSelector = (container, data) => {
     .append("option")
     .attr("value", d => d)
     .text(d => datasets[d].label);
+
+  mapSelector.select(`option[value=${firstKey}]`).attr("selected", true);
 };
 
 const initDataMap = container => {
@@ -174,10 +178,17 @@ const initDataMap = container => {
     });
 
     const datasetKeys = Object.keys(datasets);
-    const firstDataset = datasets[datasetKeys[0]];
+    let firstKey = datasetKeys[0];
+
+    if (window.location.hash) {
+      const hash = window.location.hash.split("#")[1];
+      firstKey = datasetKeys.indexOf(hash) > -1 ? hash : datasetKeys[0];
+    }
+
+    const firstDataset = datasets[firstKey];
 
     if (datasetKeys.length > 1) {
-      addMapSelector(container, datasetKeys);
+      addMapSelector(container, datasetKeys, firstKey);
       addStateAndDistrictToggle(firstDataset);
     }
 
