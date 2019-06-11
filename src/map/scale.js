@@ -8,7 +8,8 @@ import {
   DYNAMIC_SCALE,
   INVERTED_RED_SCALE,
   INVERTED_BLUE_SCALE,
-  INVERTED_DYNAMIC_SCALE
+  INVERTED_DYNAMIC_SCALE,
+  DIVERGENT_SCALE
 } from "../constants";
 
 export const getDomain = (data, setMin, setMax) => {
@@ -36,31 +37,32 @@ export const getDomain = (data, setMin, setMax) => {
 };
 
 export const getDynamicDomain = data => {
-  const min = Math.round(Math.min.apply(null, data) * 10) / 10;
-  const max = Math.round(Math.max.apply(null, data) * 10) / 10;
+  const min = Math.floor(Math.min.apply(null, data) * 10) / 10;
+  const max = Math.ceil(Math.max.apply(null, data) * 10) / 10;
   return [min, max];
 };
 
 export const getDynamicColorScheme = (domain, scaleType) => {
   if (scaleType === INVERTED_DYNAMIC_SCALE) {
-    if (domain[0] <= 0.5 && domain[1] <= 0.5) {
-      // If min and max are both below .5 go dark red to light red
+    if (domain[1] <= 0.5) {
+      // If min and max are both below .5 go dark blue to light blue
       return INVERTED_BLUE_SCALE;
     }
     if (domain[0] >= 0.5) {
-      // If min is over .5 go light blue to dark blue
+      // If min is over .5 go light red to dark red
       return RED_SCALE;
     }
-  } else {
-    if (domain[0] <= 0.5 && domain[1] <= 0.5) {
-      // If min and max are both below .5 go dark red to light red
-      return INVERTED_RED_SCALE;
-    }
-    if (domain[0] >= 0.5) {
-      // If min is over .5 go light blue to dark blue
-      return BLUE_SCALE;
-    }
+    return INVERTED_SCALE;
   }
+  if (domain[1] <= 0.5) {
+    // If min and max are both below .5 go dark red to light red
+    return INVERTED_RED_SCALE;
+  }
+  if (domain[0] >= 0.5) {
+    // If min is over .5 go light blue to dark blue
+    return BLUE_SCALE;
+  }
+  return DIVERGENT_SCALE;
 };
 
 export const getMapScale = ({ scaleType, buckets, setMin, setMax }, data) => {
