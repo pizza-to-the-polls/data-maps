@@ -99,7 +99,7 @@ const addMapSelector = (container, data, firstKey) => {
     .on("change", () => {
       const value = mapSelector.property("value");
       const selected = datasets[value];
-      window.location = `#${value}`;
+      window.location.hash = value;
       currentDataset = selected;
       build(selected.defaultTab);
       addStateAndDistrictToggle(selected);
