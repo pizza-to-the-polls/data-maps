@@ -29,6 +29,7 @@ The first tab should be a settings tab. The following columns are required:
 These are optional columns that you can have for extra configuration:
 
 - `Title`: The title that will be displayed at the top of the map. If empty, it will default to `Support for [issue label]`.
+- `Legend label`: Override the label on the legend.
 - `Min`: A decimal between 0 and 1. If empty, it will be 0.
 - `Max`: A decimal between 0 and 1. If empty, it will be 1.
 - `Scale`: The type of scale to use. Options:
