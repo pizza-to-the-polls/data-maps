@@ -34,8 +34,12 @@ export const nonFilterPrefix = "na_";
 export const QUALITATIVE_SCALE = "qualitative";
 export const RED_SCALE = "red";
 export const BLUE_SCALE = "blue";
+export const INVERTED_RED_SCALE = "red-inverted";
+export const INVERTED_BLUE_SCALE = "blue-inverted";
 export const DIVERGENT_SCALE = "red-to-blue";
 export const INVERTED_SCALE = "blue-to-red";
+export const DYNAMIC_SCALE = "dynamic";
+export const INVERTED_DYNAMIC_SCALE = "dynamic-inverted";
 export const DEFAULT_SCALE = DIVERGENT_SCALE;
 export const DEFAULT_BUCKETS = 7;
 

@@ -7,7 +7,7 @@ import { prefix, nonFilters, nonFilterPrefix, QUALITATIVE_SCALE } from "../const
 import { addDetails, removeDetails } from "./details";
 import { buildQuantitativeLegend, buildQualitativeLegend } from "./legend";
 import { addTooltip, removeTooltip } from "./tooltip";
-import { getMapScale, getLegendScale } from "./scale";
+import { getMapScale, getLegendScale, getDomain, getDynamicDomain } from "./scale";
 import { addQualPatterns, toggleHoverPattern } from "./patterns";
 
 let filterContainer;
@@ -113,37 +113,12 @@ const drawFeatures = (pathGenerator, data) =>
     .attr("class", "feature")
     .on("click", handleClick);
 
-const updatePaths = (
-  paths,
-  filter,
-  { max: setMax, min: setMin, scaleType, legendLabel, buckets }
-) => {
+const updatePaths = (paths, filter, config) => {
   const data = paths
     .data()
     .map(d => d[filter])
     .filter(p => p);
-  const max = Math.max.apply(null, data);
-  const min = Math.min.apply(null, data);
-  const domain = [];
-
-  if (setMin) {
-    domain.push(setMin);
-  } else {
-    domain.push(
-      min < 0
-        ? min < -1
-          ? -100
-          : -1 // Assume equal distribution around zero
-        : 0 // Assume floor is zero
-    );
-  }
-  if (setMax) {
-    domain.push(setMax);
-  } else {
-    domain.push(max > 1 ? 100 : 1);
-  }
-
-  const scale = getMapScale(scaleType, domain, buckets);
+  const scale = getMapScale(config, data);
 
   paths
     .transition()
@@ -158,11 +133,11 @@ const updatePaths = (
       removeTooltip(d);
     });
 
-  if (scaleType === QUALITATIVE_SCALE) {
+  if (config.scaleType === QUALITATIVE_SCALE) {
     addQualPatterns(svg);
     buildQualitativeLegend(getLegendScale(), filter);
   } else {
-    buildQuantitativeLegend(scale, legendLabel);
+    buildQuantitativeLegend(scale, config.legendLabel);
   }
 };
 
