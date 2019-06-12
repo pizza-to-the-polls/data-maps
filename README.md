@@ -29,6 +29,7 @@ The first tab should be a settings tab. The following columns are required:
 These are optional columns that you can have for extra configuration:
 
 - `Title`: The title that will be displayed at the top of the map. If empty, it will default to `Support for [issue label]`.
+- `Legend label`: Override the label on the legend.
 - `Min`: A decimal between 0 and 1. If empty, it will be 0.
 - `Max`: A decimal between 0 and 1. If empty, it will be 1.
 - `Scale`: The type of scale to use. Options:
@@ -36,6 +37,10 @@ These are optional columns that you can have for extra configuration:
   - `blue`: Linear scale from light blue to dark blue.
   - `red-to-blue`: Divergent scale from red to blue.
   - `blue-to-red`: Divergent scale from blue to red.
+  - `red-inverted`: Linear scale from dark red to light red.
+  - `blue-inverted`: Linear scale from dark blue to light blue.
+  - `dynamic`: If min is at or above .5, light blue to dark blue. If max is at or below .5, dark red to light red. Otherwise dark red to dark blue.
+  - `dynamic-inverted`: If min is at or above .5, light blue to dark blue. If max is at or below .5, dark red to light red. Otherwise dark blue to dark red.
   - `qualitative`: Red, yellow and green. Used for evaluating quality of policies.
 - `Buckets`: The number of buckets to divide the scale into. Defaults to 7. Options:
   - `red` and `blue`: A number between 3 and 8.
