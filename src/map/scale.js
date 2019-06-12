@@ -109,4 +109,3 @@ export const getLegendScale = () => {
   });
   return qualLegendScale;
 };
-// getDomain(min, max, setMin, setMax);
