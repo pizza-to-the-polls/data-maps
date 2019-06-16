@@ -36,10 +36,26 @@ export const getDomain = (data, setMin, setMax) => {
   return domain;
 };
 
-export const getDynamicDomain = data => {
+const getMinAndMax = data => {
   const min = Math.floor(Math.min.apply(null, data) * 10) / 10;
   const max = Math.ceil(Math.max.apply(null, data) * 10) / 10;
-  return [min, max];
+  return { min, max };
+};
+
+export const getDynamicDomain = data => {
+  // Calculate the dynamic range:
+  // 1. If all numbers are above or below .5, then just use the natural min and max from the dataset
+  // 2. If the min and max are on either side of .5, then take whichever is further from .5 and use
+  //    that to set the scale. So if the min is .4 and max is .8, adjust the domain to be [.2, .8]
+  const { min, max } = getMinAndMax(data);
+  if ((min <= 0.5 && max <= 0.5) || (min >= 0.5 && max >= 0.5)) {
+    return [min, max];
+  }
+  const maxFromHalf = max - 0.5;
+  const minFromHalf = 0.5 - min;
+  const newMax = maxFromHalf > minFromHalf ? max : 0.5 + minFromHalf;
+  const newMin = minFromHalf > maxFromHalf ? min : 0.5 - maxFromHalf;
+  return [newMin, newMax];
 };
 
 export const getDynamicColorScheme = (domain, scaleType) => {
