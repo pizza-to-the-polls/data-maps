@@ -1,4 +1,5 @@
 import { select, json } from "d3";
+
 import { prefix, DEFAULT_SCALE, DEFAULT_BUCKETS } from "./constants";
 import { buildMapURL, buildSheetsURL, parseRow, floatOrNull } from "./utils";
 import { getContent, showContent, initDom, toggleLoading } from "./content";
@@ -9,7 +10,6 @@ import { initTable } from "./table";
 
 let currentDataset;
 let mapSelectorContainer;
-let toggleContainer;
 let title;
 let sheetKey;
 
@@ -55,7 +55,8 @@ const updateClickInstructions = value => {
     `Click a ${value === "state" ? "state" : "district"} for details`
   );
 };
-const addStateAndDistrictToggle = dataset => {
+const addStateAndDistrictToggle = (container, dataset) => {
+  const toggleContainer = select(container).select(`.${prefix}toggle`);
   toggleContainer.selectAll("*").remove();
 
   if (dataset.maps.length > 1) {
@@ -86,7 +87,6 @@ const addStateAndDistrictToggle = dataset => {
 
 const addMapSelector = (container, data, firstKey) => {
   mapSelectorContainer = select(container).select(`.${prefix}selector`);
-  toggleContainer = select(container).select(`.${prefix}toggle`);
 
   mapSelectorContainer
     .append("label")
@@ -187,9 +187,11 @@ const initDataMap = container => {
 
     const firstDataset = datasets[firstKey];
 
-    if (datasetKeys.length > 1) {
+    if (datasetKeys.length > 1 ) {
       addMapSelector(container, datasetKeys, firstKey);
-      addStateAndDistrictToggle(firstDataset);
+    }
+    if( Object.values(mapKeys).length > 1 ) {
+      addStateAndDistrictToggle(container, firstDataset);
     }
 
     currentDataset = firstDataset;
