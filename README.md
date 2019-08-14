@@ -35,8 +35,8 @@ These are optional columns that you can have for extra configuration:
 - `Scale`: The type of scale to use. Options:
   - `red`: Linear scale from light red to dark red.
   - `blue`: Linear scale from light blue to dark blue.
-  - `red-to-blue`: Divergent scale from red to blue.
-  - `blue-to-red`: Divergent scale from blue to red.
+  - `red-to-blue`: Divergent scale from red to blue. Must be an odd number; middle is automatically set to gray.
+  - `blue-to-red`: Divergent scale from blue to red. Must be an odd number; middle is automatically set to gray.
   - `red-inverted`: Linear scale from dark red to light red.
   - `blue-inverted`: Linear scale from dark blue to light blue.
   - `dynamic`: If min is at or above .5, light blue to dark blue. If max is at or below .5, dark red to light red. Otherwise dark red to dark blue.

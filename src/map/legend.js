@@ -7,8 +7,13 @@ const size = 20;
 export const buildQuantitativeLegend = (scale, label) => {
   const legendSvg = d3.select(`.${prefix}legend`).select("svg");
   const stops = scale.thresholds().map(i => [i, scale(i)]);
-  d3.select(`.${prefix}legend-label`).text(label);
 
+  // Add the minimum bucket
+  // Necessary because usually D3 just shows the thresholds
+  const min = scale.domain()[0];
+  stops.splice(0, 0, [min, scale(min)]);
+
+  d3.select(`.${prefix}legend-label`).text(label);
   legendSvg.selectAll("*").remove();
 
   legendSvg
