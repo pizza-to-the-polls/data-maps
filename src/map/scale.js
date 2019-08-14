@@ -42,6 +42,15 @@ const getMinAndMax = data => {
   return { min, max };
 };
 
+const findMiddlePoint = length => {
+  return Math.floor(length / 2);
+};
+
+const setMidpointToGray = scheme => {
+  scheme.splice(findMiddlePoint(scheme.length), 1, "#f7f7f7");
+  return scheme;
+};
+
 export const getDynamicDomain = data => {
   // Calculate the dynamic range:
   // 1. If all numbers are above or below .5, then just use the natural min and max from the dataset
@@ -82,7 +91,7 @@ export const getDynamicColorScheme = (domain, scaleType) => {
 };
 
 export const getMapScale = ({ scaleType, buckets, setMin, setMax }, data) => {
-  const colorSchemeIndex = buckets + 1; // Account for 0-indexing
+  const colorSchemeIndex = buckets; // Account for 0-indexing
   let domain = [];
   let colorScheme;
   if (scaleType === DYNAMIC_SCALE || scaleType === INVERTED_DYNAMIC_SCALE) {
@@ -101,7 +110,7 @@ export const getMapScale = ({ scaleType, buckets, setMin, setMax }, data) => {
     return value => qualMapScale[value];
   }
   if (colorScheme === INVERTED_SCALE) {
-    return d3.scaleQuantize(domain, d3.schemeRdBu[colorSchemeIndex].reverse());
+    return d3.scaleQuantize(domain, setMidpointToGray(d3.schemeRdBu[colorSchemeIndex].reverse()));
   }
   if (colorScheme === BLUE_SCALE) {
     return d3.scaleQuantize(domain, d3.schemeBlues[colorSchemeIndex]);
@@ -115,7 +124,7 @@ export const getMapScale = ({ scaleType, buckets, setMin, setMax }, data) => {
   if (colorScheme === INVERTED_BLUE_SCALE) {
     return d3.scaleQuantize(domain, d3.schemeBlues[colorSchemeIndex].reverse());
   }
-  return d3.scaleQuantize(domain, d3.schemeRdBu[colorSchemeIndex]);
+  return d3.scaleQuantize(domain, setMidpointToGray(d3.schemeRdBu[colorSchemeIndex]));
 };
 
 export const getLegendScale = () => {
