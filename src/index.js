@@ -102,7 +102,7 @@ const addMapSelector = (container, data, firstKey) => {
       window.location.hash = value;
       currentDataset = selected;
       build(selected.defaultTab);
-      addStateAndDistrictToggle(selected);
+      addStateAndDistrictToggle(container, selected);
       showContent(selected.issuekey);
     });
 
@@ -190,7 +190,7 @@ const initDataMap = container => {
     if (datasetKeys.length > 1 ) {
       addMapSelector(container, datasetKeys, firstKey);
     }
-    if( Object.values(mapKeys).length > 1 ) {
+    if (Object.values(mapKeys).length > 1) {
       addStateAndDistrictToggle(container, firstDataset);
     }
 
