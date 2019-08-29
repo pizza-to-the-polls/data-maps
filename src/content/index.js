@@ -6,6 +6,8 @@ import { legendWidth, legendHeight, prefix } from "../constants";
 import { buildSheetsURL } from "../utils";
 
 let vis;
+let shareContainer;
+let shareImg;
 
 export const toggleLoading = (isLoading, elem = vis) => {
   if (isLoading) {
@@ -74,6 +76,47 @@ export const initDom = outer => {
   map.appendChild(clickInstructions);
 
   const legendImg = document.createElement("img");
+
+  // html2canvass only supported with promises
+  if (typeof Promise !== "undefined" && Promise.toString().indexOf("[native code]") !== -1) {
+    const sharebutton = document.createElement("button");
+    sharebutton.className = `${prefix}share-button`;
+    sharebutton.innerText = "Share Map";
+    map.appendChild(sharebutton);
+
+    shareContainer = document.createElement("div");
+    shareContainer.className = `${prefix}share-container`;
+
+    const shareInstructions = document.createElement("p");
+    shareInstructions.innerText = "Click to download the image.";
+
+    const closeButton = document.createElement("button");
+    closeButton.innerText = "Back to Map";
+    closeButton.onclick = () => toggleShare(false);
+    shareImg = document.createElement("img");
+
+    // This is a weird one - you can't just open data-urls anymore
+    // so we need to open a window then write html to it :P
+    shareImg.onclick = event => {
+      const newWindow = window.open();
+      newWindow.document.write(`
+        <body style="background: #1c313a; margin: 0; padding: 0;">
+          <img src=${event.target.getAttribute("src")} style="width: 100%;">
+        </body>
+      `);
+    };
+    shareContainer.appendChild(shareImg);
+    shareContainer.appendChild(shareInstructions);
+    shareContainer.appendChild(closeButton);
+
+    // html2canvass will only load images with the same domain as the visited page
+    // so we need to inline the dfp logo
+    legendImg.setAttribute(
+      "src",
+      `data:image/jpg;base64,${btoa(fs.readFileSync("img/dfp-logo-share.jpg", "binary"))}`
+    );
+  }
+
   const legend = document.createElement("div");
   legend.className = `${prefix}legend`;
 
