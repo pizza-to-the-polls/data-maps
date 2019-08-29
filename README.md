@@ -67,3 +67,39 @@ Every other column on the sheet will be treated as a filter. It should have a de
 In order for a column label to show up as multiple words, use dashes: e.g. `independent-voters`.
 
 The sheet can have an optional `content` column that will be displayed in the details pane. Markdown is supported.
+
+
+## Creating TopoJSON Files
+
+Visit [mapshaper](https://mapshaper.org/) to convert shapefiles or geojson to topojson. Try and compress further using [toposimplify](https://github.com/topojson/topojson-simplify) if possible.
+
+Each TopoJSON files must have the following characteristics:
+
+ * The shapes which are to be mapped must be under in the `features` key under `objects`
+ * Each geometry needs to have an `id` property which will be joined to the `code` column in the spreadsheet.
+ * The top level `config` can be added added to to effect the projection, rotation, scale, and zoomScalar when the features are loaded.
+
+```json
+{
+  "type": "Topology",
+  "arcs": [
+    // TopoJSON Stuff
+  ],
+  "config" : {
+    "projection": "geoTransverseMercator",
+    "rotate": [76.583, -40],
+    "scale": 3000,
+    "zoomScaler": 500
+  },
+  "objects": {
+    "features": {
+      "type":"GeometryCollection",
+      "geometries":[
+        {
+          "type": "Polygon",
+          "id": "some-id" // must match the code column in the spreadsheet
+        }
+      ]
+    }
+  }
+}
