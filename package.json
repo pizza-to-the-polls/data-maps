@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "dev": "parcel index.html",
+    "dev-local": "LOCAL_DATA=true parcel index.html",
     "build": "parcel build index.html",
     "predeploy": "rm -rf dist && parcel build index.html src/index.js styles/style.scss --public-url https://pizza-to-the-polls.github.io/data-maps",
     "deploy": "gh-pages -d dist"
