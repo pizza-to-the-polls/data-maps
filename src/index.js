@@ -20,12 +20,12 @@ const mapKeys = {};
 
 const fetchMap = map => json(buildMapURL(map)).then(geojson => (maps[map] = geojson));
 
-const build = (tab, filter, attempts) => {
+const build = (tab, options, attempts) => {
   toggleLoading(true);
   if (!sheets[tab])
     return json(buildSheetsURL(tab, sheetKey)).then(raw => {
       sheets[tab] = raw;
-      build(tab, filter);
+      build(tab, options);
     });
 
   const map = maps[mapKeys[tab]];
@@ -33,7 +33,7 @@ const build = (tab, filter, attempts) => {
   if (!map) {
     const attempt = attempts || 0;
     if (attempt < 2) {
-      return setTimeout(() => build(tab, filter, attempt + 1), 500);
+      return setTimeout(() => build(tab, options, attempt + 1), 500);
     }
     console.error(
       `Map ${mapKeys[tab]} never loaded - are you sure this row is configured correctly?`
@@ -42,7 +42,7 @@ const build = (tab, filter, attempts) => {
   }
 
   toggleLoading(false);
-  drawMap(sheets[tab], map, currentDataset, filter);
+  drawMap(sheets[tab], map, currentDataset, options);
 
   title.text(currentDataset.title);
 
@@ -184,22 +184,31 @@ const initDataMap = container => {
       }
     });
 
-    const { datasetKeys, firstKey, firstDataset, firstTab, firstMap, firstFilter } = getMapConfig(datasets, {
+    const {
+      datasetKeys,
+      firstKey,
+      firstDataset,
+      firstTab,
+      firstMap,
+      firstFilter,
+      firstFeature
+    } = getMapConfig(datasets, {
       startMap,
       startKey: container.getAttribute("data-start-key"),
       startFilter: container.getAttribute("data-start-filter"),
+      startFeature: container.getAttribute("data-start-feature")
     });
 
     currentDataset = firstDataset;
 
-    if (datasetKeys.length > 1 ) {
+    if (datasetKeys.length > 1) {
       addMapSelector(container, datasetKeys, firstKey);
     }
     if (Object.values(mapKeys).length > 1) {
       addStateAndDistrictToggle(container, firstDataset, firstMap);
     }
 
-    build(firstTab, firstFilter);
+    build(firstTab, { firstFilter, firstFeature });
     updateClickInstructions(firstMap);
     getContent(currentDataset.issuekey, sheetKey);
   });

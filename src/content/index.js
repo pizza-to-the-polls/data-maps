@@ -79,10 +79,15 @@ export const initDom = outer => {
 
   // html2canvass only supported with promises
   if (typeof Promise !== "undefined" && Promise.toString().indexOf("[native code]") !== -1) {
-    const sharebutton = document.createElement("button");
-    sharebutton.className = `${prefix}share-button`;
-    sharebutton.innerText = "Share Map";
-    map.appendChild(sharebutton);
+    const shareButton = document.createElement("button");
+    shareButton.className = `${prefix}share-button`;
+    shareButton.innerText = "Share Map";
+    map.appendChild(shareButton);
+
+    const embedButton = document.createElement("button");
+    embedButton.className = `${prefix}embed-button`;
+    embedButton.innerText = "Embed Map";
+    map.appendChild(embedButton);
 
     shareContainer = document.createElement("div");
     shareContainer.className = `${prefix}share-container`;
