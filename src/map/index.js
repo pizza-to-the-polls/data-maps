@@ -143,7 +143,7 @@ const updatePaths = (paths, filter, config) => {
   }
 };
 
-const addFilters = (paths, filters, dataSetConfig) => {
+const addFilters = (paths, filters, initialFilter, dataSetConfig) => {
   filterContainer.selectAll("*").remove();
   if (filters.length > 1) {
     filterContainer
@@ -164,6 +164,8 @@ const addFilters = (paths, filters, dataSetConfig) => {
       .append("option")
       .text(makeLabel)
       .attr("value", d => d);
+
+    if( initialFilter ) filter.property('value', initialFilter)
   }
 };
 
@@ -211,7 +213,7 @@ const buildPathGenerator = (map, topoFeature) => {
 };
 
 // Draw the map
-export const drawMap = (stats, map, dataSetConfig) => {
+export const drawMap = (stats, map, dataSetConfig, startFilter) => {
   const topoFeature = topojson.feature(map, map.objects.features);
   const cleanStats = parseStats(stats);
   svg.selectAll("path").remove();
@@ -221,6 +223,7 @@ export const drawMap = (stats, map, dataSetConfig) => {
   const filters = Object.keys(cleanStats[0]).filter(
     key => !nonFilters.includes(key) && key.search(nonFilterPrefix) !== 0
   );
+  const initialFilter = filters.includes(startFilter) ? startFilter : filters[0];
 
   toggleHoverPattern(svg, dataSetConfig.scaleType !== QUALITATIVE_SCALE);
 
@@ -234,7 +237,7 @@ export const drawMap = (stats, map, dataSetConfig) => {
     )
   );
 
-  addFilters(currentGeography, filters, dataSetConfig);
-  updatePaths(currentGeography, filters[0], dataSetConfig);
+  addFilters(currentGeography, filters, initialFilter, dataSetConfig);
+  updatePaths(currentGeography, initialFilter, dataSetConfig);
   createTable(cleanStats);
 };
