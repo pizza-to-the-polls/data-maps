@@ -1,7 +1,7 @@
 import { select, json } from "d3";
 
 import { prefix, DEFAULT_SCALE, DEFAULT_BUCKETS } from "./constants";
-import { buildMapURL, buildSheetsURL, parseRow, floatOrNull } from "./utils";
+import { getMapConfig, buildMapURL, buildSheetsURL, parseRow, floatOrNull } from "./utils";
 import { getContent, showContent, initDom, toggleLoading } from "./content";
 import { removeDetails, initDetails } from "./map/details";
 import { initTooltip, removeTooltip } from "./map/tooltip";
@@ -20,12 +20,12 @@ const mapKeys = {};
 
 const fetchMap = map => json(buildMapURL(map)).then(geojson => (maps[map] = geojson));
 
-const build = (tab, attempts) => {
+const build = (tab, filter, attempts) => {
   toggleLoading(true);
   if (!sheets[tab])
     return json(buildSheetsURL(tab, sheetKey)).then(raw => {
       sheets[tab] = raw;
-      build(tab);
+      build(tab, filter);
     });
 
   const map = maps[mapKeys[tab]];
@@ -33,7 +33,7 @@ const build = (tab, attempts) => {
   if (!map) {
     const attempt = attempts || 0;
     if (attempt < 2) {
-      return setTimeout(() => build(tab, attempt + 1), 500);
+      return setTimeout(() => build(tab, filter, attempt + 1), 500);
     }
     console.error(
       `Map ${mapKeys[tab]} never loaded - are you sure this row is configured correctly?`
@@ -42,7 +42,7 @@ const build = (tab, attempts) => {
   }
 
   toggleLoading(false);
-  drawMap(sheets[tab], map, currentDataset);
+  drawMap(sheets[tab], map, currentDataset, filter);
 
   title.text(currentDataset.title);
 
@@ -55,7 +55,7 @@ const updateClickInstructions = value => {
     `Click a ${value === "state" ? "state" : "district"} for details`
   );
 };
-const addStateAndDistrictToggle = (container, dataset) => {
+const addStateAndDistrictToggle = (container, dataset, selected) => {
   const toggleContainer = select(container).select(`.${prefix}toggle`);
   toggleContainer.selectAll("*").remove();
 
@@ -82,6 +82,8 @@ const addStateAndDistrictToggle = (container, dataset) => {
       .append("option")
       .attr("value", d => d.toLowerCase())
       .text(d => dataset[d].dataset);
+
+    if (selected) toggle.property("value", selected);
   }
 };
 
@@ -119,10 +121,12 @@ const addMapSelector = (container, data, firstKey) => {
 
 const initDataMap = container => {
   sheetKey = container ? container.getAttribute("data-spreadsheet-key") : null;
+
   if (!sheetKey) {
     console.error("Cannot init maps without a key - set the data-spreadsheet-key attribute");
     return;
   }
+
   initDom(container);
   initMap(container);
   initTable(container);
@@ -131,13 +135,14 @@ const initDataMap = container => {
 
   title = select(container).select(`.${prefix}header`);
 
-  // Load the states and district maps
-  fetchMap("state");
+  const startMap = container.getAttribute("data-start-map") || "state";
+
+  // Load the first map
+  fetchMap(startMap);
+  const loadedMaps = { [startMap]: true };
 
   // Get the Settings tab which lists all the datasets (other tabs) we'll later get
   json(buildSheetsURL(1, sheetKey)).then(response => {
-    const loadedMaps = { state: true };
-
     response.feed.entry.forEach(entry => {
       try {
         const dataset = parseRow(entry.content.$t);
@@ -159,15 +164,17 @@ const initDataMap = container => {
           datasets[key].defaultTab = dataset.tab;
           datasets[key].scaleType = dataset.scaleType;
           datasets[key].legendLabel = dataset.legendlabel || "Issue support";
-          datasets[key].defaultView = dataset.dataset.toLowerCase();
+          datasets[key].defaultMap = mapKey;
           datasets[key].issuekey = key;
           datasets[key].maps = [];
+          datasets[key].tabs = [];
           datasets[key].buckets = Number(dataset.buckets) || DEFAULT_BUCKETS;
           if (dataset.max) datasets[key].max = floatOrNull(dataset.max);
           if (dataset.min) datasets[key].min = floatOrNull(dataset.min);
         }
         datasets[key][mapKey] = dataset;
         datasets[key].maps.push(mapKey);
+        datasets[key].tabs.push(dataset.tab);
         mapKeys[dataset.tab] = mapKey;
       } catch (error) {
         console.error(
@@ -177,27 +184,24 @@ const initDataMap = container => {
       }
     });
 
-    const datasetKeys = Object.keys(datasets);
-    let firstKey = datasetKeys[0];
+    const { datasetKeys, firstKey, firstDataset, firstTab, firstMap, firstFilter } = getMapConfig(datasets, {
+      startMap,
+      startKey: container.getAttribute("data-start-key"),
+      startFilter: container.getAttribute("data-start-filter"),
+    });
 
-    if (window.location.hash) {
-      const hash = window.location.hash.split("#")[1];
-      firstKey = datasetKeys.indexOf(hash) > -1 ? hash : datasetKeys[0];
-    }
-
-    const firstDataset = datasets[firstKey];
+    currentDataset = firstDataset;
 
     if (datasetKeys.length > 1 ) {
       addMapSelector(container, datasetKeys, firstKey);
     }
     if (Object.values(mapKeys).length > 1) {
-      addStateAndDistrictToggle(container, firstDataset);
+      addStateAndDistrictToggle(container, firstDataset, firstMap);
     }
 
-    currentDataset = firstDataset;
-    build(firstDataset.defaultTab);
-    updateClickInstructions(firstDataset.defaultView);
-    getContent(firstDataset.issuekey, sheetKey);
+    build(firstTab, firstFilter);
+    updateClickInstructions(firstMap);
+    getContent(currentDataset.issuekey, sheetKey);
   });
 };
 

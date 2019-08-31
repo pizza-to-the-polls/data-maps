@@ -78,3 +78,62 @@ export const getFullLabel = value => {
 
   return stateLabels[value] || value;
 };
+
+export const getMapConfig = (datasets, { startKey, startMap, startFilter }) => {
+  const datasetKeys = Object.keys(datasets);
+
+  const [hashKey, hashMap, hashFilter] = (window.location.hash ? window.location.hash.split("#")[1].split("|") : []);
+
+  if (datasetKeys.includes(hashKey)) {
+    // If the hash matches a dataset and contains a map - return the map
+    // If the hash matches a dataset without a map - return the defaults
+
+    const hashedDataSet = datasets[hashKey];
+    const hashedViewSet = datasets[hashKey][hashMap];
+
+    return {
+      datasetKeys,
+      firstKey: hashKey,
+      firstDataset: hashedDataSet,
+      firstMap: hashedViewSet
+        ? hashMap
+        : hashedDataSet.defaultMap,
+      firstTab: hashedViewSet
+        ? hashedViewSet.tab
+        : hashedDataSet.defaultTab,
+      firstFilter: hashFilter,
+    };
+  }
+
+  if(datasetKeys.includes(startKey)) {
+    // If the data attr matches a dataset and contains a map - return the map
+    // If the data attr matches a dataset without a map - return the defaults
+
+    const startDataSet = datasets[startKey]
+    const startViewSet = datasets[startKey][startMap]
+
+    return {
+      datasetKeys,
+      firstKey: startKey,
+      firstDataset: startDataSet,
+      firstMap: startViewSet
+        ? startMap
+        : startDataSet.defaultMap,
+      firstTab: startViewSet
+        ? startViewSet.tab
+        : startDataSet.defaultTab,
+      firstFilter: startFilter
+    };
+  }
+
+  const defaultKey = datasetKeys[0];
+  const defaultDataSet = datasets[defaultKey];
+
+  return {
+    datasetKeys,
+    firstKey: defaultKey,
+    firstDataset: defaultDataSet,
+    firstMap: defaultDataSet.defaultMap,
+    firstTab: defaultDataSet.defaultTab,
+  };
+};
