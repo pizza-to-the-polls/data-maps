@@ -79,10 +79,12 @@ export const getFullLabel = value => {
   return stateLabels[value] || value;
 };
 
-export const getMapConfig = (datasets, { startKey, startMap, startFilter }) => {
+export const getMapConfig = (datasets, { startKey, startMap, startFilter, startFeature }) => {
   const datasetKeys = Object.keys(datasets);
 
-  const [hashKey, hashMap, hashFilter] = (window.location.hash ? window.location.hash.split("#")[1].split("|") : []);
+  const [hashKey, hashMap, hashFilter, hashFeature] = (window.location.hash ? window.location.hash.split("#")[1].split("|") : []);
+
+  const firstFeature = hashFeature || startFeature;
 
   if (datasetKeys.includes(hashKey)) {
     // If the hash matches a dataset and contains a map - return the map
@@ -102,15 +104,19 @@ export const getMapConfig = (datasets, { startKey, startMap, startFilter }) => {
         ? hashedViewSet.tab
         : hashedDataSet.defaultTab,
       firstFilter: hashFilter,
+      firstFeature
     };
   }
 
-  if(datasetKeys.includes(startKey)) {
+  const defaultKey = datasetKeys[0];
+  const defaultDataSet = datasets[defaultKey];
+
+  if(datasetKeys.includes(startKey) || defaultDataSet[startMap]) {
     // If the data attr matches a dataset and contains a map - return the map
     // If the data attr matches a dataset without a map - return the defaults
 
-    const startDataSet = datasets[startKey]
-    const startViewSet = datasets[startKey][startMap]
+    const startDataSet = datasets[startKey] || defaultDataSet;
+    const startViewSet = startDataSet[startMap]
 
     return {
       datasetKeys,
@@ -122,12 +128,11 @@ export const getMapConfig = (datasets, { startKey, startMap, startFilter }) => {
       firstTab: startViewSet
         ? startViewSet.tab
         : startDataSet.defaultTab,
-      firstFilter: startFilter
+      firstFilter: startFilter,
+      firstFeature
     };
   }
 
-  const defaultKey = datasetKeys[0];
-  const defaultDataSet = datasets[defaultKey];
 
   return {
     datasetKeys,
@@ -135,5 +140,6 @@ export const getMapConfig = (datasets, { startKey, startMap, startFilter }) => {
     firstDataset: defaultDataSet,
     firstMap: defaultDataSet.defaultMap,
     firstTab: defaultDataSet.defaultTab,
+    firstFeature
   };
 };

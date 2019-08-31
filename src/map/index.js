@@ -112,6 +112,7 @@ const drawFeatures = (pathGenerator, data) =>
     .enter()
     .append("path")
     .attr("d", pathGenerator)
+    .attr("id", d => `feature-num-${d.id}`)
     .attr("class", "feature")
     .on("click", handleClick);
 
@@ -165,7 +166,7 @@ const addFilters = (paths, filters, initialFilter, dataSetConfig) => {
       .text(makeLabel)
       .attr("value", d => d);
 
-    if( initialFilter ) filter.property('value', initialFilter)
+    if (initialFilter) filter.property("value", initialFilter);
   }
 };
 
@@ -213,9 +214,11 @@ const buildPathGenerator = (map, topoFeature) => {
 };
 
 // Draw the map
-export const drawMap = (stats, map, dataSetConfig, startFilter) => {
+export const drawMap = (stats, map, dataSetConfig, options) => {
+  const { firstFilter, firstFeature } = options || {};
   const topoFeature = topojson.feature(map, map.objects.features);
   const cleanStats = parseStats(stats);
+
   svg.selectAll("path").remove();
 
   const geoPathGenerator = buildPathGenerator(map, topoFeature);
@@ -223,7 +226,7 @@ export const drawMap = (stats, map, dataSetConfig, startFilter) => {
   const filters = Object.keys(cleanStats[0]).filter(
     key => !nonFilters.includes(key) && key.search(nonFilterPrefix) !== 0
   );
-  const initialFilter = filters.includes(startFilter) ? startFilter : filters[0];
+  const initialFilter = filters.includes(firstFilter) ? firstFilter : filters[0];
 
   toggleHoverPattern(svg, dataSetConfig.scaleType !== QUALITATIVE_SCALE);
 
@@ -240,4 +243,11 @@ export const drawMap = (stats, map, dataSetConfig, startFilter) => {
   addFilters(currentGeography, filters, initialFilter, dataSetConfig);
   updatePaths(currentGeography, initialFilter, dataSetConfig);
   createTable(cleanStats);
+
+  // For some reason the details don't load without a little delay
+  if (firstFeature) {
+    setTimeout(() => {
+      currentGeography.filter(d => d.id.toString() === firstFeature).each(handleClick);
+    }, 10);
+  }
 };
