@@ -3,11 +3,12 @@ import marked from "marked";
 import fs from "fs";
 import { legendWidth, legendHeight, prefix } from "../constants";
 
-import { buildSheetsURL } from "../utils";
+import { buildSheetsURL, buildShareURL } from "../utils";
 
 let vis;
 let shareContainer;
 let shareImg;
+let shareInput;
 
 export const toggleLoading = (isLoading, elem = vis) => {
   if (isLoading) {
@@ -18,13 +19,21 @@ export const toggleLoading = (isLoading, elem = vis) => {
   }
 };
 
-export const toggleShare = (isOpen, dataURL) => {
+export const toggleShare = (isOpen, dataURL, sheetConfig) => {
   if (isOpen) {
-    shareImg.setAttribute("src", dataURL);
+    console.log(dataURL)
+    if( dataURL ) {
+      shareImg.setAttribute("src", dataURL);
+      shareImg.parentElement.style.display = 'block';
+    } else {
+      shareImg.parentElement.style.display = 'none';
+    }
+    shareInput.value = buildShareURL(sheetConfig)
     shareContainer.style.display = "flex";
   } else {
     shareImg.removeAttribute("src");
     shareContainer.style.display = "none";
+    shareInput.value = '';
   }
 };
 
@@ -79,18 +88,33 @@ export const initDom = outer => {
 
   // html2canvass only supported with promises
   if (typeof Promise !== "undefined" && Promise.toString().indexOf("[native code]") !== -1) {
+
+    const shareButtonContainer = document.createElement("div");
+    shareButtonContainer.className = `${prefix}share-button-container`;
+
+    shareInput = document.createElement("input");
+    shareInput.className = `${prefix}share-input`;
+    shareInput.onclick = (el) => { el.target.setSelectionRange(0, el.target.value.length) }
+
+    const shareLinkInstructions = document.createElement("p");
+    shareLinkInstructions.innerText = "Copy the link to share this view";
+
     const shareButton = document.createElement("button");
     shareButton.className = `${prefix}share-button`;
     shareButton.innerText = "Share Map";
-    map.appendChild(shareButton);
+    shareButtonContainer.appendChild(shareButton);
 
     const embedButton = document.createElement("button");
     embedButton.className = `${prefix}embed-button`;
     embedButton.innerText = "Embed Map";
-    map.appendChild(embedButton);
+    shareButtonContainer.appendChild(embedButton);
+
+    map.appendChild(shareButtonContainer);
 
     shareContainer = document.createElement("div");
     shareContainer.className = `${prefix}share-container`;
+
+    const shareImageContainer = document.createElement("div");
 
     const shareInstructions = document.createElement("p");
     shareInstructions.innerText = "Click to download the image.";
@@ -110,8 +134,11 @@ export const initDom = outer => {
         </body>
       `);
     };
-    shareContainer.appendChild(shareImg);
-    shareContainer.appendChild(shareInstructions);
+    shareImageContainer.appendChild(shareImg);
+    shareImageContainer.appendChild(shareInstructions);
+    shareContainer.appendChild(shareImageContainer);
+    shareContainer.appendChild(shareInput);
+    shareContainer.appendChild(shareLinkInstructions);
     shareContainer.appendChild(closeButton);
 
     // html2canvass will only load images with the same domain as the visited page

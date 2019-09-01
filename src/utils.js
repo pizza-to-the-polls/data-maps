@@ -82,7 +82,9 @@ export const getFullLabel = value => {
 export const getMapConfig = (datasets, { startKey, startMap, startFilter, startFeature }) => {
   const datasetKeys = Object.keys(datasets);
 
-  const [hashKey, hashMap, hashFilter, hashFeature] = (window.location.hash ? window.location.hash.split("#")[1].split("|") : []);
+  const [hashKey, hashMap, hashFilter, hashFeature] = window.location.hash
+    ? window.location.hash.split("#")[1].split("|")
+    : [];
 
   const firstFeature = hashFeature || startFeature;
 
@@ -97,12 +99,8 @@ export const getMapConfig = (datasets, { startKey, startMap, startFilter, startF
       datasetKeys,
       firstKey: hashKey,
       firstDataset: hashedDataSet,
-      firstMap: hashedViewSet
-        ? hashMap
-        : hashedDataSet.defaultMap,
-      firstTab: hashedViewSet
-        ? hashedViewSet.tab
-        : hashedDataSet.defaultTab,
+      firstMap: hashedViewSet ? hashMap : hashedDataSet.defaultMap,
+      firstTab: hashedViewSet ? hashedViewSet.tab : hashedDataSet.defaultTab,
       firstFilter: hashFilter,
       firstFeature
     };
@@ -111,28 +109,23 @@ export const getMapConfig = (datasets, { startKey, startMap, startFilter, startF
   const defaultKey = datasetKeys[0];
   const defaultDataSet = datasets[defaultKey];
 
-  if(datasetKeys.includes(startKey) || defaultDataSet[startMap]) {
+  if (datasetKeys.includes(startKey) || defaultDataSet[startMap]) {
     // If the data attr matches a dataset and contains a map - return the map
     // If the data attr matches a dataset without a map - return the defaults
 
     const startDataSet = datasets[startKey] || defaultDataSet;
-    const startViewSet = startDataSet[startMap]
+    const startViewSet = startDataSet[startMap];
 
     return {
       datasetKeys,
       firstKey: startKey,
       firstDataset: startDataSet,
-      firstMap: startViewSet
-        ? startMap
-        : startDataSet.defaultMap,
-      firstTab: startViewSet
-        ? startViewSet.tab
-        : startDataSet.defaultTab,
+      firstMap: startViewSet ? startMap : startDataSet.defaultMap,
+      firstTab: startViewSet ? startViewSet.tab : startDataSet.defaultTab,
       firstFilter: startFilter,
       firstFeature
     };
   }
-
 
   return {
     datasetKeys,
@@ -143,3 +136,9 @@ export const getMapConfig = (datasets, { startKey, startMap, startFilter, startF
     firstFeature
   };
 };
+
+export const buildShareURL = shareState =>
+  [
+    document.location.toString().split("#")[0],
+    [shareState.key, shareState.map, shareState.filter, shareState.feature].filter(e => e).join("|")
+  ].join("#");

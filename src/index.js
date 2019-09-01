@@ -21,6 +21,9 @@ const mapKeys = {};
 const fetchMap = map => json(buildMapURL(map)).then(geojson => (maps[map] = geojson));
 
 const build = (tab, options, attempts) => {
+  options = options || {}
+  options.mapKey = mapKeys[tab]
+
   toggleLoading(true);
   if (!sheets[tab])
     return json(buildSheetsURL(tab, sheetKey)).then(raw => {
