@@ -13,6 +13,7 @@ import { addQualPatterns, toggleHoverPattern } from "./patterns";
 
 let filterContainer;
 let svg;
+let shareState = {};
 
 let geoPathGenerator;
 let svgWidth;
@@ -77,7 +78,7 @@ export const initMap = container => {
   svgHeight = +svg.attr("viewBox").split(" ")[3];
   const projection = d3.geoAlbersUsa().translate([svgWidth / 2, svgHeight / 2]);
   geoPathGenerator = d3.geoPath().projection(projection);
-  addShare();
+  addShare(shareState);
 
   document.addEventListener("click", event => {
     if (event.target.id === `${prefix}map-svg`) {
@@ -97,6 +98,7 @@ const addStatsToFeatures = (features, stats, scaleType, legendLabel) =>
 
 const handleClick = (d, key, allPaths) => {
   // d3.select('.selected-path')
+  shareState.feature = d.id;
   const thisPath = allPaths[key];
   d3.selectAll(".selected-path").classed("selected-path", false);
   thisPath.classList += " selected-path";
@@ -112,11 +114,11 @@ const drawFeatures = (pathGenerator, data) =>
     .enter()
     .append("path")
     .attr("d", pathGenerator)
-    .attr("id", d => `feature-num-${d.id}`)
     .attr("class", "feature")
     .on("click", handleClick);
 
 const updatePaths = (paths, filter, config) => {
+  shareState.filter = filter;
   const data = paths
     .data()
     .map(d => d[filter])
@@ -215,9 +217,13 @@ const buildPathGenerator = (map, topoFeature) => {
 
 // Draw the map
 export const drawMap = (stats, map, dataSetConfig, options) => {
-  const { firstFilter, firstFeature } = options || {};
+  const { firstFilter, firstFeature, mapKey } = options;
   const topoFeature = topojson.feature(map, map.objects.features);
   const cleanStats = parseStats(stats);
+
+  shareState.scaleType = dataSetConfig.scaleType;
+  shareState.key = dataSetConfig.issuekey;
+  shareState.map = mapKey;
 
   svg.selectAll("path").remove();
 

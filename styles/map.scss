@@ -30,8 +30,7 @@ $details-color: $gray1;
     left: -9999px;
     top: -9999px;
 
-    .#{$prefix}share-button,
-    .#{$prefix}embed-button {
+    .#{$prefix}share-button-container {
       display: none;
     }
 
@@ -268,14 +267,8 @@ span.#{$prefix}legend-label {
   }
 }
 
-.#{$prefix}share-button,
-.#{$prefix}embed-button {
+.#{$prefix}share-button-container {
   z-index: 4;
-  background-color: $gray4;
-  color: #fff;
-  border: none;
-  margin: 5px;
-
   @media screen and (min-width: 600px) {
     position: absolute;
     bottom: 10px;
@@ -283,12 +276,43 @@ span.#{$prefix}legend-label {
     right: 10px;
   }
 }
+
+.#{$prefix}share-input {
+  max-width: 60%;
+  width: 100%;
+  min-width: 300px;
+  margin: 30px auto;
+  height: 40px;
+  font-size: 1.5rem;
+  background-color: transparent;
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: underline;
+  &:focus {
+    outline: none;
+  }
+}
+
+.#{$prefix}share-button,
+.#{$prefix}embed-button {
+  z-index: 4;
+  background-color: $gray4;
+  color: #fff;
+  border: none;
+  margin: 5px;
+  width: 120px;
+}
+.#{$prefix}share-container p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: $gray3;
+}
 .#{$prefix}embed-button {
   background-color: $blue;
   display: none;
 
   @media screen and (min-width: 600px) {
-    right: 120px;
     display: block;
   }
 }
