@@ -217,13 +217,14 @@ const buildPathGenerator = (map, topoFeature) => {
 
 // Draw the map
 export const drawMap = (stats, map, dataSetConfig, options) => {
-  const { firstFilter, firstFeature, mapKey } = options;
+  const { firstFilter, firstFeature, mapKey, sheetKey } = options;
   const topoFeature = topojson.feature(map, map.objects.features);
   const cleanStats = parseStats(stats);
 
   shareState.scaleType = dataSetConfig.scaleType;
   shareState.key = dataSetConfig.issuekey;
   shareState.map = mapKey;
+  shareState.sheetKey = sheetKey;
 
   svg.selectAll("path").remove();
 

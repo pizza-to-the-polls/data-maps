@@ -142,3 +142,28 @@ export const buildShareURL = shareState =>
     document.location.toString().split("#")[0],
     [shareState.key, shareState.map, shareState.filter, shareState.feature].filter(e => e).join("|")
   ].join("#");
+
+export const buildEmbedCode = shareState => {
+  const embedDiv = document.createElement('div');
+  embedDiv.class="data-progress-maps"
+
+  embedDiv.setAttribute('data-spreadsheet-key', shareState.sheetKey)
+  embedDiv.setAttribute('data-start-key', shareState.key)
+  embedDiv.setAttribute('data-start-map', shareState.map)
+  embedDiv.setAttribute('data-start-filter', shareState.filter)
+  embedDiv.setAttribute('data-start-feature', shareState.feature)
+
+
+  const embedScript = [
+    '<script>!function(d,w){if(!w.dfpMap){w.dfpMap="init";',
+    'var i=d.createElement("script"),s=d.createElement("link");',
+    'i.setAttribute("src","https://pizza-to-the-polls.github.io',
+    '/data-maps/src/index.js"),s.setAttribute("href",',
+    '"https://pizza-to-the-polls.github.io/data-maps/styles/style.css"),',
+    's.setAttribute("rel","stylesheet"), s.setAttribute("type","text/css")',
+    ',d.head.appendChild(i),d.head.appendChild(s)}}(document,window);</script>'
+  ].join('')
+
+
+  return `${embedDiv.outerHTML}${embedScript}`
+}

@@ -276,7 +276,6 @@ span.#{$prefix}legend-label {
     right: 10px;
   }
 }
-
 .#{$prefix}share-input {
   max-width: 60%;
   width: 100%;
@@ -293,7 +292,22 @@ span.#{$prefix}legend-label {
     outline: none;
   }
 }
-
+.#{$prefix}embed-box {
+  max-width: 60%;
+  width: 100%;
+  min-width: 300px;
+  margin: 30px auto;
+  height: 200px;
+  font-family: monospace;
+  background-color: white;
+  font-size: 1.1rem;
+  resize: none;
+  border: none;
+  color: $gray1;
+  &:focus {
+    outline: none;
+  }
+}
 .#{$prefix}share-button,
 .#{$prefix}embed-button {
   z-index: 4;
