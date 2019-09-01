@@ -2,12 +2,21 @@ import { select } from "d3";
 
 import html2canvas from "html2canvas";
 import { prefix, QUALITATIVE_SCALE } from "../constants";
-import { toggleLoading, toggleShare } from "../content";
+import { toggleLoading, toggleShare, toggleEmbed } from "../content";
 import { buildURL } from "../utils";
 
 export const addShare = (shareState) => {
 
+  select(`.${prefix}embed-button`).on("click", () => toggleEmbed(true, shareState))
+
   select(`.${prefix}share-button`).on("click", () => {
+
+    // html2canvass only supported with promises
+    if (typeof Promise !== "undefined" && Promise.toString().indexOf("[native code]") === -1) {
+      return toggleShare(true, false, shareState)
+    }
+
+    // html2canvass doesn't support dynamic images used in qualitative scale
     if( shareState.scaleType === QUALITATIVE_SCALE ) {
       return toggleShare(true, false, shareState)
     }

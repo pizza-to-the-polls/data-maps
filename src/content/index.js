@@ -2,13 +2,11 @@ import { select, selectAll, json } from "d3";
 import marked from "marked";
 import fs from "fs";
 import { legendWidth, legendHeight, prefix } from "../constants";
+import createShareContent from "./share";
 
-import { buildSheetsURL, buildShareURL } from "../utils";
+import { buildSheetsURL } from "../utils";
 
 let vis;
-let shareContainer;
-let shareImg;
-let shareInput;
 
 export const toggleLoading = (isLoading, elem = vis) => {
   if (isLoading) {
@@ -16,24 +14,6 @@ export const toggleLoading = (isLoading, elem = vis) => {
   } else {
     // The animation looks better if it's given room to run a little
     elem.classList.remove("is--loading");
-  }
-};
-
-export const toggleShare = (isOpen, dataURL, sheetConfig) => {
-  if (isOpen) {
-    console.log(dataURL)
-    if( dataURL ) {
-      shareImg.setAttribute("src", dataURL);
-      shareImg.parentElement.style.display = 'block';
-    } else {
-      shareImg.parentElement.style.display = 'none';
-    }
-    shareInput.value = buildShareURL(sheetConfig)
-    shareContainer.style.display = "flex";
-  } else {
-    shareImg.removeAttribute("src");
-    shareContainer.style.display = "none";
-    shareInput.value = '';
   }
 };
 
@@ -86,68 +66,14 @@ export const initDom = outer => {
 
   const legendImg = document.createElement("img");
 
-  // html2canvass only supported with promises
-  if (typeof Promise !== "undefined" && Promise.toString().indexOf("[native code]") !== -1) {
+  const { shareContainer, embedContainer } = createShareContent(map);
 
-    const shareButtonContainer = document.createElement("div");
-    shareButtonContainer.className = `${prefix}share-button-container`;
-
-    shareInput = document.createElement("input");
-    shareInput.className = `${prefix}share-input`;
-    shareInput.onclick = (el) => { el.target.setSelectionRange(0, el.target.value.length) }
-
-    const shareLinkInstructions = document.createElement("p");
-    shareLinkInstructions.innerText = "Copy the link to share this view";
-
-    const shareButton = document.createElement("button");
-    shareButton.className = `${prefix}share-button`;
-    shareButton.innerText = "Share Map";
-    shareButtonContainer.appendChild(shareButton);
-
-    const embedButton = document.createElement("button");
-    embedButton.className = `${prefix}embed-button`;
-    embedButton.innerText = "Embed Map";
-    shareButtonContainer.appendChild(embedButton);
-
-    map.appendChild(shareButtonContainer);
-
-    shareContainer = document.createElement("div");
-    shareContainer.className = `${prefix}share-container`;
-
-    const shareImageContainer = document.createElement("div");
-
-    const shareInstructions = document.createElement("p");
-    shareInstructions.innerText = "Click to download the image.";
-
-    const closeButton = document.createElement("button");
-    closeButton.innerText = "Back to Map";
-    closeButton.onclick = () => toggleShare(false);
-    shareImg = document.createElement("img");
-
-    // This is a weird one - you can't just open data-urls anymore
-    // so we need to open a window then write html to it :P
-    shareImg.onclick = event => {
-      const newWindow = window.open();
-      newWindow.document.write(`
-        <body style="background: #1c313a; margin: 0; padding: 0;">
-          <img src=${event.target.getAttribute("src")} style="width: 100%;">
-        </body>
-      `);
-    };
-    shareImageContainer.appendChild(shareImg);
-    shareImageContainer.appendChild(shareInstructions);
-    shareContainer.appendChild(shareImageContainer);
-    shareContainer.appendChild(shareInput);
-    shareContainer.appendChild(shareLinkInstructions);
-    shareContainer.appendChild(closeButton);
-
-    // html2canvass will only load images with the same domain as the visited page
-    // so we need to inline the dfp logo
-    legendImg.setAttribute(
-      "src",
-      `data:image/jpg;base64,${btoa(fs.readFileSync("img/dfp-logo-share.jpg", "binary"))}`
-    );
-  }
+  // html2canvass will only load images with the same domain as the visited page
+  // so we need to inline the dfp logo
+  legendImg.setAttribute(
+    "src",
+    `data:image/jpg;base64,${btoa(fs.readFileSync("img/dfp-logo-share.jpg", "binary"))}`
+  );
 
   const legend = document.createElement("div");
   legend.className = `${prefix}legend`;
@@ -160,13 +86,14 @@ export const initDom = outer => {
 
   legend.appendChild(legendLabel);
   legend.appendChild(legendSvg);
-  if (typeof shareContainer !== "undefined") legend.appendChild(legendImg);
+  legend.appendChild(legendImg);
 
   vis.appendChild(header);
   vis.appendChild(map);
   vis.appendChild(legend);
   vis.appendChild(loader);
-  if (typeof shareContainer !== "undefined") vis.appendChild(shareContainer);
+  vis.appendChild(shareContainer);
+  vis.appendChild(embedContainer);
   container.appendChild(vis);
 
   const controls = document.createElement("div");
@@ -197,3 +124,5 @@ export const initDom = outer => {
 };
 
 export default getContent;
+
+export { toggleShare, toggleEmbed } from './share';
