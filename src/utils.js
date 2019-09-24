@@ -145,14 +145,13 @@ export const buildShareURL = shareState =>
 
 export const buildEmbedCode = shareState => {
   const embedDiv = document.createElement('div');
-  embedDiv.class="data-progress-maps"
+  embedDiv.className = "data-progress-maps"
 
   embedDiv.setAttribute('data-spreadsheet-key', shareState.sheetKey)
-  embedDiv.setAttribute('data-start-key', shareState.key)
-  embedDiv.setAttribute('data-start-map', shareState.map)
-  embedDiv.setAttribute('data-start-filter', shareState.filter)
-  embedDiv.setAttribute('data-start-feature', shareState.feature)
-
+  if( shareState.key ) embedDiv.setAttribute('data-start-key', shareState.key)
+  if( shareState.map ) embedDiv.setAttribute('data-start-map', shareState.map)
+  if( shareState.filter ) embedDiv.setAttribute('data-start-filter', shareState.filter)
+  if( shareState.feature ) embedDiv.setAttribute('data-start-feature', shareState.feature)
 
   const embedScript = [
     '<script>!function(d,w){if(!w.dfpMap){w.dfpMap="init";',

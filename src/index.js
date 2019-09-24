@@ -160,6 +160,7 @@ const initDataMap = container => {
 
         dataset.scaleType = dataset.scale || DEFAULT_SCALE;
         dataset.buckets = Number(dataset.buckets) || DEFAULT_BUCKETS;
+        dataset.issuekey = key
 
         if (!Object.prototype.hasOwnProperty.call(datasets, key)) {
           datasets[key] = {};

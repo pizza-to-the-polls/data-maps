@@ -84,6 +84,7 @@ export const initMap = container => {
     if (event.target.id === `${prefix}map-svg`) {
       svg.selectAll("path").style("opacity", 1);
       removeDetails();
+      shareState.feature = null;
     }
   });
 };

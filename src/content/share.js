@@ -122,7 +122,6 @@ const createEmbedContainer = () => {
 const createShareContent = (map) => {
   addButtons(map)
 
-
   return {
     shareContainer: createShareContainer(),
     embedContainer: createEmbedContainer()
