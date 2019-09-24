@@ -226,6 +226,7 @@ export const drawMap = (stats, map, dataSetConfig, options) => {
   shareState.key = dataSetConfig.issuekey;
   shareState.map = mapKey;
   shareState.sheetKey = sheetKey;
+  shareState.feature = null;
 
   svg.selectAll("path").remove();
 
