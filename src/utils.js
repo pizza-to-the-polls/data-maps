@@ -83,7 +83,7 @@ export const getMapConfig = (datasets, { startKey, startMap, startFilter, startF
   const datasetKeys = Object.keys(datasets);
 
   const [hashKey, hashMap, hashFilter, hashFeature] = window.location.hash
-    ? window.location.hash.split("#")[1].split("|")
+    ? window.location.hash.split("#")[1].split(":")
     : [];
 
   const firstFeature = hashFeature || startFeature;
@@ -140,7 +140,7 @@ export const getMapConfig = (datasets, { startKey, startMap, startFilter, startF
 export const buildShareURL = shareState =>
   [
     document.location.toString().split("#")[0],
-    [shareState.key, shareState.map, shareState.filter, shareState.feature].filter(e => e).join("|")
+    [shareState.key, shareState.map, shareState.filter, shareState.feature].filter(e => e).join(":")
   ].join("#");
 
 export const buildEmbedCode = shareState => {
